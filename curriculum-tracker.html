@@ -1,0 +1,2633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canon — by Surabhi Batra</title>
+  <style>
+    :root {
+      --purple: #5046E5;
+      --purple-light: #EEEDFB;
+      --purple-dark: #3B33C4;
+      --green: #059669;
+      --green-light: #D1FAE5;
+      --amber: #B45309;
+      --amber-light: #FEF3C7;
+      --red: #DC2626;
+      --gray: #78716C;
+      --gray-light: #F5F5F2;
+      --border: #E7E5E0;
+      --bg: #F8F7F4;
+      --text: #1C1917;
+      --text-muted: #78716C;
+      --radius: 16px;
+      --shadow: 0 1px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 24px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+      --shadow-lg: 0 20px 60px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.06);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); background-image: radial-gradient(ellipse at 10% 60%, rgba(180,140,80,0.1) 0%, transparent 55%), radial-gradient(ellipse at 90% 15%, rgba(80,70,229,0.08) 0%, transparent 55%), radial-gradient(ellipse at 50% 95%, rgba(140,100,180,0.07) 0%, transparent 50%); background-attachment: fixed; color: var(--text); min-height: 100vh; line-height: 1.6; }
+
+    /* ── Header ── */
+    .header { background: rgba(255,255,255,0.72); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-bottom: 1px solid rgba(255,255,255,0.6); padding: 0 24px; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 24px rgba(99,102,241,0.08); }
+    .header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 16px; height: 64px; }
+    .header-logo { display: flex; align-items: center; gap: 10px; white-space: nowrap; flex-shrink: 0; }
+    .header-logo-text { display: flex; flex-direction: column; gap: 1px; }
+    .header-logo-name { font-size: 17px; font-weight: 700; color: var(--text); line-height: 1.2; letter-spacing: -0.4px; }
+    .header-logo-byline { font-size: 11px; color: var(--text-muted); font-weight: 400; letter-spacing: 0.1px; }
+    .header-tagline-sub { font-size: 12px; color: var(--text-muted); font-weight: 400; padding-left: 4px; border-left: 1px solid var(--border); margin-left: 4px; }
+    .header-tagline { flex: 1; padding: 0 28px; font-size: 12px; font-weight: 400; color: var(--text-muted); line-height: 1.5; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .header-title { display: none; }
+    .mode-toggle { display: flex; background: var(--gray-light); border-radius: 8px; padding: 3px; gap: 2px; flex-shrink: 0; }
+    .mode-btn { padding: 6px 16px; border-radius: 6px; border: none; background: transparent; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-muted); transition: all 0.15s; }
+    .mode-btn.active { background: white; color: var(--purple); box-shadow: var(--shadow); }
+
+    /* ── Main ── */
+    .main { max-width: 1200px; margin: 0 auto; padding: 24px 24px 64px; }
+
+    /* ── Progress Banner ── */
+    .progress-banner { background: rgba(255,255,255,0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.85); border-radius: var(--radius); padding: 16px 24px; margin-bottom: 24px; box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 20px; }
+    .progress-stats { display: none; }
+    .stat { text-align: center; }
+    .stat-num { font-size: 28px; font-weight: 700; color: var(--purple); line-height: 1; }
+    .stat-label { font-size: 11px; color: var(--text-muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .progress-bar-section { flex: 1; }
+    .progress-banner-text { font-size: 13px; font-weight: 500; color: var(--text-muted); white-space: nowrap; }
+    .progress-banner-text strong { color: var(--text); font-weight: 600; }
+    .progress-bar-label { display: none; }
+    .progress-bar-track { height: 2px; background: var(--border); border-radius: 999px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: var(--purple); border-radius: 999px; transition: width 0.5s; opacity: 0.6; }
+
+    /* ── Module Grid ── */
+    .modules-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+    .module-card { background: rgba(255,255,255,0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.85); border-radius: var(--radius); box-shadow: 0 4px 20px rgba(0,0,0,0.05), 0 1px 4px rgba(0,0,0,0.04); overflow: hidden; transition: box-shadow 0.25s, transform 0.25s, border-color 0.25s; cursor: pointer; }
+    .module-card:hover { box-shadow: 0 12px 40px rgba(99,102,241,0.16), 0 4px 12px rgba(0,0,0,0.06); transform: translateY(-4px); }
+    .module-card.selected { border-color: rgba(99,102,241,0.45); box-shadow: 0 0 0 3px rgba(99,102,241,0.1), 0 12px 40px rgba(99,102,241,0.14); }
+    /* ── Module Card Visual Banner ── */
+    .module-card-visual { height: 90px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 6px; position: relative; overflow: hidden; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.5); }
+    .module-card-icon { width: 34px; height: 34px; position: relative; z-index: 1; flex-shrink: 0; opacity: 0.82; }
+    .module-card-visual-num { font-size: 9px; font-weight: 700; letter-spacing: 2px; color: rgba(0,0,0,0.28); text-transform: uppercase; position: relative; z-index: 1; }
+    [data-theme="dark"] .module-card-visual { border-bottom-color: rgba(255,255,255,0.06); }
+    [data-theme="dark"] .module-card-visual-num { color: rgba(255,255,255,0.32); }
+    [data-theme="dark"] .module-card-icon { opacity: 0.7; }
+
+    /* ── Split Layout (module selected) ── */
+    .student-split { display: grid; grid-template-columns: 288px 1fr; gap: 20px; align-items: start; }
+    .modules-column { display: flex; flex-direction: column; gap: 8px; position: sticky; top: 80px; max-height: calc(100vh - 108px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; padding-right: 2px; }
+    .modules-column::-webkit-scrollbar { width: 4px; }
+    .modules-column::-webkit-scrollbar-track { background: transparent; }
+    .modules-column::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+    .modules-column .module-card { display: flex; flex-direction: row; align-items: stretch; }
+    .modules-column .module-card-visual { height: auto; width: 52px; flex-shrink: 0; border-bottom: none; border-right: 1px solid rgba(255,255,255,0.45); }
+    .modules-column .module-card-icon { width: 22px; height: 22px; }
+    .modules-column .module-card-visual-num { display: none; }
+    .modules-column .module-card-header { flex: 1; padding: 10px 12px; border-bottom: none; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+    .modules-column .module-badge { display: none; }
+    .modules-column .module-num-inline { display: block; font-size: 10px; font-weight: 600; color: var(--mod-color, var(--purple)); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px; opacity: 0.9; }
+    .modules-column .module-title { font-size: 12.5px; margin-bottom: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .modules-column .module-subtitle { display: none; }
+    .modules-column .module-card-footer { display: none !important; }
+    .module-num-inline { display: none; }
+    .detail-column { min-width: 0; }
+    .detail-column .detail-panel { margin-top: 0; }
+    @media (max-width: 900px) {
+      .student-split { grid-template-columns: 1fr; }
+      .modules-column { position: static; max-height: 220px; }
+    }
+    .module-card-header { padding: 16px 20px; border-bottom: 1px solid rgba(0,0,0,0.04); }
+    .module-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; letter-spacing: 0.2px; padding: 2px 0; margin-bottom: 10px; }
+    .badge-complete { color: var(--green); }
+    .badge-progress { color: var(--amber); }
+    .badge-notstarted { display: none; }
+    .module-number { font-size: 11px; font-weight: 600; color: var(--purple); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .module-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; line-height: 1.3; }
+    .module-subtitle { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+    .module-card-footer { padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.02); border-top: 1px solid rgba(0,0,0,0.03); }
+    .module-progress-mini { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); }
+    .mini-bar { width: 72px; height: 2px; background: var(--border); border-radius: 999px; overflow: hidden; }
+    .mini-bar-fill { height: 100%; background: var(--mod-color, var(--purple)); border-radius: 999px; transition: width 0.3s; opacity: 0.7; }
+    .module-items-count { font-size: 12px; color: var(--text-muted); }
+
+    /* ── Detail Panel ── */
+    .detail-panel { background: rgba(255,255,255,0.72); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: var(--radius); box-shadow: var(--shadow-lg); margin-top: 24px; overflow: hidden; border: 1px solid rgba(255,255,255,0.85); }
+    .detail-header { padding: 24px 28px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+    .detail-header-left { flex: 1; }
+    .detail-module-num { font-size: 11px; font-weight: 600; color: var(--purple); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .detail-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .detail-subtitle { font-size: 14px; color: var(--text-muted); font-style: italic; }
+    .close-btn { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: white; cursor: pointer; font-size: 13px; color: var(--text-muted); transition: all 0.15s; flex-shrink: 0; }
+    .close-btn:hover { background: var(--gray-light); }
+    .why-banner { padding: 14px 28px; background: rgba(99,102,241,0.06); border-bottom: 1px solid rgba(99,102,241,0.1); font-size: 14px; color: #3730A3; line-height: 1.6; }
+    .why-label { font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; opacity: 0.7; }
+
+    /* ── Tabs ── */
+    .detail-tabs { display: flex; border-bottom: 1px solid rgba(0,0,0,0.06); padding: 0 28px; background: rgba(255,255,255,0.4); overflow-x: auto; scrollbar-width: none; }
+    .detail-tabs::-webkit-scrollbar { display: none; }
+    .tab-btn { padding: 12px 14px; border: none; background: transparent; cursor: pointer; font-size: 12.5px; font-weight: 400; color: var(--text-muted); border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.15s; }
+    .tab-btn.active { font-weight: 500; }
+    .tab-btn:hover { color: var(--purple); }
+    .tab-btn.active { color: var(--purple); border-bottom-color: var(--purple); }
+
+    /* ── Tab Content ── */
+    .tab-content { padding: 24px 28px; max-height: 520px; overflow-y: auto; }
+
+    /* ── Reading Items ── */
+    .reading-item { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); border-radius: 6px; transition: background 0.3s; }
+    .reading-item:last-child { border-bottom: none; }
+    .reading-item.reading-highlight { background: rgba(124,58,237,0.08); padding-left: 8px; }
+    .check-input { flex-shrink: 0; width: 18px; height: 18px; margin-top: 3px; cursor: pointer; accent-color: var(--purple); }
+    .reading-content { flex: 1; }
+    .reading-title { font-weight: 600; font-size: 14px; margin-bottom: 5px; line-height: 1.4; }
+    .reading-title.done { text-decoration: line-through; color: var(--text-muted); }
+    .reading-link { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--purple); text-decoration: none; margin-bottom: 5px; background: var(--purple-light); padding: 2px 8px; border-radius: 4px; }
+    .reading-link:hover { background: #DDD6FE; }
+    .search-pill { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; background: var(--gray-light); padding: 2px 8px; border-radius: 4px; color: var(--text-muted); margin-bottom: 5px; font-family: monospace; }
+    .reading-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+    /* ── Watch Items ── */
+    .watch-item { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .watch-item:last-child { border-bottom: none; }
+    .watch-content { flex: 1; }
+    .watch-term { font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+    .watch-term.done { text-decoration: line-through; color: var(--text-muted); }
+    .yt-btn { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; background: #FEE2E2; color: #DC2626; padding: 3px 10px; border-radius: 4px; text-decoration: none; }
+    .yt-btn:hover { background: #FECACA; }
+    .watch-desc { font-size: 13px; color: var(--text-muted); margin-top: 6px; line-height: 1.5; }
+
+    /* ── Prose & Notes ── */
+    .prose-block { font-size: 14px; line-height: 1.8; color: var(--text); margin-bottom: 20px; white-space: pre-wrap; }
+    .reflection-block { font-size: 14px; line-height: 1.8; color: #3730A3; background: rgba(99,102,241,0.06); border-left: 3px solid var(--purple); border-radius: 0 8px 8px 0; padding: 16px 20px; margin-bottom: 20px; white-space: pre-wrap; }
+    .done-check-row { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--gray-light); border-radius: 8px; margin-bottom: 20px; font-size: 14px; font-weight: 500; cursor: pointer; }
+    .done-check-row:hover { background: #E5E7EB; }
+    .notes-label { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .notes-area { width: 100%; min-height: 160px; border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; font-size: 14px; font-family: inherit; color: var(--text); resize: vertical; line-height: 1.7; outline: none; transition: border-color 0.15s; }
+    .notes-area:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+
+    /* ── Rich Text Editor ── */
+    .rte-wrap { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: box-shadow 0.15s; }
+    .rte-wrap:focus-within { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+    .rte-toolbar { display: flex; align-items: center; gap: 2px; padding: 6px 10px; background: var(--gray-light); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .rte-btn { width: 30px; height: 28px; border: none; background: transparent; border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--text); transition: background 0.1s; flex-shrink: 0; padding: 0; }
+    .rte-btn:hover { background: var(--border); }
+    .rte-btn svg { pointer-events: none; }
+    .rte-sep { width: 1px; height: 18px; background: var(--border); margin: 0 5px; flex-shrink: 0; }
+    .rte-swatch { width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(0,0,0,0.12); cursor: pointer; flex-shrink: 0; transition: transform 0.1s; }
+    .rte-swatch:hover { transform: scale(1.2); }
+    .rte-editor { min-height: 200px; padding: 14px 16px; font-size: 14px; line-height: 1.75; color: var(--text); outline: none; background: white; }
+    .rte-editor:empty::before { content: attr(data-placeholder); color: var(--text-muted); pointer-events: none; }
+    .rte-editor ul { padding-left: 22px; list-style: disc; margin: 4px 0; }
+    .rte-editor ol { padding-left: 22px; list-style: decimal; margin: 4px 0; }
+    .rte-editor li { margin: 2px 0; }
+    [data-theme="dark"] .rte-wrap { border-color: rgba(255,255,255,0.1); }
+    [data-theme="dark"] .rte-wrap:focus-within { border-color: var(--purple); }
+    [data-theme="dark"] .rte-toolbar { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    [data-theme="dark"] .rte-editor { background: rgba(0,0,0,0.25); color: var(--text); }
+    [data-theme="dark"] .rte-swatch { border-color: rgba(255,255,255,0.15); }
+    .notes-hint { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+
+    /* ── Assignment Sections ── */
+    .asgn-sections { display: flex; flex-direction: column; gap: 10px; }
+    .asgn-section { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: rgba(255,255,255,0.6); transition: box-shadow 0.15s; }
+    .asgn-section.dragging { opacity: 0.45; }
+    .asgn-section.drag-over { box-shadow: 0 0 0 2px var(--purple); }
+    .asgn-sec-header { display: flex; align-items: center; gap: 6px; padding: 10px 12px; background: var(--gray-light); border-bottom: 1px solid var(--border); cursor: default; user-select: none; }
+    .asgn-sec-body { }
+    .asgn-sec-body.collapsed { display: none; }
+    .asgn-sec-drag { cursor: grab; color: var(--text-muted); font-size: 18px; line-height: 1; padding: 0 2px; flex-shrink: 0; }
+    .asgn-sec-drag:active { cursor: grabbing; }
+    .asgn-sec-title { flex: 1; font-size: 13px; font-weight: 600; color: var(--text); background: transparent; border: none; outline: none; padding: 2px 4px; border-radius: 4px; line-height: 1.4; }
+    .asgn-sec-title:focus { background: rgba(124,58,237,0.06); }
+    .asgn-sec-title:empty::before { content: attr(data-placeholder); color: var(--text-muted); font-weight: 400; pointer-events: none; }
+    .asgn-sec-toggle { width: 26px; height: 26px; border: none; background: transparent; cursor: pointer; color: var(--text-muted); border-radius: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.1s, transform 0.2s; padding: 0; }
+    .asgn-sec-toggle:hover { background: var(--border); }
+    .asgn-sec-toggle.collapsed { transform: rotate(-90deg); }
+    .asgn-sec-delete { width: 26px; height: 26px; border: none; background: transparent; cursor: pointer; color: var(--text-muted); border-radius: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.1s, color 0.1s; padding: 0; }
+    .asgn-sec-delete:hover { background: #fee2e2; color: #dc2626; }
+    .asgn-add-sec { display: flex; align-items: center; gap: 6px; padding: 9px 14px; border: 1.5px dashed var(--border); border-radius: 10px; background: transparent; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-muted); width: 100%; transition: border-color 0.15s, color 0.15s, background 0.15s; margin-top: 2px; }
+    .asgn-add-sec:hover { border-color: var(--purple); color: var(--purple); background: rgba(124,58,237,0.04); }
+    [data-theme="dark"] .asgn-section { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
+    [data-theme="dark"] .asgn-sec-header { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.08); }
+    [data-theme="dark"] .asgn-sec-delete:hover { background: rgba(220,38,38,0.15); }
+    [data-theme="dark"] .asgn-add-sec { border-color: rgba(255,255,255,0.12); }
+
+    /* ── Source citations ── */
+    .src-cite { color: var(--purple); text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 3px; cursor: pointer; border-radius: 2px; transition: background 0.1s; user-select: none; -webkit-user-select: none; }
+    .src-cite:hover { background: rgba(124,58,237,0.1); }
+    .src-picker { position: absolute; z-index: 9999; background: white; border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 32px rgba(0,0,0,0.12); min-width: 240px; max-width: 320px; overflow: hidden; display: none; }
+    .src-picker.open { display: block; }
+    .src-picker-header { padding: 10px 14px 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+    .src-picker-item { padding: 9px 14px; font-size: 13px; color: var(--text); cursor: pointer; line-height: 1.4; transition: background 0.1s; }
+    .src-picker-item:hover { background: rgba(124,58,237,0.07); color: var(--purple); }
+    .src-picker-empty { padding: 12px 14px; font-size: 13px; color: var(--text-muted); }
+    .rte-btn-link { width: auto !important; padding: 0 7px !important; gap: 4px; font-size: 11px; }
+    [data-theme="dark"] .src-picker { background: #1e1e2e; border-color: rgba(255,255,255,0.1); }
+    [data-theme="dark"] .src-picker-header { border-color: rgba(255,255,255,0.08); }
+    [data-theme="dark"] .src-picker-item { color: var(--text); }
+    [data-theme="dark"] .src-picker-item:hover { background: rgba(124,58,237,0.15); }
+
+    /* ── Attachments ── */
+    .attach-section { margin-bottom: 28px; }
+    .attach-section:last-child { margin-bottom: 0; }
+    .attach-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .attach-section-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .attach-count { font-size: 11px; background: var(--purple-light); color: var(--purple); padding: 2px 7px; border-radius: 999px; font-weight: 600; margin-left: 6px; }
+    .attach-empty { font-size: 13px; color: var(--text-muted); padding: 14px 0; font-style: italic; }
+    .attach-drop-zone {
+      border: 2px dashed var(--border); border-radius: 10px; padding: 20px;
+      text-align: center; cursor: pointer; transition: all 0.15s; background: var(--gray-light);
+      margin-bottom: 12px;
+    }
+    .attach-drop-zone:hover, .attach-drop-zone.drag-over { border-color: var(--purple); background: var(--purple-light); }
+    .attach-drop-zone p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    .attach-drop-icon { font-size: 24px; margin-bottom: 4px; }
+    .attach-drop-label { font-size: 14px; font-weight: 600; color: var(--text); }
+    .attach-file-list { display: flex; flex-direction: column; gap: 8px; }
+    .attach-file-item {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--gray-light); border-radius: 8px; padding: 10px 14px;
+      border: 1px solid var(--border);
+    }
+    .attach-file-icon { font-size: 22px; flex-shrink: 0; }
+    .attach-file-info { flex: 1; min-width: 0; }
+    .attach-file-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .attach-file-meta { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+    .attach-file-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .attach-uploading { opacity: 0.6; animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
+    .attach-resource-badge { font-size: 10px; background: #FEF3C7; color: #92400E; padding: 2px 6px; border-radius: 4px; font-weight: 600; margin-left: 6px; }
+
+    /* ── Complete Button ── */
+    .detail-footer { padding: 16px 28px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; }
+    .complete-btn { padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; display: flex; align-items: center; gap: 8px; }
+    .complete-btn.not-done { background: var(--purple-light); color: var(--purple); }
+    .complete-btn.not-done:hover { background: var(--purple); color: white; }
+    .complete-btn.is-done { background: var(--green-light); color: var(--green); }
+    .complete-btn.is-done:hover { background: #A7F3D0; }
+
+    /* ── Admin ── */
+    .admin-toolbar { display: flex; gap: 12px; margin-bottom: 24px; align-items: center; flex-wrap: wrap; }
+    .btn { padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; }
+    .btn-primary { background: var(--purple); color: white; }
+    .btn-primary:hover { background: var(--purple-dark); }
+    .btn-outline { background: white; color: var(--text); border: 1px solid var(--border); }
+    .btn-outline:hover { background: var(--gray-light); }
+    .btn-danger { background: #FEE2E2; color: var(--red); }
+    .btn-danger:hover { background: #FECACA; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+    .btn-attach { background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; }
+    .btn-attach:hover { background: #DBEAFE; }
+
+    .admin-module-row { background: rgba(255,255,255,0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.85); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 20px; display: flex; align-items: center; gap: 16px; margin-bottom: 10px; }
+    .admin-mod-num { width: 36px; height: 36px; border-radius: 999px; background: var(--purple-light); color: var(--purple); font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .admin-mod-info { flex: 1; min-width: 0; }
+    .admin-mod-title { font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .admin-mod-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .admin-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+    /* ── Modal ── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .modal { background: rgba(255,255,255,0.88); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); border: 1px solid rgba(255,255,255,0.9); border-radius: 20px; box-shadow: var(--shadow-lg); width: 100%; max-width: 680px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; }
+    .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .modal-title { font-size: 18px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+    /* ── PDF Viewer Modal ── */
+    .modal.pdf-modal { max-width: 900px; height: 92vh; max-height: 92vh; }
+    .pdf-modal .modal-header { flex-shrink: 0; }
+    .pdf-modal:fullscreen { max-width: 100vw; width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+    .pdf-modal:-webkit-full-screen { max-width: 100vw; width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+
+    /* ── PDF Text Layer & Highlights ── */
+    .pdf-page-wrapper { position: relative; margin-bottom: 10px; box-shadow: 0 2px 16px rgba(0,0,0,0.5); line-height: 1; }
+    .pdf-page-wrapper canvas { display: block; }
+    .textLayer { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+    .textLayer span, .textLayer br { color: transparent; position: absolute; white-space: pre; transform-origin: 0% 0%; cursor: text; }
+    .textLayer ::selection { background: rgba(255, 220, 0, 0.55); }
+    .textLayer ::-moz-selection { background: rgba(255, 220, 0, 0.55); }
+    .pdf-hl-layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .pdf-hl { position: absolute; background: rgba(255, 220, 0, 0.42); mix-blend-mode: multiply; border-radius: 2px; }
+    .btn-hl-on { background: #FEF3C7; color: #92400E; border-color: #FCD34D; }
+    .btn-hl-on:hover { background: #FDE68A; }
+
+    /* ── Form ── */
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-input, .form-textarea { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 14px; font-family: inherit; color: var(--text); outline: none; transition: border-color 0.15s; background: white; }
+    .form-input:focus, .form-textarea:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+    .form-textarea { min-height: 100px; resize: vertical; line-height: 1.6; }
+    .form-hint { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    /* ── Upload Zone (modal) ── */
+    .upload-zone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 40px 32px; text-align: center; cursor: pointer; transition: all 0.15s; background: var(--gray-light); }
+    .upload-zone:hover, .upload-zone.drag-over { border-color: var(--purple); background: var(--purple-light); }
+    .upload-icon { font-size: 40px; margin-bottom: 12px; }
+    .upload-text { font-size: 15px; font-weight: 600; }
+    .upload-subtext { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+    /* ── Empty State ── */
+    .empty-state { text-align: center; padding: 64px 24px; color: var(--text-muted); }
+    .empty-icon { font-size: 52px; margin-bottom: 16px; }
+    .empty-title { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .empty-text { font-size: 14px; }
+
+    /* ── Toast ── */
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #1F2937; color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 500; box-shadow: var(--shadow-lg); z-index: 500; opacity: 1; transform: translateY(0); transition: opacity 0.3s, transform 0.3s; }
+    .toast.hide { opacity: 0; transform: translateY(16px); pointer-events: none; }
+
+    /* ── Dark Mode Toggle Button ── */
+    .dark-toggle { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 15px; line-height: 1; color: var(--text-muted); transition: all 0.15s; flex-shrink: 0; }
+    .dark-toggle:hover { background: var(--gray-light); }
+
+    /* ── Drag to Reorder ── */
+    .drag-handle { cursor: grab; color: var(--text-muted); font-size: 20px; flex-shrink: 0; padding: 0 2px; line-height: 1; user-select: none; }
+    .drag-handle:active { cursor: grabbing; }
+    .admin-module-row { transition: opacity 0.15s, border-color 0.15s; }
+    .admin-module-row.dragging { opacity: 0.35; box-shadow: none !important; }
+    .admin-module-row.drag-over { border: 2px solid var(--purple); box-shadow: 0 0 0 3px rgba(124,58,237,0.15) !important; }
+
+    /* ── Dark Mode ── */
+    [data-theme="dark"] {
+      --purple: #8B83F0;
+      --purple-light: #1E1B3A;
+      --purple-dark: #6B62D4;
+      --green: #34D399;
+      --green-light: #064E3B;
+      --amber: #FCD34D;
+      --amber-light: #78350F;
+      --red: #FCA5A5;
+      --gray: #A8A29E;
+      --gray-light: #1C1917;
+      --border: #292524;
+      --bg: #111110;
+      --text: #E7E5E0;
+      --text-muted: #A8A29E;
+      --shadow: 0 1px 4px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.4);
+      --shadow-md: 0 4px 24px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.3);
+      --shadow-lg: 0 20px 60px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.4);
+    }
+    [data-theme="dark"] body { background-image: radial-gradient(ellipse at 10% 60%, rgba(180,140,60,0.08) 0%, transparent 55%), radial-gradient(ellipse at 90% 15%, rgba(80,70,229,0.12) 0%, transparent 55%), radial-gradient(ellipse at 50% 95%, rgba(120,80,160,0.08) 0%, transparent 50%); }
+    [data-theme="dark"] .header { background: rgba(17,17,16,0.82); border-color: rgba(255,255,255,0.05); }
+    [data-theme="dark"] .progress-banner { background: rgba(28,25,23,0.6); border-color: rgba(255,255,255,0.06); }
+    [data-theme="dark"] .module-card { background: rgba(28,25,23,0.55); border-color: rgba(255,255,255,0.07); }
+    [data-theme="dark"] .module-card-footer { background: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.05); }
+    [data-theme="dark"] .detail-panel { background: rgba(17,17,16,0.8); border-color: rgba(255,255,255,0.07); }
+    [data-theme="dark"] .detail-tabs { background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.06); }
+    [data-theme="dark"] .admin-module-row { background: rgba(28,25,23,0.55); border-color: rgba(255,255,255,0.07); }
+    [data-theme="dark"] .modal { background: rgba(17,17,16,0.92); border-color: rgba(255,255,255,0.08); }
+    [data-theme="dark"] .why-banner { background: rgba(80,70,229,0.1); border-color: rgba(80,70,229,0.15); color: #B0AAFF; }
+    [data-theme="dark"] .reflection-block { background: rgba(80,70,229,0.08); border-color: var(--purple); color: #B0AAFF; }
+    [data-theme="dark"] .mode-btn.active { background: rgba(0,0,0,0.4); }
+    [data-theme="dark"] .close-btn { background: rgba(255,255,255,0.05); color: var(--text-muted); border-color: rgba(255,255,255,0.1); }
+    [data-theme="dark"] .close-btn:hover { background: rgba(255,255,255,0.1); }
+    [data-theme="dark"] .btn-outline { background: rgba(255,255,255,0.05); color: var(--text); border-color: rgba(255,255,255,0.1); }
+    [data-theme="dark"] .btn-outline:hover { background: rgba(255,255,255,0.1); }
+    [data-theme="dark"] .notes-area,
+    [data-theme="dark"] .form-input,
+    [data-theme="dark"] .form-textarea { background: rgba(0,0,0,0.3); color: var(--text); border-color: rgba(255,255,255,0.1); }
+    [data-theme="dark"] .notes-area:focus,
+    [data-theme="dark"] .form-input:focus,
+    [data-theme="dark"] .form-textarea:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(129,140,248,0.15); }
+    [data-theme="dark"] .done-check-row { background: rgba(255,255,255,0.04); }
+    [data-theme="dark"] .done-check-row:hover { background: rgba(255,255,255,0.08); }
+    [data-theme="dark"] .attach-file-item { background: rgba(0,0,0,0.25); border-color: rgba(255,255,255,0.08); }
+    [data-theme="dark"] .attach-drop-zone { background: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.1); }
+    [data-theme="dark"] .upload-zone { background: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.1); }
+    [data-theme="dark"] .reading-link { background: rgba(99,102,241,0.15); color: #A5B4FC; }
+    [data-theme="dark"] .reading-link:hover { background: rgba(99,102,241,0.25); }
+    [data-theme="dark"] .search-pill { background: rgba(255,255,255,0.06); color: var(--text-muted); }
+    [data-theme="dark"] .attach-resource-badge { background: rgba(217,119,6,0.2); color: #FCD34D; }
+    [data-theme="dark"] .btn-danger { background: rgba(220,38,38,0.15); color: #FCA5A5; }
+    [data-theme="dark"] .btn-danger:hover { background: rgba(220,38,38,0.25); }
+    [data-theme="dark"] .btn-attach { background: rgba(37,99,235,0.15); color: #93C5FD; border-color: rgba(37,99,235,0.3); }
+    [data-theme="dark"] .btn-attach:hover { background: rgba(37,99,235,0.25); }
+    [data-theme="dark"] .toast { background: rgba(30,27,74,0.95); border: 1px solid rgba(255,255,255,0.1); }
+
+    /* ── Responsive: tablet ── */
+    @media (max-width: 900px) {
+      .student-split { grid-template-columns: 1fr; gap: 12px; }
+      .modules-column { position: static; max-height: 200px; flex-direction: row; overflow-x: auto; overflow-y: hidden; padding-bottom: 4px; padding-right: 0; gap: 8px; }
+      .modules-column .module-card { min-width: 200px; flex-shrink: 0; }
+      .detail-column .detail-panel { margin-top: 0; }
+    }
+
+    /* ── Responsive: phone ── */
+    @media (max-width: 640px) {
+      /* Header */
+      .header { padding: 0 16px; }
+      .header-inner { height: auto; padding: 10px 0; flex-wrap: wrap; gap: 8px; }
+      .header-logo { flex: 1; min-width: 0; overflow: hidden; }
+      .header-logo-name { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .header-logo-byline { display: none; }
+      .header-tagline { display: none; }
+      .mode-btn { padding: 6px 10px; font-size: 12px; }
+
+      /* Main */
+      .main { padding: 12px 12px 48px; }
+
+      /* Progress banner */
+      .progress-banner { flex-direction: column; align-items: flex-start; gap: 16px; padding: 16px; }
+      .progress-stats { gap: 20px; }
+      .stat-num { font-size: 22px; }
+
+      /* Module grid */
+      .modules-grid { grid-template-columns: 1fr; gap: 12px; }
+      .module-card-visual { height: 72px; }
+
+      /* Split layout: hide column, show detail full-width with back button */
+      .student-split { grid-template-columns: 1fr; gap: 0; }
+      .modules-column { display: none; }
+      .detail-column .detail-panel { border-radius: 12px; margin-top: 0; }
+      .close-btn::before { content: '← '; }
+      .close-btn { font-size: 12px; padding: 6px 10px; }
+
+      /* Detail panel */
+      .detail-header { padding: 14px 16px 12px; flex-wrap: wrap; gap: 10px; }
+      .detail-title { font-size: 18px; }
+      .detail-subtitle { font-size: 13px; }
+      .why-banner { padding: 12px 16px; font-size: 13px; }
+      .detail-tabs { padding: 0 12px; }
+      .tab-btn { padding: 12px 12px; font-size: 12px; }
+      .tab-content { padding: 14px 16px; max-height: none; }
+      .detail-footer { padding: 12px 16px; }
+
+      /* Admin */
+      .admin-toolbar { gap: 8px; }
+      .admin-module-row { flex-wrap: wrap; gap: 10px; }
+      .admin-actions { width: 100%; justify-content: flex-end; }
+
+      /* Modal */
+      .modal-overlay { padding: 12px; align-items: flex-end; }
+      .modal { border-radius: 20px 20px 0 0; max-height: 88vh; }
+      .modal-body { padding: 16px; }
+      .modal-header { padding: 16px; }
+      .modal-footer { padding: 12px 16px; }
+    }
+
+    /* ── Auth Screen ── */
+    .auth-screen { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: var(--bg); background-image: radial-gradient(ellipse at 10% 60%, rgba(180,140,80,0.1) 0%, transparent 55%), radial-gradient(ellipse at 90% 15%, rgba(80,70,229,0.08) 0%, transparent 55%); }
+    .auth-card { background: white; border-radius: 20px; padding: 40px; width: 100%; max-width: 400px; box-shadow: var(--shadow-lg); }
+    .auth-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; }
+    .auth-logo-name { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; }
+    .auth-logo-byline { font-size: 12px; color: var(--text-muted); }
+    .auth-title { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .auth-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; }
+    .auth-tabs { display: flex; background: var(--gray-light); border-radius: 8px; padding: 3px; gap: 2px; margin-bottom: 24px; }
+    .auth-tab { flex: 1; padding: 7px; border-radius: 6px; border: none; background: transparent; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-muted); transition: all 0.15s; }
+    .auth-tab.active { background: white; color: var(--purple); box-shadow: var(--shadow); }
+    .auth-input { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; font-family: inherit; color: var(--text); background: white; transition: border-color 0.15s; margin-bottom: 12px; outline: none; display: block; }
+    .auth-input:focus { border-color: var(--purple); }
+    .auth-btn { width: 100%; padding: 12px; background: var(--purple); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; margin-top: 4px; font-family: inherit; }
+    .auth-btn:hover { background: var(--purple-dark); }
+    .auth-btn:disabled { opacity: 0.55; cursor: default; }
+    .auth-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 8px; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .auth-msg { font-size: 13px; margin-top: 14px; text-align: center; min-height: 20px; line-height: 1.5; }
+    .auth-msg.error { color: var(--red); }
+    .auth-msg.success { color: var(--green); }
+    .auth-msg.info { color: var(--text-muted); }
+    .auth-loading { display: flex; align-items: center; gap: 10px; justify-content: center; padding: 60px 0; color: var(--text-muted); font-size: 14px; }
+    .auth-loading-spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.7s linear infinite; }
+    /* User badge in header */
+    .user-badge { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .user-badge-email { font-size: 11px; color: var(--text-muted); max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .user-signout { padding: 5px 12px; border-radius: 7px; border: 1px solid var(--border); background: transparent; cursor: pointer; font-size: 12px; font-weight: 500; color: var(--text-muted); transition: all 0.15s; font-family: inherit; }
+    .user-signout:hover { border-color: var(--red); color: var(--red); }
+    .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); opacity: 0; transition: opacity 0.4s; }
+    .sync-dot.syncing { background: var(--amber); opacity: 1; }
+    .sync-dot.synced { opacity: 1; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+</head>
+<body>
+
+<!-- Auth screen — shown when not authenticated -->
+<div id="authScreen" class="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="28" height="28" rx="7" fill="url(#authLogoGrad)"/>
+        <path d="M18 9.5C16.8 8.6 15.4 8 13.8 8C10.1 8 7 11.1 7 14.8C7 18.5 10.1 21.6 13.8 21.6C15.5 21.6 17 21 18.2 19.9" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <defs><linearGradient id="authLogoGrad" x1="0" y1="0" x2="28" y2="28"><stop offset="0%" stop-color="#4F46E5"/><stop offset="100%" stop-color="#7C3AED"/></linearGradient></defs>
+      </svg>
+      <div>
+        <div class="auth-logo-name">Canon</div>
+        <div class="auth-logo-byline">by Surabhi Batra</div>
+      </div>
+    </div>
+    <!-- Loading state -->
+    <div id="authLoading" class="auth-loading">
+      <div class="auth-loading-spinner"></div>
+      <span>Checking session…</span>
+    </div>
+    <!-- Sign-in / Sign-up form (hidden until auth check completes) -->
+    <div id="authForm" style="display:none">
+      <div class="auth-title" id="authTitle">Welcome back</div>
+      <div class="auth-subtitle" id="authSubtitle">Sign in to sync your progress across devices</div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="authTabSignIn" onclick="switchAuthTab('signin')">Sign in</button>
+        <button class="auth-tab" id="authTabSignUp" onclick="switchAuthTab('signup')">Create account</button>
+      </div>
+      <form onsubmit="handleAuthSubmit(event)">
+        <input type="email" class="auth-input" id="authEmail" placeholder="Email address" required autocomplete="email">
+        <input type="password" class="auth-input" id="authPassword" placeholder="Password (min 6 chars)" required autocomplete="current-password" minlength="6">
+        <button type="submit" class="auth-btn" id="authSubmitBtn">Sign in</button>
+      </form>
+      <div class="auth-msg info" id="authMsg"></div>
+    </div>
+  </div>
+</div>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="header-logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+        <rect width="28" height="28" rx="7" fill="url(#logoGrad)"/>
+        <path d="M18 9.5C16.8 8.6 15.4 8 13.8 8C10.1 8 7 11.1 7 14.8C7 18.5 10.1 21.6 13.8 21.6C15.5 21.6 17 21 18.2 19.9" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="28" y2="28">
+            <stop offset="0%" stop-color="#4F46E5"/>
+            <stop offset="100%" stop-color="#7C3AED"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="header-logo-text">
+        <div class="header-logo-name">Canon</div>
+        <div class="header-logo-byline">by Surabhi Batra</div>
+      </div>
+    </div>
+    <div style="flex:1; display:flex; align-items:center; padding-left: 20px;">
+      <span class="header-tagline-sub" style="display:none" id="headerTaglineSub">Design your curriculum with AI. Execute it with intention. Walk out with proof.</span>
+    </div>
+    <div class="header-title" id="headerTitle" style="display:none"></div>
+    <button class="dark-toggle" id="darkToggleBtn" onclick="toggleDarkMode()" title="Toggle dark mode">🌙</button>
+    <!-- User badge (shown when signed in) -->
+    <div class="user-badge" id="userBadge" style="display:none">
+      <div class="sync-dot" id="syncDot" title="Cloud sync status"></div>
+      <span class="user-badge-email" id="userBadgeEmail"></span>
+      <button class="user-signout" onclick="handleSignOut()">Sign out</button>
+    </div>
+    <div class="mode-toggle" id="modeToggle">
+      <button class="mode-btn active" id="studentModeBtn" onclick="setMode('student')">Student</button>
+      <button class="mode-btn" id="adminModeBtn" onclick="setMode('admin')">Admin</button>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <div id="studentView"></div>
+  <div id="adminView" style="display:none"></div>
+</main>
+
+<!-- Hidden file inputs -->
+<input type="file" id="mdInput" accept=".md,.txt" style="display:none" onchange="handleMdFile(this)">
+<input type="file" id="pdfInput" accept=".pdf,application/pdf" multiple style="display:none" onchange="handlePdfFiles(this)">
+
+<div id="modalOverlay" class="modal-overlay" style="display:none" onclick="handleOverlayClick(event)"></div>
+<div id="toast" class="toast hide"></div>
+
+<script>
+// ====================================================================
+// EMBEDDED CURRICULUM — Jane's 9-module PM curriculum
+// ====================================================================
+const JANE_CURRICULUM = {
+  title: "Canon — Surabhi Batra",
+  subtitle: "Your personal upskilling playbook. Strategy, Design Thinking, AI Product, Pricing & Metrics.",
+  modules: [
+    {
+      id: "m1", number: 1,
+      title: "Strategic Thinking & Systems Thinking",
+      subtitle: "Your gap: strategy feels weak. Your actual situation: you have strategic instincts but may have lost the language to articulate them confidently.",
+      whyItMatters: "Your target orgs — GovTech, Mandai X, NTUC — are not execution environments. They need people who can hold complexity, think in systems, and make decisions in ambiguity. This is the module that makes you dangerous in a room again.",
+      readings: [
+        { id:"m1r1", number:"1", title:'"What Is Strategy?" — Michael Porter, HBR 1996', url:"https://hbr.org/1996/11/what-is-strategy", searchTerm:"", type:"verified", description:"The foundational text. Porter's argument that strategy is about what you won't do is still the sharpest definition available." },
+        { id:"m1r2", number:"2", title:'"The Big Lie of Strategic Planning" — Roger Martin, HBR', url:"https://hbr.org/2014/12/the-big-lie-of-strategic-planning", searchTerm:"", type:"verified", description:"Read this alongside Porter. Martin is the best living writer on strategy." },
+        { id:"m1r3", number:"3", title:'"7 Powers: The Foundations of Business Strategy" — Hamilton Helmer', url:"", searchTerm:"Hamilton Helmer 7 Powers summary", type:"search", description:"Book (~$15 Kindle). The best modern strategy framework for tech PMs. Counter-positioning, scale economies, switching costs, network effects — explained with real rigour." },
+        { id:"m1r4", number:"4", title:"Thinking in Systems — Donella Meadows", url:"", searchTerm:"Donella Meadows Thinking in Systems PDF excerpt", type:"search", description:"The systems thinking bible. Read chapters 1–3 minimum." },
+        { id:"m1r5", number:"5", title:'Stratechery — Ben Thompson: "Aggregation Theory"', url:"https://stratechery.com/2015/aggregation-theory/", searchTerm:"", type:"verified", description:"Free. The most important framework for understanding platform power in the internet age." },
+        { id:"m1r6", number:"6", title:"GovTech Singapore's Digital Government strategy documents", url:"https://www.tech.gov.sg/our-digital-government-efforts/", searchTerm:"", type:"verified", description:"Read their actual published strategy. If you're going to work there, you should know how they think about themselves." }
+      ],
+      watching: [
+        { id:"m1w1", searchTerm:"Roger Martin strategy talk Playing to Win", description:"Several good recordings of him explaining his framework (~45 min)" },
+        { id:"m1w2", searchTerm:"Hamilton Helmer 7 Powers talk", description:"The Invest Like the Best one is excellent" },
+        { id:"m1w3", searchTerm:"MIT OpenCourseWare System Dynamics John Sterman", description:"Long but extraordinary if you want to go deep on systems thinking" }
+      ],
+      assignment:"Map the strategic position of \"Canon\" as a product.\n\n- Who are the real users? Career re-entrants vs. active PMs vs. companies upskilling teams — they're different customers with different willingness to pay and different definitions of success.\n- What's the unique position no generic tool (Notion, Coursera, even ChatGPT) can replicate?\n- Apply Porter: what tradeoffs define this product? What does it deliberately not do?\n- Apply 7 Powers: which of the seven — network effects, switching costs, scale economies, brand — are achievable for a learning app? Which will you target first?\n\nWrite 600 words. End with one sentence: \"The one thing this product must never compromise on is ___.\"",
+      reflection:"When you've done your best strategic work in your career — what did it feel like in your body? Energising or draining? Was it the strategy itself, or the environment it happened in?"
+    },
+    {
+      id:"m2", number:2,
+      title:"Design Thinking & Human-Centred Research (Advanced)",
+      subtitle:"Your gap: design thinking. Your actual situation: you probably know the vocabulary but haven't used the methodology rigorously.",
+      whyItMatters:"Your target orgs are mission-driven. The best work there comes from genuine empathy with the humans being served — not feature lists. This module also reconnects you to why products matter.",
+      readings: [
+        { id:"m2r1", number:"1", title:"Stanford d.school Design Thinking Bootleg — FREE", url:"https://dschool.stanford.edu/resources", searchTerm:"", type:"verified", description:"Download \"The Bootleg Deck\". It's the canonical Stanford design thinking methodology, free, beautifully designed." },
+        { id:"m2r2", number:"2", title:"IDEO Design Kit — FREE", url:"https://www.designkit.org/methods", searchTerm:"", type:"verified", description:"Browse the methods library. Pick 5 methods that seem interesting and read those entries in full." },
+        { id:"m2r3", number:"3", title:'"Design Thinking" — Tim Brown, HBR 2008', url:"https://hbr.org/2008/06/design-thinking", searchTerm:"", type:"verified", description:"Short. The piece that brought design thinking into the mainstream business conversation." },
+        { id:"m2r4", number:"4", title:"Google PAIR Guidebook — FREE", url:"https://pair.withgoogle.com/guidebook/", searchTerm:"", type:"verified", description:"People + AI Research. Google's free guidebook for designing AI-powered products. Read the whole thing." },
+        { id:"m2r5", number:"5", title:'"The Design of Everyday Things" — Don Norman', url:"", searchTerm:"Don Norman Design of Everyday Things", type:"search", description:"If you haven't read it: read chapters 1 and 2. It lands differently after burnout." }
+      ],
+      watching: [
+        { id:"m2w1", searchTerm:"IDEO design thinking shopping cart ABC Nightline", description:"The 1999 video that made design thinking famous. (~22 min)" },
+        { id:"m2w2", searchTerm:"Stanford d.school design thinking bootcamp", description:"" },
+        { id:"m2w3", searchTerm:"Google PAIR design AI", description:"" }
+      ],
+      assignment:"Run discovery on your own product.\n\n1. Write 3 user personas who might use this app: a career re-entrant (you), an active PM who wants structured self-study, and an L&D manager at a company. For each: what's their job-to-be-done? What does \"done\" look like for them?\n\n2. Write 5 interview questions you'd ask a career re-entrant in Singapore — then answer them yourself honestly. What surprised you in your own answers?\n\n3. Identify the 2 biggest UX assumptions baked into the current app that you haven't validated with anyone other than yourself.\n\n4. Describe one feature the current app completely lacks that genuine user research would likely surface.\n\nThe goal is one insight about your own product that you didn't have before you started.",
+      reflection:"Think of a product decision you made that you're genuinely proud of. Was it driven by data or by a human insight that caught you off guard? What does that tell you about where your best thinking comes from?"
+    },
+    {
+      id:"m3", number:3,
+      title:"AI Fundamentals — Rigorous, Non-Technical",
+      subtitle:"Your gap: understanding the AI wave at a level that goes beyond tools.",
+      whyItMatters:"You've been around AI tools enough to use them. This module gives you the conceptual foundation to think about them as a product strategist — understanding failure modes, architectural constraints, and evaluation.",
+      readings: [
+        { id:"m3r1", number:"1", title:"Ethan Mollick — One Useful Thing (Substack)", url:"https://www.oneusefulthing.org", searchTerm:"", type:"verified", description:"Subscribe. Start with: \"The Cybernetic Teammate\", \"On Trust and the Practical Challenges of AI\", \"Getting your AI to do good work\"." },
+        { id:"m3r2", number:"2", title:'"What is ChatGPT Doing and Why Does It Work?" — Stephen Wolfram', url:"https://writings.stephenwolfram.com/2023/02/what-is-chatgpt-doing-and-why-does-it-work/", searchTerm:"", type:"verified", description:"Long. Dense. Read sections 1–5. The best non-mathematical explanation of how LLMs work." },
+        { id:"m3r3", number:"3", title:'"Your AI Product Needs Evals" — Hamel Husain', url:"https://hamel.dev/blog/posts/evals/", searchTerm:"", type:"verified", description:"This directly addresses your Micro1 gap. Read carefully." },
+        { id:"m3r4", number:"4", title:'"Situational Awareness" — Leopold Aschenbrenner', url:"https://situational-awareness.ai", searchTerm:"", type:"verified", description:"Very long essay. Read Part 1 only (~30 min)." },
+        { id:"m3r5", number:"5", title:"DeepLearning.AI Short Courses — FREE", url:"https://www.deeplearning.ai/short-courses/", searchTerm:"", type:"verified", description:"\"Evaluating and Debugging Generative AI\", \"ChatGPT Prompt Engineering for Developers\", \"Building and Evaluating Advanced RAG\". Free, 1–4 hours each." }
+      ],
+      watching: [
+        { id:"m3w1", searchTerm:"Andrej Karpathy intro to large language models", description:"1 hour. The single best non-technical explanation of how LLMs work." },
+        { id:"m3w2", searchTerm:"3Blue1Brown but what is a neural network", description:"19 minutes. Beautiful visual explanation." },
+        { id:"m3w3", searchTerm:"Andrej Karpathy State of GPT", description:"His Microsoft Build talk — excellent for understanding where the models are going." }
+      ],
+      assignment:"Map the AI opportunity surface for this product.\n\n1. Where in the current app does AI add zero value vs. where it adds genuine leverage? Be honest — not every feature benefits from AI.\n\n2. Write a capability map: for each of the 9 modules in your curriculum, what would an AI tutor specifically do that the static curriculum can't? (e.g. give feedback on your assignment notes, ask Socratic follow-up questions, flag when you're rationalising instead of thinking)\n\n3. Identify 2 AI risks specific to a learning product — hallucinated citations, over-reliance, assessment gaming, false confidence. How would you design against them?\n\n4. Write a 1-page \"AI product thesis\" for an evolved version of this app: what's the core AI-native insight that makes it genuinely different from a course platform with a chatbot bolted on?",
+      reflection:"What part of the AI wave feels even mildly interesting to you — not what you think should interest you, but what actually catches your attention when you read about it? Hold onto that signal."
+    },
+    {
+      id:"m4", number:4,
+      title:"AI Tools — Hands On",
+      subtitle:"Your gap: AI tools and ways of working. The play module.",
+      whyItMatters:"\"AI-native\" isn't a credential. It's a way of working. You build it by building things, not by watching courses about building things. This module has no wrong answers.",
+      readings: [
+        { id:"m4r1", number:"1", title:"The a16z AI Canon", url:"https://a16z.com/ai-canon/", searchTerm:"", type:"verified", description:"The best curated reading list on AI available anywhere. Bookmark. Graze." },
+        { id:"m4r2", number:"2", title:"Lenny Rachitsky — Newsletter", url:"https://www.lennysnewsletter.com", searchTerm:"", type:"verified", description:"Search his archive for \"AI\" — his practical PM-level pieces on AI product development are excellent." }
+      ],
+      watching: [
+        { id:"m4w1", searchTerm:"Fireship", description:"His channel for fast, sharp tool overviews (2–5 min videos)" },
+        { id:"m4w2", searchTerm:"Greg Isenberg building with AI", description:"Product/builder angle, calmer energy" },
+        { id:"m4w3", searchTerm:"Matt Wolfe AI tools", description:"Comprehensive weekly roundups if you want to stay current" }
+      ],
+      assignment:"Use AI to actually improve the curriculum you're studying with.\n\n1. Take one of your written assignment submissions from Modules 1–3 and run it through Claude (or another model) as a critical reviewer. Write good prompts — not \"is this good?\" but \"what's the weakest strategic assumption in this argument?\". Document the prompts, the outputs, and what you changed as a result.\n\n2. Use AI to rewrite the \"Why this matters for you\" section of whichever module feels least relevant to your actual situation. Make it specific to your background and your target roles.\n\n3. Build a simple prompt that acts as a study coach for one module — something you could paste into Claude before each study session. Iterate the prompt at least 3 times. Document what changed between versions and why.\n\n4. Reflect honestly: where did AI help you think better vs. where did it think for you? What's the difference, and how do you know?",
+      reflection:"Tools to spend time with:\n1. Claude — Use Projects. Try extended thinking on a hard problem.\n2. Lovable (https://lovable.dev) — Build something small.\n3. v0 by Vercel (https://v0.dev) — Good for UI components.\n4. NotebookLM (https://notebooklm.google.com) — Upload your reading materials.\n5. Perplexity (https://www.perplexity.ai) — Use as your research tool.\n6. Gamma (https://gamma.app) — AI-generated decks.\n7. n8n (https://n8n.io) — Free automation tool."
+    },
+    {
+      id:"m5", number:5,
+      title:"Pricing & Monetization Strategy",
+      subtitle:"Your gap: pricing. Your hidden strength: you've spent years at Temasek understanding value at a systems level.",
+      whyItMatters:"Most PMs avoid pricing because it's uncomfortable and financial. You're not most PMs. Your Temasek background means you understand value creation better than most — you just haven't applied it at the product level explicitly.",
+      readings: [
+        { id:"m5r1", number:"1", title:'"Monetizing Innovation" — Madhavan Ramaswami & Georg Tacke', url:"", searchTerm:"Monetizing Innovation Simon-Kucher", type:"search", description:"Book (~$20 Kindle). The best practical pricing book for product people." },
+        { id:"m5r2", number:"2", title:'"The Good-Better-Best Approach to Pricing" — Rafi Mohammed, HBR', url:"https://hbr.org/2018/09/the-good-better-best-approach-to-pricing", searchTerm:"", type:"verified", description:"Short, practical, directly applicable." },
+        { id:"m5r3", number:"3", title:'"Don\'t Just Roll the Dice" — Neil Davidson', url:"", searchTerm:"Don't Just Roll the Dice software pricing PDF Neil Davidson", type:"search", description:"Free. The most pragmatic short guide to software pricing available." },
+        { id:"m5r4", number:"4", title:"AI-specific pricing models", url:"", searchTerm:"Lenny Rachitsky AI pricing models", type:"search", description:"The shift from seat-based to consumption-based pricing is a genuinely new problem." },
+        { id:"m5r5", number:"5", title:"B2G Pricing — GovTech context", url:"", searchTerm:"pricing government contracts technology Singapore", type:"search", description:"GovTech procurement works differently from commercial SaaS. Understanding GeBIZ is useful background." }
+      ],
+      watching: [
+        { id:"m5w1", searchTerm:"Patrick McKenzie pricing software", description:"The best practical thinker on pricing for tech products" },
+        { id:"m5w2", searchTerm:"Y Combinator startup pricing", description:"Several good short talks" },
+        { id:"m5w3", searchTerm:"Shreyas Doshi product pricing", description:"" }
+      ],
+      assignment:"Design the business model for this app as if you were going to commercialise it.\n\n1. Define 3 customer segments and their willingness to pay: a career re-entrant self-funding, a company buying it for a team of PMs, and a bootcamp or accelerator licensing it for cohorts. What does each segment value most?\n\n2. Choose a pricing model and defend it — one-time purchase, subscription, per-seat, freemium, cohort licensing. What's the strategic logic? What does it signal about who the product is really for?\n\n3. Apply the framework from \"Don't Just Roll the Dice\": what's the value metric (what scales with value delivered)? What price anchors the conversation?\n\n4. Define the free tier if any. What's the deliberate limitation that makes the paid tier worth it — and why won't the free tier cannibalise paid?\n\n5. Write the actual pricing page copy — the 150 words a user would read before deciding whether to pay. No tables, no bullet points. Just the argument.",
+      reflection:"Have you ever directly owned a pricing decision in your career? What happened? If not — why do you think pricing got delegated away from you?"
+    },
+    {
+      id:"m6", number:6,
+      title:"AI Product Strategy — The Layer Above the Tools",
+      subtitle:"The most important module for your Singapore re-entry.",
+      whyItMatters:"This is where your seniority becomes relevant again. Junior PMs learn to use AI tools. Senior PMs define what to build with AI and why — and understand the strategic implications of AI on their industry.",
+      readings: [
+        { id:"m6r1", number:"1", title:'"The New Business of AI" — Andreessen Horowitz', url:"https://a16z.com/the-new-business-of-ai/", searchTerm:"", type:"verified", description:"Essential. Explains why AI product economics are structurally different from SaaS." },
+        { id:"m6r2", number:"2", title:'"Who Owns the Generative AI Platform?" — Andreessen Horowitz', url:"https://a16z.com/who-owns-the-generative-ai-platform/", searchTerm:"", type:"verified", description:"Where is value actually accruing in the AI stack?" },
+        { id:"m6r3", number:"3", title:'Stratechery — "AI Unbundling"', url:"", searchTerm:"Stratechery AI unbundling Ben Thompson", type:"search", description:"Ben Thompson on how AI is changing the bundling logic of software." },
+        { id:"m6r4", number:"4", title:'"Sequoia Capital AI Report"', url:"", searchTerm:"Sequoia Capital AI report 2024", type:"search", description:"They publish annual free reports on the state of AI business. Authoritative, well-researched." },
+        { id:"m6r5", number:"5", title:"Singapore's National AI Strategy 2.0", url:"https://www.smartnation.gov.sg/nais/", searchTerm:"", type:"verified", description:"Read the executive summary minimum. You should be able to quote this in an interview." },
+        { id:"m6r6", number:"6", title:"GovTech Singapore — Open Government Products", url:"https://www.open.gov.sg", searchTerm:"", type:"verified", description:"Read their case studies on what they've built and why." }
+      ],
+      watching: [
+        { id:"m6w1", searchTerm:"Reid Hoffman AI product strategy", description:"" },
+        { id:"m6w2", searchTerm:"a16z AI application layer", description:"" },
+        { id:"m6w3", searchTerm:"Andrew Ng AI transformation playbook", description:"Practical framework for bringing AI into organisations" }
+      ],
+      assignment:"Define the AI product strategy for the next version of this app.\n\n1. What's the AI-native feature that couldn't exist without AI? Not \"AI summarises your notes\" — that's a feature. What's the strategy? What does AI unlock that changes the fundamental value proposition?\n\n2. Who are the real AI competitors? Not just \"Coursera with AI\" — think about what happens when any LLM can generate a custom curriculum on demand in 30 seconds. What's your moat when the content layer is commoditised?\n\n3. Write a 12-month product roadmap with 3 phases. What AI features ship in each phase, and why in that order? What assumption does each phase test?\n\n4. Define the data flywheel: what user behaviour data makes the product smarter over time? How does each new user make the product better for the next one?\n\nThis is your first real portfolio artifact — treat it accordingly.",
+      reflection:"Reading about AI strategy — do you find yourself mentally correcting things, having opinions, noticing gaps? Or does it feel foreign and anxiety-inducing? The answer is useful information about where you actually are."
+    },
+    {
+      id:"m7", number:7,
+      title:"Execution & Stakeholder Management — Confidence Rebuild",
+      subtitle:"Not new skills. Re-learning to trust the ones you have.",
+      whyItMatters:"Burnout specifically attacks the skills that caused it. You know how to manage stakeholders — the muscle exists. The work here is understanding what went wrong and what kind of environment lets you operate well.",
+      readings: [
+        { id:"m7r1", number:"1", title:'"Resilient Management" — Lara Hogan', url:"https://larahogan.me/resources/", searchTerm:"", type:"verified", description:"Her writing on navigating difficult stakeholder dynamics is the most honest available." },
+        { id:"m7r2", number:"2", title:"Shreyas Doshi — senior PM dynamics", url:"", searchTerm:"Shreyas Doshi upstream thinking product", type:"search", description:"He writes the most honest things about what senior PM work actually involves. Also: \"Shreyas Doshi influence without authority\"." },
+        { id:"m7r3", number:"3", title:'"Managing Your Boss" — Gabarro & Kotter, HBR', url:"https://hbr.org/2005/01/managing-your-boss", searchTerm:"", type:"verified", description:"Classic. Still the best piece on the upward relationship." },
+        { id:"m7r4", number:"4", title:'"The Courage to Be Disliked" — Kishimi & Koga', url:"", searchTerm:"The Courage to Be Disliked summary", type:"search", description:"About separating your tasks from others' tasks — which is the core of stakeholder management at its most fundamental." },
+        { id:"m7r5", number:"5", title:'"Dare to Lead" — Brené Brown', url:"", searchTerm:"Dare to Lead Brene Brown armored leadership", type:"search", description:"Re-read the section on \"armored vs. daring leadership\". The framework for what happens to skilled people in high-fear environments." }
+      ],
+      watching: [
+        { id:"m7w1", searchTerm:"Shreyas Doshi product leadership talk", description:"" },
+        { id:"m7w2", searchTerm:"Lara Hogan management communication", description:"" },
+        { id:"m7w3", searchTerm:"Amy Edmondson psychological safety", description:"Why smart people stop speaking up in unsafe environments" }
+      ],
+      assignment:"Write the go-to-market and execution plan for launching this product in Singapore.\n\n1. Who are the first 100 users and exactly how do you reach them? Be specific — not \"LinkedIn\" but which communities, which people, which message, in which order. Why those 100 and not a different 100?\n\n2. Identify your 3 most important stakeholders for a B2B version (e.g. an L&D lead at GovTech, a Singapore accelerator running PM cohorts, a regional tech company upskilling mid-level PMs). What does each need to believe before they say yes?\n\n3. Write the stakeholder communication plan: what does each stakeholder need to hear, from whom, and when?\n\n4. Write the pre-mortem: it's 6 months post-launch and the product failed. What was the most likely cause? Now write the mitigation — what would you do in the first 30 days to prevent it?\n\nThis is the most important assignment in the curriculum. Execution is where PMs actually fail.",
+      reflection:"What would a stakeholder environment look like that made you feel energised rather than depleted? Try to be specific — not \"less political\" but what specifically would be different. That description is your filter for the next role."
+    },
+    {
+      id:"m8", number:8,
+      title:"Metrics, Evaluation & North Star Thinking",
+      subtitle:"Specific gap from Micro1: error-handling steps, behavioural failure-mode anchors, tool-specific feature referencing.",
+      whyItMatters:"AI product metrics are genuinely different from traditional product metrics. Understanding this is currently a real differentiator — most senior PMs haven't updated for AI-specific evaluation.",
+      readings: [
+        { id:"m8r1", number:"1", title:"Hamel Husain — everything on evals", url:"https://hamel.dev", searchTerm:"", type:"verified", description:"Read all his evaluation-related posts. Specifically: \"Your AI Product Needs Evals\" and any follow-ups." },
+        { id:"m8r2", number:"2", title:'"North Star Playbook" — Amplitude', url:"https://amplitude.com/northstar", searchTerm:"", type:"verified", description:"Free guide. Amplitude's framework for defining metrics that actually matter. Read the whole thing." },
+        { id:"m8r3", number:"3", title:"Shreyas Doshi — Input vs Output Metrics", url:"", searchTerm:"Shreyas Doshi input metrics output metrics", type:"search", description:"Distinguishing metrics you can move from metrics that move because you moved other things." },
+        { id:"m8r4", number:"4", title:"RAGAS — AI Evaluation Framework", url:"https://docs.ragas.io", searchTerm:"", type:"verified", description:"Open source framework for evaluating RAG-based AI systems. Read the conceptual docs." },
+        { id:"m8r5", number:"5", title:'DeepLearning.AI: "Evaluating and Debugging Generative AI"', url:"https://www.deeplearning.ai/short-courses/evaluating-debugging-generative-ai/", searchTerm:"", type:"verified", description:"Free. Do this course in full. Directly addresses your Micro1 gap." }
+      ],
+      watching: [
+        { id:"m8w1", searchTerm:"Andrew Ng evaluation AI systems", description:"" },
+        { id:"m8w2", searchTerm:"Brian Balfour north star metric Reforge", description:"" },
+        { id:"m8w3", searchTerm:"Mixpanel north star metric", description:"Practical walkthroughs" }
+      ],
+      assignment:"Build the full metrics framework for this product.\n\n1. Define the North Star Metric. Hint: it's probably not DAU or revenue — what does \"learning actually happened\" look like as a measurable signal? What's the difference between activity (opened the app) and outcome (can do something they couldn't do before)?\n\n2. Build the metric tree: what 3–4 input metrics drive the North Star? What are the leading indicators you'd watch weekly vs. the lagging indicators you'd check monthly?\n\n3. Define what \"success at 90 days\" looks like for a single user — and write down exactly how you'd know from data alone, without asking them.\n\n4. Name 2 vanity metrics that would be tempting to track (and celebrate) but would be actively misleading about whether the product is working.\n\n5. Write the weekly product review template: the 5 numbers you'd open every Monday and the 3 questions you'd ask about them.\n\nOne page. This is the second portfolio artifact.",
+      reflection:"Think about a time you were given the wrong metric to optimise for. What happened? What would you have measured instead?"
+    },
+    {
+      id:"m9", number:9,
+      title:"Pulling It Together — Artifact & Portfolio",
+      subtitle:"Only when you're ready. No deadline.",
+      whyItMatters:"By the time you reach this module you'll have 6–7 written pieces from the assignments above. This module turns them into something coherent that you can use — in Singapore interviews, as a LinkedIn post, or just as private proof to yourself that your mind still works.",
+      readings: [
+        { id:"m9r1", number:"1", title:'"Show Your Work" — Austin Kleon', url:"", searchTerm:"Austin Kleon Show Your Work summary", type:"search", description:"Short book on sharing creative work publicly without it feeling performative." },
+        { id:"m9r2", number:"2", title:"Notion — for the final document", url:"https://www.notion.so", searchTerm:"", type:"verified", description:"For writing and organising your final artifact." },
+        { id:"m9r3", number:"3", title:"Gamma — for the deck version", url:"https://gamma.app", searchTerm:"", type:"verified", description:"AI-generated decks, genuinely good output, free tier." }
+      ],
+      watching:[],
+      assignment:"The app is the artifact. Write the PM case study.\n\nTitle: \"Building a Personalized Learning System: A PM's Case Study in Eating Your Own Dog Food\"\n\nStructure (1,200 words):\n- Problem: why did this need to exist? What was broken about how you were approaching re-entry?\n- Research: the user insight from Module 2 that most changed how you thought about the product\n- Strategic position: the one tradeoff from Module 1 that defines what this product is\n- AI strategy: the AI opportunity you're most excited about from Modules 3–6\n- Business model: the pricing model you'd launch with and why (Module 5)\n- Metrics: your North Star metric and why it's the right one (Module 8)\n- Execution: the first 100 users and how you'd reach them (Module 7)\n- What I'd do differently: the 2 biggest product decisions you'd change with hindsight\n\nThen:\n- Record a 5-minute Loom walkthrough of the actual live app — treat it like a product demo in a senior PM interview\n- End with one sentence: \"If I had 3 more months and a small team, the next thing I'd build is ___\"\n\nThis case study is your re-entry portfolio piece. It shows strategy, research, product thinking, AI literacy, and execution — in one real artifact you actually built.",
+      reflection:"Having read, watched, built, and thought through all of this:\n\nDo you want to be a PM?\n\nNot should you. Not what does the market want. Not what makes a good salary.\n\nDo you want it?\n\nWrite the answer down, privately, before you apply for anything."
+    },
+    {
+      id:"m10",
+      number:10,
+      title:"Build Log & Publishing",
+      subtitle:"_Drafts, post ideas, and shipping decisions — your private workspace_",
+      whyItMatters:"This module isn't curriculum. It's your scratchpad for any writing you might one day publish — LinkedIn posts, essays, launch announcements, interview answers. No pressure to ship. No content calendar. Just a place to dump thoughts that doesn't pretend to be social media.\n\nThe goal isn't to become a content creator. It's to accumulate raw material so that, if and when you're ready to launch, you have 2–3 pieces already drafted — not a blinking cursor and a deadline.\n\nWrite when you want. Cite the readings that informed you. Collapse drafts you're not ready to look at. Delete what doesn't serve you.\n\nWhen something feels finished, take it out of here and ship it.",
+      readings:[],
+      watching:[],
+      assignment:"Use the sections below as drafts. Each section is one piece of writing — a post, an essay, a story, an answer.\n\nGuidelines (loose):\n- Write in your real voice, not a LinkedIn voice\n- Cite the readings from other modules that shaped your thinking — use the 🔗 Cite button\n- Don't worry about polish. Drafts are for thinking, not performing.\n- Collapse what you're not actively working on. The UI rewards mess as long as it's organized mess.\n- Add new sections freely. Delete sections you've outgrown.\n\nThe pre-stubbed sections below are starting points — based on conversations you've already had about this product. Treat them as prompts, not assignments. Reorder, rename, or delete them as you like.",
+      reflection:"After a few weeks of writing here, look back and ask:\n\n- Which drafts keep growing? Which ones do you abandon?\n- What themes keep showing up across different posts?\n- What are you NOT writing about that you probably should be?\n\nWhat you naturally return to is a strong signal about what you actually care about — and a clue about what you should be publishing first."
+    }
+  ]
+};
+
+// Default sections to seed in the Build Log module on first visit
+const PUBLISHING_DEFAULT_SECTIONS = [
+  { title: "Why I built this during my career break", content: "" },
+  { title: "Pricing without subscription guilt — one-time pricing for niche products", content: "" },
+  { title: "Porter's activity system, applied to my own product", content: "" },
+  { title: "Refusing to gamify a serious-learning product", content: "" },
+  { title: "Using Claude to co-design my curriculum — what worked, what didn't", content: "" },
+  { title: "The artifact-first business model", content: "" },
+  { title: "Why I won't build a marketplace (yet)", content: "" },
+  { title: "What 90 days of structured PM self-study actually produced", content: "" }
+];
+
+// ====================================================================
+// MODULE VISUAL CONFIGS — gradient + emoji per module slot
+// ====================================================================
+const MOD_VISUALS = [
+  { color: '#7B92B8', g: 'linear-gradient(145deg, rgba(123,146,184,0.18) 0%, rgba(157,176,204,0.1) 100%)',
+    svg: `<svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="17" cy="17" r="9"/><circle cx="17" cy="17" r="2.5"/><line x1="17" y1="4" x2="17" y2="8"/><line x1="17" y1="26" x2="17" y2="30"/><line x1="4" y1="17" x2="8" y2="17"/><line x1="26" y1="17" x2="30" y2="17"/></svg>` },
+  { color: '#6AABAB', g: 'linear-gradient(145deg, rgba(106,171,171,0.18) 0%, rgba(142,196,196,0.1) 100%)',
+    svg: `<svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="17,4 30,17 17,30 4,17"/><polygon points="17,11 23,17 17,23 11,17"/></svg>` },
+  { color: '#9490BE', g: 'linear-gradient(145deg, rgba(148,144,190,0.18) 0%, rgba(176,172,206,0.1) 100%)',
+    svg: `<svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="17,3 28,9.5 28,22.5 17,29 6,22.5 6,9.5"/><circle cx="17" cy="17" r="2.5"/><line x1="17" y1="14.5" x2="17" y2="10"/><line x1="19.2" y1="18.3" x2="23.5" y2="21"/><line x1="14.8" y1="18.3" x2="10.5" y2="21"/></svg>` },
+  { color: '#C4A070', g: 'linear-gradient(145deg, rgba(196,160,112,0.18) 0%, rgba(216,188,150,0.1) 100%)',
+    svg: `<svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="26" height="20" rx="3"/><polyline points="10,14 15,17 10,20"/><line x1="17" y1="20" x2="24" y2="20"/></svg>` },
+  { color: '#9898BE', g: 'linear-gradient(145deg, rgba(152,152,190,0.18) 0%, rgba(180,180,206,0.1) 100%)',
+    svg: `<svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h9l13 13a2.8 2.8 0 0 1 0 4l-5 5a2.8 2.8 0 0 1-4 0L6 15V6z"/><circle cx="12" cy="12" r="1.8"/></svg>` },
+  { color: '#7898BE', g: 'linear-gradient(145deg, rgba(120,152,190,0.18) 0%, rgba(150,180,206,0.1) 100%)',
+    svg: `<svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,12 17,5 30,12 17,19 4,12"/><polyline points="4,18 17,25 30,18"/><polyline points="4,24 17,31 30,24"/></svg>` },
+  { color: '#C49090', g: 'linear-gradient(145deg, rgba(196,144,144,0.18) 0%, rgba(212,170,170,0.1) 100%)',
+    svg: `<svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="17" cy="8" r="3"/><circle cx="7" cy="25" r="3"/><circle cx="27" cy="25" r="3"/><line x1="17" y1="11" x2="9.5" y2="22.5"/><line x1="17" y1="11" x2="24.5" y2="22.5"/><line x1="10" y1="25" x2="24" y2="25"/></svg>` },
+  { color: '#72A8C4', g: 'linear-gradient(145deg, rgba(114,168,196,0.18) 0%, rgba(144,192,212,0.1) 100%)',
+    svg: `<svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="29" x2="29" y2="29"/><line x1="5" y1="5" x2="5" y2="29"/><rect x="9" y="18" width="5" height="11" rx="1"/><rect x="16" y="12" width="5" height="17" rx="1"/><rect x="23" y="7" width="5" height="22" rx="1"/></svg>` },
+  { color: '#8AB490', g: 'linear-gradient(145deg, rgba(138,180,144,0.18) 0%, rgba(168,202,168,0.1) 100%)',
+    svg: `<svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="11" height="11" rx="2"/><rect x="19" y="4" width="11" height="11" rx="2"/><rect x="4" y="19" width="11" height="11" rx="2"/><rect x="19" y="19" width="11" height="11" rx="2"/></svg>` },
+  // Module 10: Build Log & Publishing — quill icon, warm slate (visually distinct from coursework)
+  { color: '#A89078', g: 'linear-gradient(145deg, rgba(168,144,120,0.18) 0%, rgba(196,176,152,0.1) 100%)',
+    svg: `<svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 29 L13 21"/><path d="M11 19 C17 13, 23 9, 29 5 C27 13, 23 19, 17 25 L13 25 L11 23 Z"/><line x1="13" y1="21" x2="17" y2="25"/></svg>` },
+];
+function getModVisual(mod) { return MOD_VISUALS[(mod.number - 1) % MOD_VISUALS.length]; }
+
+// ====================================================================
+// SUPABASE — cloud sync + file storage
+// ====================================================================
+const SUPABASE_URL  = 'https://ybnlkungkyqqafbnmlgt.supabase.co';
+const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlibmxrdW5na3lxcWFmYm5tbGd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4NjIwNjMsImV4cCI6MjA5NTQzODA2M30.UFKpbW7aLaXGZiXzhXtC72K3w5Nqf0oalXrmgSp16Jg';
+const STORAGE_BUCKET = 'attachments';
+let _sb = null;            // Supabase client instance
+let _currentUser = null;   // Currently signed-in user (or null)
+let _syncTimer   = null;   // Debounce handle for cloud saves
+let _authMode    = 'signin'; // 'signin' | 'signup'
+
+function _initSupabase() {
+  if (_sb) return;
+  try {
+    _sb = window.supabase?.createClient(SUPABASE_URL, SUPABASE_KEY);
+  } catch(e) { console.warn('Supabase init failed', e); }
+}
+
+// ====================================================================
+// INDEXEDDB — fallback blob store for unauthenticated / offline use
+// ====================================================================
+const IDB_NAME = 'pm_curriculum_attachments';
+const IDB_VERSION = 1;
+const IDB_STORE = 'files';
+let _idb = null;
+
+function openIDB() {
+  if (_idb) return Promise.resolve(_idb);
+  return new Promise((res, rej) => {
+    const req = indexedDB.open(IDB_NAME, IDB_VERSION);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(IDB_STORE)) {
+        db.createObjectStore(IDB_STORE, { keyPath: 'id', autoIncrement: true });
+      }
+    };
+    req.onsuccess = e => { _idb = e.target.result; res(_idb); };
+    req.onerror = e => rej(e.target.error);
+  });
+}
+
+async function idbPut(blob, meta) {
+  const db = await openIDB();
+  return new Promise((res, rej) => {
+    const tx = db.transaction(IDB_STORE, 'readwrite');
+    const store = tx.objectStore(IDB_STORE);
+    const req = store.add({ ...meta, data: blob });
+    req.onsuccess = e => res(e.target.result);
+    req.onerror = e => rej(e.target.error);
+  });
+}
+
+async function idbGet(id) {
+  const db = await openIDB();
+  return new Promise((res, rej) => {
+    const tx = db.transaction(IDB_STORE, 'readonly');
+    const req = tx.objectStore(IDB_STORE).get(id);
+    req.onsuccess = e => res(e.target.result);
+    req.onerror = e => rej(e.target.error);
+  });
+}
+
+async function idbDelete(id) {
+  const db = await openIDB();
+  return new Promise((res, rej) => {
+    const tx = db.transaction(IDB_STORE, 'readwrite');
+    const req = tx.objectStore(IDB_STORE).delete(id);
+    req.onsuccess = () => res();
+    req.onerror = e => rej(e.target.error);
+  });
+}
+
+async function idbDeleteMany(ids) {
+  for (const id of ids) { try { await idbDelete(id); } catch(e) {} }
+}
+
+// ====================================================================
+// STATE
+// ====================================================================
+const LS_KEY = 'pm_curriculum_v2';
+
+let state = {
+  mode: 'student',
+  curriculum: null,
+  progress: {},
+  attachments: {}, // { [modId]: { admin: [{dbId,name,size,addedAt}], student: [...] } }
+  selectedModule: null,
+  activeTab: 'reading'
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+      const d = JSON.parse(raw);
+      state.curriculum  = d.curriculum  || null;
+      state.progress    = d.progress    || {};
+      state.attachments = d.attachments || {};
+      state.darkMode    = d.darkMode    || false;
+    }
+  } catch(e) {}
+}
+
+function _writeLocalStorage() {
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify({
+      curriculum:  state.curriculum,
+      progress:    state.progress,
+      attachments: state.attachments,
+      darkMode:    state.darkMode
+    }));
+  } catch(e) { console.warn('localStorage save failed', e); }
+}
+
+function saveState() {
+  _writeLocalStorage();
+  // Debounced cloud push (only when signed in)
+  if (_currentUser && _sb) {
+    _setSyncDot('syncing');
+    clearTimeout(_syncTimer);
+    _syncTimer = setTimeout(() => _pushToCloud(), 1800);
+  }
+}
+
+// ── Cloud sync helpers ───────────────────────────────────────────────────────
+function _setSyncDot(state_) {
+  const dot = document.getElementById('syncDot');
+  if (!dot) return;
+  dot.className = 'sync-dot' + (state_ ? ' ' + state_ : '');
+}
+
+async function _pushToCloud() {
+  if (!_sb || !_currentUser) return;
+  try {
+    const { error } = await _sb.from('user_state').upsert({
+      user_id:          _currentUser.id,
+      curriculum:       state.curriculum,
+      progress:         state.progress,
+      attachments_meta: state.attachments
+    }, { onConflict: 'user_id' });
+    if (error) throw error;
+    _setSyncDot('synced');
+    // Fade the dot after 2s
+    setTimeout(() => _setSyncDot(''), 2000);
+  } catch(e) {
+    console.warn('Cloud push failed', e);
+    _setSyncDot(''); // hide on error (no noise)
+  }
+}
+
+async function _syncFromCloud() {
+  if (!_sb || !_currentUser) return;
+  try {
+    const { data, error } = await _sb
+      .from('user_state')
+      .select('curriculum, progress, attachments_meta')
+      .eq('user_id', _currentUser.id)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    if (!data) {
+      // First time this user logs in — migrate localStorage to cloud
+      if (state.curriculum) {
+        await _pushToCloud();
+      }
+      return;
+    }
+
+    // Cloud has data — use it (cloud is source of truth for cross-device sync)
+    if (data.curriculum)       state.curriculum  = data.curriculum;
+    if (data.progress)         state.progress    = data.progress;
+    if (data.attachments_meta) state.attachments = data.attachments_meta;
+    _writeLocalStorage();
+  } catch(e) {
+    console.warn('Sync from cloud failed', e);
+    // Gracefully continue with local state
+  }
+}
+
+// ====================================================================
+// AUTH — sign in / sign up / sign out / session management
+// ====================================================================
+async function initAuth() {
+  _initSupabase();
+
+  if (!_sb) {
+    // Supabase SDK didn't load (offline / CDN failure) — run in local mode
+    _hideAuthScreen();
+    render();
+    return;
+  }
+
+  // Listen for auth state changes (handles OAuth callbacks, token refresh, etc.)
+  _sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      _currentUser = session.user;
+      _updateUserBadge();
+    } else if (event === 'SIGNED_OUT') {
+      _currentUser = null;
+      _updateUserBadge();
+      _showAuthScreen();
+    }
+  });
+
+  // Check for existing session
+  const { data: { session } } = await _sb.auth.getSession();
+  if (session?.user) {
+    _currentUser = session.user;
+    await _syncFromCloud();
+    _applyStateAfterSync();
+    _hideAuthScreen();
+  } else {
+    _showAuthFormInOverlay();
+  }
+}
+
+function _showAuthScreen() {
+  const s = document.getElementById('authScreen');
+  const f = document.getElementById('authForm');
+  const l = document.getElementById('authLoading');
+  if (s) s.style.display = 'flex';
+  if (f) f.style.display = 'block';
+  if (l) l.style.display = 'none';
+  // Hide user badge
+  const ub = document.getElementById('userBadge');
+  if (ub) ub.style.display = 'none';
+}
+
+function _showAuthFormInOverlay() {
+  const s = document.getElementById('authScreen');
+  const f = document.getElementById('authForm');
+  const l = document.getElementById('authLoading');
+  if (s) s.style.display = 'flex';
+  if (f) f.style.display = 'block';
+  if (l) l.style.display = 'none';
+}
+
+function _hideAuthScreen() {
+  const s = document.getElementById('authScreen');
+  if (s) s.style.display = 'none';
+  _updateUserBadge();
+  render();
+}
+
+function _applyStateAfterSync() {
+  // Re-run migrations in case cloud data is from an older version
+  if (state.curriculum && !state.curriculum.modules.find(m => m.id === 'm10')) {
+    const pubMod = JANE_CURRICULUM.modules.find(m => m.id === 'm10');
+    if (pubMod) { state.curriculum.modules.push(JSON.parse(JSON.stringify(pubMod))); }
+  }
+  if (!state.progress) state.progress = {};
+  if (!state.progress.m10) state.progress.m10 = { readings: {}, watching: {} };
+  if (!state.progress.m10.assignmentSections?.length) {
+    state.progress.m10.assignmentSections = PUBLISHING_DEFAULT_SECTIONS.map((s, i) => ({
+      id: 'sec_pub_' + i + '_' + Math.random().toString(36).slice(2, 7),
+      title: s.title, content: s.content, collapsed: true
+    }));
+  }
+  applyDarkMode();
+  _writeLocalStorage();
+}
+
+function _updateUserBadge() {
+  const ub  = document.getElementById('userBadge');
+  const em  = document.getElementById('userBadgeEmail');
+  if (!ub) return;
+  if (_currentUser) {
+    ub.style.display = 'flex';
+    if (em) em.textContent = _currentUser.email;
+  } else {
+    ub.style.display = 'none';
+  }
+}
+
+function switchAuthTab(tab) {
+  _authMode = tab;
+  const siBtn   = document.getElementById('authTabSignIn');
+  const suBtn   = document.getElementById('authTabSignUp');
+  const title   = document.getElementById('authTitle');
+  const sub     = document.getElementById('authSubtitle');
+  const submit  = document.getElementById('authSubmitBtn');
+  const msg     = document.getElementById('authMsg');
+  if (siBtn) siBtn.classList.toggle('active', tab === 'signin');
+  if (suBtn) suBtn.classList.toggle('active', tab === 'signup');
+  if (title)  title.textContent  = tab === 'signin' ? 'Welcome back' : 'Create account';
+  if (sub)    sub.textContent    = tab === 'signin'
+    ? 'Sign in to sync your progress across devices'
+    : 'Create your Canon account';
+  if (submit) submit.textContent = tab === 'signin' ? 'Sign in' : 'Create account';
+  if (msg) { msg.textContent = ''; msg.className = 'auth-msg info'; }
+  // Update password autocomplete
+  const pw = document.getElementById('authPassword');
+  if (pw) pw.autocomplete = tab === 'signin' ? 'current-password' : 'new-password';
+}
+
+async function handleAuthSubmit(e) {
+  e.preventDefault();
+  if (!_sb) return;
+  const email    = document.getElementById('authEmail')?.value.trim();
+  const password = document.getElementById('authPassword')?.value;
+  const btn      = document.getElementById('authSubmitBtn');
+  const msg      = document.getElementById('authMsg');
+  if (!email || !password) return;
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="auth-spinner"></span>' + (_authMode === 'signin' ? 'Signing in…' : 'Creating account…');
+  if (msg) { msg.textContent = ''; msg.className = 'auth-msg info'; }
+
+  try {
+    if (_authMode === 'signin') {
+      const { error } = await _sb.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      // onAuthStateChange will fire — but let's sync and show app directly
+      const { data: { session } } = await _sb.auth.getSession();
+      if (session?.user) {
+        _currentUser = session.user;
+        if (msg) { msg.textContent = '✓ Signed in. Loading your data…'; msg.className = 'auth-msg success'; }
+        await _syncFromCloud();
+        _applyStateAfterSync();
+        _hideAuthScreen();
+      }
+    } else {
+      const { error } = await _sb.auth.signUp({ email, password });
+      if (error) throw error;
+      if (msg) {
+        msg.textContent = '✓ Account created. Check your email for a confirmation link, then sign in.';
+        msg.className = 'auth-msg success';
+      }
+      // Switch to sign-in view
+      switchAuthTab('signin');
+    }
+  } catch(err) {
+    if (msg) {
+      msg.textContent = err.message || 'Something went wrong. Please try again.';
+      msg.className = 'auth-msg error';
+    }
+  } finally {
+    btn.disabled = false;
+    btn.textContent = _authMode === 'signin' ? 'Sign in' : 'Create account';
+  }
+}
+
+async function handleSignOut() {
+  if (!_sb) return;
+  try {
+    await _sb.auth.signOut();
+    // onAuthStateChange fires and calls _showAuthScreen()
+  } catch(e) {
+    showToast('Sign out failed — please try again');
+  }
+}
+
+// ====================================================================
+// MARKDOWN PARSER
+// ====================================================================
+function parseMarkdown(md) {
+  const curriculum = { title: 'PM Curriculum', subtitle: '', modules: [] };
+  const titleMatch = md.match(/^# ([^#\n]+)$/m);
+  if (titleMatch) curriculum.title = titleMatch[1].trim();
+  const subtitleMatch = md.match(/^### ([^\n]+)/m);
+  if (subtitleMatch) curriculum.subtitle = subtitleMatch[1].trim();
+
+  const modRegex = /# MODULE (\d+):\s*(.+)/g;
+  const positions = [];
+  let m;
+  while ((m = modRegex.exec(md)) !== null) positions.push({ index: m.index, number: parseInt(m[1]), title: m[2].trim() });
+
+  for (let i = 0; i < positions.length; i++) {
+    const section = md.slice(positions[i].index, i + 1 < positions.length ? positions[i+1].index : md.length);
+    const mod = { id:`m${positions[i].number}`, number:positions[i].number, title:positions[i].title, subtitle:'', whyItMatters:'', readings:[], watching:[], assignment:'', reflection:'' };
+    const subMatch = section.match(/^# MODULE[^\n]*\n\*([^\n*]+)\*/m);
+    if (subMatch) mod.subtitle = subMatch[1].trim();
+    const whyMatch = section.match(/\*\*Why this matters[^*]*\*\*[^\n]*\n([\s\S]*?)(?=\n---)/);
+    if (whyMatch) mod.whyItMatters = whyMatch[1].trim();
+    const parts = section.split(/\n### /);
+    for (const p of parts) {
+      const header = p.split('\n')[0].trim().toLowerCase();
+      const content = p.split('\n').slice(1).join('\n').trim();
+      if (header === 'reading') mod.readings = parseReadingSection(content);
+      else if (header === 'watching') mod.watching = parseWatchingSection(content);
+      else if (header === 'assignment') mod.assignment = content;
+      else if (header.startsWith('reflection')) mod.reflection = content;
+    }
+    curriculum.modules.push(mod);
+  }
+  return curriculum;
+}
+
+function parseReadingSection(text) {
+  const out = [];
+  for (const part of text.split(/(?=\*\*\d+\.)/)) {
+    if (!part.trim()) continue;
+    const nm = part.match(/^\*\*(\d+)\.\s+(.*?)\*\*/);
+    if (!nm) continue;
+    const r = { id:`r_${Math.random().toString(36).substr(2,8)}`, number:nm[1], title:nm[2].trim(), url:'', searchTerm:'', type:'search', description:'' };
+    const urlM = part.match(/✅\s*(https?:\/\/[^\s\n]+)/); if (urlM) { r.url=urlM[1]; r.type='verified'; }
+    const srchM = part.match(/🔍\s*Search:\s*"([^"]+)"/); if (srchM) r.searchTerm=srchM[1];
+    r.description = part.split('\n').slice(1).filter(l => !l.match(/^✅|^🔍/) && l.trim()!=='---').join('\n').trim();
+    out.push(r);
+  }
+  return out;
+}
+
+function parseWatchingSection(text) {
+  return text.split('\n').filter(l => l.includes('🔍')).map(line => {
+    const m = line.match(/🔍\s*Search YouTube:\s*\*\*"([^"]+)"\*\*(.*)/);
+    return m ? { id:`w_${Math.random().toString(36).substr(2,8)}`, searchTerm:m[1], description:m[2].replace(/^[\s—–-]+/,'').trim() } : null;
+  }).filter(Boolean);
+}
+
+// ====================================================================
+// PROGRESS HELPERS
+// ====================================================================
+function getProgress(modId) {
+  return { complete:false, readings:{}, watching:{}, assignmentDone:false, reflectionDone:false, notes:'', assignmentNotes:'', reflectionNotes:'', ...(state.progress[modId]||{}) };
+}
+function getModPct(mod) {
+  const p = getProgress(mod.id);
+  if (p.complete) return 100;
+  let total=0, done=0;
+  total+=mod.readings.length; done+=mod.readings.filter(r=>p.readings[r.id]).length;
+  total+=mod.watching.length; done+=mod.watching.filter(w=>p.watching[w.id]).length;
+  if (mod.assignment){total++;if(p.assignmentDone)done++;}
+  if (mod.reflection){total++;if(p.reflectionDone)done++;}
+  return total===0?0:Math.round((done/total)*100);
+}
+function getOverall() {
+  if (!state.curriculum) return {complete:0,inProgress:0,total:0,pct:0};
+  let complete=0,inProgress=0;
+  for (const m of state.curriculum.modules) { const pct=getModPct(m); if(pct===100)complete++; else if(pct>0)inProgress++; }
+  const total=state.curriculum.modules.length;
+  return {complete,inProgress,total,pct:total?Math.round((complete/total)*100):0};
+}
+function getAttachments(modId) {
+  return { admin:[], student:[], ...(state.attachments[modId]||{}) };
+}
+
+// ====================================================================
+// RENDER
+// ====================================================================
+function render() {
+  document.getElementById('headerTitle').textContent = state.curriculum?.title || 'No curriculum loaded';
+  if (state.mode==='student') {
+    document.getElementById('studentView').style.display='';
+    document.getElementById('adminView').style.display='none';
+    renderStudent();
+  } else {
+    document.getElementById('studentView').style.display='none';
+    document.getElementById('adminView').style.display='';
+    renderAdmin();
+  }
+}
+
+function renderStudent() {
+  const el = document.getElementById('studentView');
+  if (!state.curriculum?.modules?.length) {
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No curriculum loaded</div><div class="empty-text">Switch to Admin mode to upload a curriculum .md file.</div><br><button class="btn btn-primary" style="margin:0 auto;display:block" onclick="loadDefault()">Load Surabhi's Curriculum</button></div>`;
+    return;
+  }
+  const ov=getOverall();
+  let html=`
+    <div class="progress-banner">
+      <div class="progress-bar-section">
+        <div class="progress-banner-text" style="margin-bottom:8px">
+          ${ov.complete === ov.total && ov.total > 0
+            ? `<strong>All ${ov.total} modules complete</strong> — well done.`
+            : ov.complete > 0
+              ? `<strong>${ov.complete} of ${ov.total}</strong> modules complete${ov.inProgress > 0 ? ` · ${ov.inProgress} in progress` : ''}`
+              : `<strong>${ov.total} modules</strong> · ready when you are`}
+        </div>
+        <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${ov.pct}%"></div></div>
+      </div>
+    </div>`;
+
+  let cardsHtml='';
+  for (const mod of state.curriculum.modules) {
+    const pct=getModPct(mod);
+    const att=getAttachments(mod.id);
+    const attCount=att.admin.length+att.student.length;
+    const vis=getModVisual(mod);
+    let badgeClass,badgeText;
+    if(pct===100){badgeClass='badge-complete';badgeText='Complete';}
+    else if(pct>0){badgeClass='badge-progress';badgeText='In progress';}
+    else{badgeClass='badge-notstarted';badgeText='';}
+    const items=mod.readings.length+mod.watching.length+(mod.assignment?1:0)+(mod.reflection?1:0);
+    cardsHtml+=`
+      <div class="module-card ${state.selectedModule===mod.id?'selected':''}" onclick="selectMod('${mod.id}')" style="--mod-color:${vis.color}">
+        <div class="module-card-visual" style="background:${vis.g}; color:${vis.color}">
+          <span class="module-card-icon">${vis.svg}</span>
+          <span class="module-card-visual-num">Module ${mod.number}</span>
+        </div>
+        <div class="module-card-header">
+          <div><span class="module-badge ${badgeClass}">${badgeText}</span></div>
+          <div class="module-num-inline">Module ${mod.number}</div>
+          <div class="module-title">${esc(mod.title)}</div>
+          ${mod.subtitle?`<div class="module-subtitle">${esc(mod.subtitle.split('.')[0])}</div>`:''}
+        </div>
+        <div class="module-card-footer">
+          <div class="module-progress-mini">
+            <div class="mini-bar"><div class="mini-bar-fill" style="width:${pct}%"></div></div>
+          </div>
+          <div class="module-items-count">${items} items${attCount?` · ${attCount} files`:''}</div>
+        </div>
+      </div>`;
+  }
+
+  if (state.selectedModule) {
+    const mod=state.curriculum.modules.find(m=>m.id===state.selectedModule);
+    if (mod) {
+      html+=`<div class="student-split"><div class="modules-column">${cardsHtml}</div><div class="detail-column">${renderDetail(mod)}</div></div>`;
+    } else {
+      html+=`<div class="modules-grid">${cardsHtml}</div>`;
+    }
+  } else {
+    html+=`<div class="modules-grid">${cardsHtml}</div>`;
+  }
+  el.innerHTML=html;
+  initRteFields();
+}
+
+function renderDetail(mod) {
+  const p=getProgress(mod.id);
+  const pct=getModPct(mod);
+  const att=getAttachments(mod.id);
+  const attCount=att.admin.length+att.student.length;
+
+  const tabs=[
+    {id:'reading',label:`Reading (${mod.readings.length})`,show:mod.readings.length>0},
+    {id:'watching',label:`Watching (${mod.watching.length})`,show:mod.watching.length>0},
+    {id:'assignment',label:'Assignment',show:!!mod.assignment},
+    {id:'reflection',label:'Reflection',show:!!mod.reflection},
+    {id:'attachments',label:`Attachments${attCount?` (${attCount})`:''}`,show:true},
+    {id:'notes',label:'Scratchpad',show:true}
+  ].filter(t=>t.show);
+
+  const activeTab=tabs.find(t=>t.id===state.activeTab)?state.activeTab:tabs[0]?.id;
+  const tabsHtml=tabs.map(t=>`<button class="tab-btn ${activeTab===t.id?'active':''}" onclick="setTab('${t.id}')">${t.label}</button>`).join('');
+
+  let content='';
+  if (activeTab==='reading') {
+    content=mod.readings.map(r=>{
+      const done=p.readings[r.id];
+      return `<div class="reading-item" data-rid="${r.id}">
+        <input type="checkbox" class="check-input" ${done?'checked':''} onchange="toggleReading('${mod.id}','${r.id}',this.checked)">
+        <div class="reading-content">
+          <div class="reading-title ${done?'done':''}">${r.number}. ${esc(r.title)}</div>
+          ${r.type==='verified'&&r.url?`<a href="${r.url}" target="_blank" rel="noopener" class="reading-link">✅ Open link ↗</a>`:r.searchTerm?`<span class="search-pill">🔍 ${esc(r.searchTerm)}</span>`:''}
+          ${r.description?`<div class="reading-desc">${esc(r.description).substring(0,220)}${r.description.length>220?'…':''}</div>`:''}
+        </div>
+      </div>`;
+    }).join('')||'<p style="color:var(--text-muted)">No readings in this module.</p>';
+
+  } else if (activeTab==='watching') {
+    content=mod.watching.map(w=>{
+      const done=p.watching[w.id];
+      const ytUrl=`https://www.youtube.com/results?search_query=${encodeURIComponent(w.searchTerm)}`;
+      return `<div class="watch-item">
+        <input type="checkbox" class="check-input" ${done?'checked':''} onchange="toggleWatching('${mod.id}','${w.id}',this.checked)">
+        <div class="watch-content">
+          <div class="watch-term ${done?'done':''}">${esc(w.searchTerm)}</div>
+          <a href="${ytUrl}" target="_blank" rel="noopener" class="yt-btn">▶ Search on YouTube</a>
+          ${w.description?`<div class="watch-desc">${esc(w.description)}</div>`:''}
+        </div>
+      </div>`;
+    }).join('')||'<p style="color:var(--text-muted)">No watching items in this module.</p>';
+
+  } else if (activeTab==='assignment') {
+    const sections = p.assignmentSections || [];
+    const secHtml = sections.map(sec => `
+      <div class="asgn-section" data-secid="${sec.id}"
+           draggable="true"
+           ondragstart="secDragStart(event,'${mod.id}','${sec.id}')"
+           ondragover="secDragOver(event,'${sec.id}')"
+           ondragleave="secDragLeave(event)"
+           ondrop="secDrop(event,'${mod.id}','${sec.id}')"
+           ondragend="secDragEnd()">
+        <div class="asgn-sec-header">
+          <span class="asgn-sec-drag" title="Drag to reorder">⠿</span>
+          <div class="asgn-sec-title"
+               contenteditable="true"
+               data-placeholder="Section title…"
+               data-modid="${mod.id}"
+               data-secid="${sec.id}"
+               oninput="saveSecTitle(this)"
+               onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${esc(sec.title)}</div>
+          <button class="asgn-sec-toggle ${sec.collapsed?'collapsed':''}" title="${sec.collapsed?'Expand':'Collapse'}"
+                  onclick="toggleSecCollapse('${mod.id}','${sec.id}',this)">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,5 7,9 11,5"/></svg>
+          </button>
+          <button class="asgn-sec-delete" title="Delete section" onclick="deleteSection('${mod.id}','${sec.id}')">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2" y1="2" x2="10" y2="10"/><line x1="10" y1="2" x2="2" y2="10"/></svg>
+          </button>
+        </div>
+        <div class="asgn-sec-body ${sec.collapsed?'collapsed':''}">
+          <div class="rte-wrap" style="border:none;border-radius:0">
+            <div class="rte-toolbar" onmousedown="event.preventDefault()">
+              <button class="rte-btn" onclick="rteCmdSec('bold','${sec.id}')" title="Bold"><svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><text x="2" y="12" font-size="13" font-weight="900" font-family="serif">B</text></svg></button>
+              <button class="rte-btn" onclick="rteCmdSec('italic','${sec.id}')" title="Italic"><svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><text x="3" y="12" font-size="13" font-style="italic" font-family="serif">I</text></svg></button>
+              <button class="rte-btn" onclick="rteCmdSec('underline','${sec.id}')" title="Underline"><svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><text x="2" y="11" font-size="12" text-decoration="underline" font-family="serif">U</text><line x1="2" y1="13" x2="12" y2="13" stroke="currentColor" stroke-width="1.5"/></svg></button>
+              <div class="rte-sep"></div>
+              <button class="rte-btn" onclick="rteCmdSec('insertUnorderedList','${sec.id}')" title="Bullet list" style="width:36px;font-size:11px;letter-spacing:-0.5px">• ≡</button>
+              <button class="rte-btn" onclick="rteCmdSec('insertOrderedList','${sec.id}')" title="Numbered list" style="width:36px;font-size:11px;letter-spacing:-0.5px">1. ≡</button>
+              <div class="rte-sep"></div>
+              <span class="rte-swatch" style="background:#1C1917" onclick="rteCmdSec('foreColor','${sec.id}','#1C1917')" title="Black"></span>
+              <span class="rte-swatch" style="background:#2563EB" onclick="rteCmdSec('foreColor','${sec.id}','#2563EB')" title="Blue"></span>
+              <span class="rte-swatch" style="background:#7C3AED" onclick="rteCmdSec('foreColor','${sec.id}','#7C3AED')" title="Purple"></span>
+              <div class="rte-sep"></div>
+              <button class="rte-btn rte-btn-link" onclick="openSrcPicker('${mod.id}','${sec.id}',this)" title="Link to a reading">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7.5a3 3 0 0 0 4.5.4l1.5-1.5a3 3 0 0 0-4.2-4.2L5.6 3.4"/><path d="M8 5.5a3 3 0 0 0-4.5-.4L2 6.6a3 3 0 0 0 4.2 4.2l1.1-1.1"/></svg>
+                <span style="font-size:11px">Cite</span>
+              </button>
+            </div>
+            <div class="rte-editor"
+                 data-modid="${mod.id}"
+                 data-secid="${sec.id}"
+                 contenteditable="true"
+                 data-placeholder="Write here…"
+                 oninput="autoSaveSec(this)"></div>
+          </div>
+        </div>
+      </div>`).join('');
+    content=`
+      <label class="done-check-row">
+        <input type="checkbox" class="check-input" ${p.assignmentDone?'checked':''} onchange="toggleAssignment('${mod.id}',this.checked)">
+        <span>Mark assignment as done</span>
+      </label>
+      <div class="prose-block">${formatProse(mod.assignment)}</div>
+      <div class="notes-label" style="margin-top:12px">My work</div>
+      <div class="asgn-sections" id="asgnSections_${mod.id}">${secHtml}</div>
+      <button class="asgn-add-sec" onclick="addSection('${mod.id}')">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="7" y1="2" x2="7" y2="12"/><line x1="2" y1="7" x2="12" y2="7"/></svg>
+        Add section
+      </button>`;
+
+  } else if (activeTab==='reflection') {
+    content=`
+      <label class="done-check-row">
+        <input type="checkbox" class="check-input" ${p.reflectionDone?'checked':''} onchange="toggleReflection('${mod.id}',this.checked)">
+        <span>Mark reflection as done</span>
+      </label>
+      <div class="reflection-block">${formatProse(mod.reflection)}</div>
+      <div class="notes-label">My reflection</div>
+      <textarea class="notes-area" id="reflectionNotes" placeholder="Write your reflection here…" oninput="autoSave('${mod.id}','reflectionNotes')">${esc(p.reflectionNotes)}</textarea>`;
+
+  } else if (activeTab==='attachments') {
+    content=renderAttachmentsTab(mod.id, 'student');
+
+  } else if (activeTab==='notes') {
+    content=`
+      <div class="notes-label">General notes for this module</div>
+      <textarea class="notes-area" id="moduleNotes" style="min-height:220px" placeholder="Any thoughts, links, ideas…" oninput="autoSave('${mod.id}','notes')">${esc(p.notes)}</textarea>
+      <div class="notes-hint">Notes save automatically as you type.</div>`;
+  }
+
+  const isComplete=pct===100||p.complete;
+  return `
+    <div class="detail-panel" id="detailPanel">
+      <div class="detail-header">
+        <div class="detail-header-left">
+          <div class="detail-module-num">Module ${mod.number}</div>
+          <div class="detail-title">${esc(mod.title)}</div>
+          ${mod.subtitle?`<div class="detail-subtitle">${esc(mod.subtitle)}</div>`:''}
+        </div>
+        <button class="close-btn" onclick="selectMod(null)">✕ Close</button>
+      </div>
+      ${mod.whyItMatters?`<div class="why-banner"><div class="why-label">Why this matters for you</div>${esc(mod.whyItMatters)}</div>`:''}
+      <div class="detail-tabs">${tabsHtml}</div>
+      <div class="tab-content">${content}</div>
+      <div class="detail-footer">
+        <button class="complete-btn ${isComplete?'is-done':'not-done'}" onclick="toggleComplete('${mod.id}')">
+          ${isComplete?'✓ Module marked complete — click to undo':'Mark module complete'}
+        </button>
+      </div>
+    </div>`;
+}
+
+function renderAttachmentsTab(modId, callerRole) {
+  // callerRole: 'student' = student mode (can add student files, view admin resources)
+  //             'admin'   = admin modal (can add admin resources)
+  const att = getAttachments(modId);
+  const isAdminCaller = callerRole === 'admin';
+  let html = '';
+
+  // ── Module Resources (admin-uploaded) ──
+  html += `<div class="attach-section">
+    <div class="attach-section-header">
+      <div class="attach-section-label">Module Resources <span class="attach-count">${att.admin.length}</span></div>
+      ${isAdminCaller ? `<button class="btn btn-primary btn-sm" onclick="triggerAttach('${modId}','admin')">+ Add PDFs</button>` : ''}
+    </div>`;
+
+  if (!att.admin.length) {
+    html += `<div class="attach-empty">${isAdminCaller ? 'No resources added yet. Add PDFs for students to reference.' : 'No module resources have been attached by the curriculum designer.'}</div>`;
+  } else {
+    html += `<div class="attach-file-list">`;
+    for (const f of att.admin) {
+      html += renderFileItem(modId, 'admin', f, isAdminCaller);
+    }
+    html += `</div>`;
+  }
+  html += `</div>`;
+
+  // ── My Files (student-uploaded) — only in student mode ──
+  if (!isAdminCaller) {
+    html += `
+      <div class="attach-section">
+        <div class="attach-section-header">
+          <div class="attach-section-label">My Files <span class="attach-count">${att.student.length}</span></div>
+          <button class="btn btn-outline btn-sm" onclick="triggerAttach('${modId}','student')">+ Add PDFs</button>
+        </div>
+        <div class="attach-drop-zone" id="dropZone_${modId}"
+          ondragover="event.preventDefault();this.classList.add('drag-over')"
+          ondragleave="this.classList.remove('drag-over')"
+          ondrop="handleAttachDrop(event,'${modId}','student')"
+          onclick="triggerAttach('${modId}','student')">
+          <div class="attach-drop-icon">📎</div>
+          <div class="attach-drop-label">Drag & drop PDFs here</div>
+          <p>or click to browse — your assignments, notes, research</p>
+        </div>`;
+    if (att.student.length) {
+      html += `<div class="attach-file-list">`;
+      for (const f of att.student) html += renderFileItem(modId, 'student', f, true);
+      html += `</div>`;
+    }
+    html += `</div>`;
+  } else {
+    // Admin viewing student files (read-only in admin modal)
+    if (att.student.length) {
+      html += `<div class="attach-section">
+        <div class="attach-section-label" style="margin-bottom:12px">Student Files <span class="attach-count">${att.student.length}</span></div>
+        <div class="attach-file-list">`;
+      for (const f of att.student) html += renderFileItem(modId, 'student', f, false);
+      html += `</div></div>`;
+    }
+  }
+  return html;
+}
+
+function renderFileItem(modId, role, f, canDelete) {
+  const sizeStr = formatBytes(f.size);
+  const dateStr = new Date(f.addedAt).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'});
+  const isUploading = f.uploading;
+  return `
+    <div class="attach-file-item ${isUploading?'attach-uploading':''}">
+      <div class="attach-file-icon">📄</div>
+      <div class="attach-file-info">
+        <div class="attach-file-name">${esc(f.name)}</div>
+        <div class="attach-file-meta">${sizeStr} · ${dateStr}${role==='admin'?'<span class="attach-resource-badge">Resource</span>':''}</div>
+      </div>
+      <div class="attach-file-actions">
+        ${!isUploading?`<button class="btn btn-outline btn-sm" onclick="viewAttach(${f.dbId},'${esc(f.name)}')">View</button>`:'<span style="font-size:12px;color:var(--text-muted)">Uploading…</span>'}
+        ${canDelete&&!isUploading?`<button class="btn btn-danger btn-sm" onclick="removeAttach('${modId}','${role}',${f.dbId})">Remove</button>`:''}
+      </div>
+    </div>`;
+}
+
+function renderAdmin() {
+  const el = document.getElementById('adminView');
+  let html = `
+    <div class="admin-toolbar">
+      <button class="btn btn-primary" onclick="showUpload()">⬆ Upload .md File</button>
+      <button class="btn btn-outline" onclick="showModuleForm(null)">+ Add Module</button>
+      <button class="btn btn-outline" onclick="loadDefault()">↺ Reset to Surabhi's Curriculum</button>
+      ${state.curriculum?`<button class="btn btn-danger" onclick="clearAll()">✕ Clear All</button>`:''}
+    </div>`;
+
+  if (!state.curriculum?.modules?.length) {
+    html+=`<div class="empty-state"><div class="empty-icon">📁</div><div class="empty-title">No curriculum loaded</div><div class="empty-text">Upload a .md file or add modules manually.</div></div>`;
+  } else {
+    html+=`<div style="margin-bottom:16px;font-size:13px;color:var(--text-muted)">${esc(state.curriculum.title)} &nbsp;·&nbsp; ${state.curriculum.modules.length} modules</div>`;
+    for (const mod of state.curriculum.modules) {
+      const att=getAttachments(mod.id);
+      const attCount=att.admin.length+att.student.length;
+      html+=`
+        <div class="admin-module-row" data-mid="${mod.id}" draggable="true"
+          ondragstart="adminDragStart(event,'${mod.id}')"
+          ondragover="adminDragOver(event,'${mod.id}')"
+          ondragleave="adminDragLeave(event)"
+          ondrop="adminDrop(event,'${mod.id}')"
+          ondragend="adminDragEnd()">
+          <div class="drag-handle" title="Drag to reorder">⠿</div>
+          <div class="admin-mod-num">${mod.number}</div>
+          <div class="admin-mod-info">
+            <div class="admin-mod-title">${esc(mod.title)}</div>
+            <div class="admin-mod-meta">${mod.readings.length} readings · ${mod.watching.length} videos${mod.assignment?' · assignment':''}${mod.reflection?' · reflection':''}${attCount?` · 📎 ${attCount} attachment${attCount>1?'s':''}`:''}
+            </div>
+          </div>
+          <div class="admin-actions">
+            <button class="btn btn-attach btn-sm" onclick="showAdminAttachModal('${mod.id}')">📎 Attachments</button>
+            <button class="btn btn-outline btn-sm" onclick="showModuleForm('${mod.id}')">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteMod('${mod.id}')">Delete</button>
+          </div>
+        </div>`;
+    }
+  }
+  el.innerHTML=html;
+}
+
+// ====================================================================
+// ATTACHMENT ACTIONS
+// ====================================================================
+let _attachTarget = { modId: null, role: null };
+
+function triggerAttach(modId, role) {
+  _attachTarget = { modId, role };
+  const input = document.getElementById('pdfInput');
+  input.value = '';
+  input.click();
+}
+
+async function handlePdfFiles(input) {
+  const { modId, role } = _attachTarget;
+  if (!modId || !role) return;
+  const files = Array.from(input.files);
+  if (!files.length) return;
+  await uploadFiles(modId, role, files);
+}
+
+function handleAttachDrop(e, modId, role) {
+  e.preventDefault();
+  const zone = document.getElementById(`dropZone_${modId}`);
+  if (zone) zone.classList.remove('drag-over');
+  const files = Array.from(e.dataTransfer.files).filter(f => f.type === 'application/pdf' || f.name.endsWith('.pdf'));
+  if (!files.length) { showToast('Please drop PDF files only'); return; }
+  uploadFiles(modId, role, files);
+}
+
+async function uploadFiles(modId, role, files) {
+  if (!state.attachments[modId]) state.attachments[modId] = { admin: [], student: [] };
+  if (!state.attachments[modId][role]) state.attachments[modId][role] = [];
+
+  // Add placeholder items to show uploading state
+  const placeholders = files.map(f => ({ dbId: null, name: f.name, size: f.size, addedAt: Date.now(), uploading: true }));
+  state.attachments[modId][role].push(...placeholders);
+  render();
+
+  let successCount = 0;
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const placeholder = placeholders[i];
+    try {
+      let dbId;
+      if (_currentUser && _sb) {
+        // ── Supabase Storage ──────────────────────────────────────
+        const uid  = _currentUser.id;
+        const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const uuid = Math.random().toString(36).slice(2) + '_' + Date.now();
+        const path = `${uid}/${modId}/${role}/${uuid}-${safe}`;
+        const { error } = await _sb.storage.from(STORAGE_BUCKET).upload(path, file, { contentType: 'application/pdf', upsert: false });
+        if (error) throw error;
+        dbId = path; // use storage path as the identifier
+      } else {
+        // ── Fallback: IndexedDB ───────────────────────────────────
+        const blob = new Blob([await file.arrayBuffer()], { type: 'application/pdf' });
+        dbId = await idbPut(blob, { modId, role, name: file.name });
+      }
+      const list = state.attachments[modId][role];
+      const idx  = list.indexOf(placeholder);
+      if (idx >= 0) list[idx] = { dbId, name: file.name, size: file.size, addedAt: Date.now() };
+      successCount++;
+    } catch(err) {
+      const list = state.attachments[modId][role];
+      const idx  = list.indexOf(placeholder);
+      if (idx >= 0) list.splice(idx, 1);
+      console.error('Upload failed', err);
+    }
+  }
+  saveState();
+  render();
+  if (successCount > 0) showToast(`✓ ${successCount} PDF${successCount>1?'s':''} attached`);
+  else showToast('Upload failed — please try again');
+}
+
+let _pdfBlobUrl = null;
+let _pdfjsLoading = null;
+let _pdfDoc = null;       // current PDF.js document
+let _pdfZoom = 1.0;       // zoom multiplier on top of fit-to-width
+let _pdfHlKey = null;     // localStorage key for highlights
+let _pdfZoomTimer = null; // debounce timer
+
+// Lazy-load PDF.js from CDN (only when first PDF is opened)
+function loadPdfJs() {
+  if (window.pdfjsLib) return Promise.resolve();
+  if (_pdfjsLoading) return _pdfjsLoading;
+  _pdfjsLoading = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    s.onload = () => {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      resolve();
+    };
+    s.onerror = () => reject(new Error('Could not load PDF renderer. Check your internet connection.'));
+    document.head.appendChild(s);
+  });
+  return _pdfjsLoading;
+}
+
+function togglePdfFullscreen() {
+  const modal = document.getElementById('pdfModal');
+  if (!modal) return;
+  if (!document.fullscreenElement) {
+    modal.requestFullscreen().catch(() => showToast('Fullscreen not supported in this browser'));
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+function togglePdfHighlight() {
+  window._pdfHlMode = !window._pdfHlMode;
+  const btn = document.getElementById('pdfHlBtn');
+  if (btn) {
+    btn.textContent = window._pdfHlMode ? '✓ Highlighting' : '✏ Highlight';
+    btn.className = window._pdfHlMode ? 'btn btn-sm btn-hl-on' : 'btn btn-outline btn-sm';
+  }
+  document.querySelectorAll('.textLayer').forEach(el => {
+    el.style.pointerEvents = window._pdfHlMode ? 'auto' : 'none';
+  });
+  if (window._pdfHlMode) showToast('Select any text to highlight it');
+}
+
+const PDF_ZOOM_LEVELS = [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
+
+function adjustPdfZoom(delta) {
+  const idx = PDF_ZOOM_LEVELS.findIndex(l => Math.abs(l - _pdfZoom) < 0.01);
+  const newIdx = Math.max(0, Math.min(PDF_ZOOM_LEVELS.length - 1, idx + delta));
+  if (newIdx === idx) return;
+  _pdfZoom = PDF_ZOOM_LEVELS[newIdx];
+  const disp = document.getElementById('pdfZoomPct');
+  if (disp) disp.textContent = Math.round(_pdfZoom * 100) + '%';
+  // Disable buttons at limits
+  const btnMinus = document.getElementById('pdfZoomOut');
+  const btnPlus  = document.getElementById('pdfZoomIn');
+  if (btnMinus) btnMinus.disabled = newIdx === 0;
+  if (btnPlus)  btnPlus.disabled  = newIdx === PDF_ZOOM_LEVELS.length - 1;
+  // Debounce re-render — wait for user to stop clicking
+  clearTimeout(_pdfZoomTimer);
+  _pdfZoomTimer = setTimeout(() => _rerenderPdfPages(), 320);
+}
+
+async function _rerenderPdfPages() {
+  const vp = document.getElementById('pdfViewport');
+  if (!vp || !_pdfDoc) return;
+  // Keep the info bar (first child), rebuild pages
+  const infoBar = vp.querySelector('.pdf-info-bar');
+  vp.innerHTML = '';
+  if (infoBar) vp.appendChild(infoBar);
+  await _renderPdfPages(_pdfDoc, vp);
+}
+
+// Core render function — shared by initial load and zoom changes
+async function _renderPdfPages(pdf, vp) {
+  const dpr = window.devicePixelRatio || 1;
+  const savedHl = JSON.parse(localStorage.getItem(_pdfHlKey) || '[]');
+  const containerWidth = Math.max(400, vp.clientWidth - 40);
+
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const baseVp = page.getViewport({ scale: 1 });
+    // Base scale fits page to container; _pdfZoom is the user multiplier on top
+    const fitScale = Math.min(2.5, containerWidth / baseVp.width);
+    const cssScale = fitScale * _pdfZoom;
+    const cssVp = page.getViewport({ scale: cssScale });       // logical CSS px
+    const hiDprVp = page.getViewport({ scale: cssScale * dpr }); // physical canvas px
+
+    // Wrapper — sized in CSS pixels
+    const wrapper = document.createElement('div');
+    wrapper.className = 'pdf-page-wrapper';
+    wrapper.dataset.page = i;
+    wrapper.dataset.w = cssVp.width;
+    wrapper.dataset.h = cssVp.height;
+    wrapper.style.cssText = `width:${cssVp.width}px;height:${cssVp.height}px;`;
+
+    // Canvas — rendered at physical pixel resolution for sharpness
+    const canvas = document.createElement('canvas');
+    canvas.width  = hiDprVp.width;
+    canvas.height = hiDprVp.height;
+    canvas.style.width  = `${cssVp.width}px`;
+    canvas.style.height = `${cssVp.height}px`;
+    await page.render({ canvasContext: canvas.getContext('2d'), viewport: hiDprVp }).promise;
+    wrapper.appendChild(canvas);
+
+    // Text layer — spans positioned at CSS scale, enables selection + highlight
+    try {
+      const textContent = await page.getTextContent();
+      const textDiv = document.createElement('div');
+      textDiv.className = 'textLayer';
+      textDiv.style.cssText = `width:${cssVp.width}px;height:${cssVp.height}px;`;
+      const task = window.pdfjsLib.renderTextLayer({
+        textContentSource: textContent,
+        container: textDiv,
+        viewport: cssVp,
+        textDivs: []
+      });
+      if (task?.promise) await task.promise;
+      wrapper.appendChild(textDiv);
+    } catch(_) { /* text layer is optional */ }
+
+    // Highlight layer — normalized coords → CSS px at current scale
+    const hlLayer = document.createElement('div');
+    hlLayer.className = 'pdf-hl-layer';
+    hlLayer.id = `pdf-hl-layer-${i}`;
+    savedHl.filter(h => h.p === i).forEach(h =>
+      h.r.forEach(r => {
+        const el = document.createElement('div');
+        el.className = 'pdf-hl';
+        // r.nx/ny/nw/nh are fractions (0-1) of page size → multiply by current CSS px
+        el.style.cssText = `left:${r.nx*cssVp.width}px;top:${r.ny*cssVp.height}px;width:${r.nw*cssVp.width}px;height:${r.nh*cssVp.height}px;`;
+        hlLayer.appendChild(el);
+      })
+    );
+    wrapper.appendChild(hlLayer);
+    vp.appendChild(wrapper);
+  }
+}
+
+async function viewAttach(dbId, name) {
+  window._pdfHlMode = false;
+  _pdfZoom = 1.0;
+  _pdfDoc = null;
+  _pdfHlKey = `pdf_hl_${typeof dbId === 'string' ? dbId.replace(/\//g,'_') : dbId}`;
+
+  try {
+    // Determine source: Supabase Storage (string path) vs IndexedDB (integer)
+    const isSupabasePath = _currentUser && _sb && typeof dbId === 'string' && dbId.includes('/');
+
+    if (_pdfBlobUrl) { URL.revokeObjectURL(_pdfBlobUrl); _pdfBlobUrl = null; }
+
+    if (isSupabasePath) {
+      // Download blob from Supabase Storage
+      const { data: blob, error } = await _sb.storage.from(STORAGE_BUCKET).download(dbId);
+      if (error || !blob) { showToast('File not found — it may have been deleted'); return; }
+      _pdfBlobUrl = URL.createObjectURL(blob);
+    } else {
+      // Legacy IndexedDB path
+      const record = await idbGet(dbId);
+      if (!record?.data) { showToast('File not found — it may have been cleared'); return; }
+      _pdfBlobUrl = URL.createObjectURL(record.data);
+    }
+    const dlUrl = _pdfBlobUrl;
+    const safeName = esc(name);
+
+    const overlay = document.getElementById('modalOverlay');
+    overlay.style.display = 'flex';
+    overlay.innerHTML = `
+      <div class="modal pdf-modal" id="pdfModal">
+        <div class="modal-header" style="flex-wrap:wrap;gap:8px;">
+          <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
+            <span style="font-size:20px;flex-shrink:0">📄</span>
+            <div class="modal-title">${safeName}</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0;align-items:center;flex-wrap:wrap">
+            <button id="pdfHlBtn" class="btn btn-outline btn-sm" onclick="togglePdfHighlight()" title="Select text then release to highlight">✏ Highlight</button>
+            <div style="display:flex;align-items:center;gap:4px;background:var(--gray-light);border-radius:8px;padding:2px 4px">
+              <button id="pdfZoomOut" class="btn btn-outline btn-sm" onclick="adjustPdfZoom(-1)" style="padding:4px 9px;border:none;background:transparent" title="Zoom out">−</button>
+              <span id="pdfZoomPct" style="font-size:12px;font-weight:600;color:var(--text-muted);min-width:38px;text-align:center">100%</span>
+              <button id="pdfZoomIn"  class="btn btn-outline btn-sm" onclick="adjustPdfZoom(1)"  style="padding:4px 9px;border:none;background:transparent" title="Zoom in">+</button>
+            </div>
+            <button class="btn btn-outline btn-sm" id="pdfFsBtn" onclick="togglePdfFullscreen()" title="Fullscreen">⛶ Fullscreen</button>
+            <a href="${dlUrl}" download="${safeName}" class="btn btn-outline btn-sm">⬇ Download</a>
+            <button class="close-btn" onclick="closePdfModal()">✕</button>
+          </div>
+        </div>
+        <div id="pdfViewport" style="flex:1;overflow-y:auto;background:#525659;padding:20px;display:flex;flex-direction:column;align-items:center;gap:0;">
+          <div style="color:white;padding:32px;font-size:14px;text-align:center;opacity:0.8">⏳ Loading PDF…</div>
+        </div>
+      </div>`;
+
+    document.addEventListener('fullscreenchange', () => {
+      const btn = document.getElementById('pdfFsBtn');
+      if (btn) btn.textContent = document.fullscreenElement ? '⛶ Exit' : '⛶ Fullscreen';
+    });
+
+    try {
+      await loadPdfJs();
+      const pdf = await window.pdfjsLib.getDocument(dlUrl).promise;
+      _pdfDoc = pdf;
+      const vp = document.getElementById('pdfViewport');
+      if (!vp) return;
+
+      const savedHl = JSON.parse(localStorage.getItem(_pdfHlKey) || '[]');
+      const hlCount = savedHl.length;
+      vp.innerHTML = `<div class="pdf-info-bar" style="color:white;font-size:12px;opacity:0.5;margin-bottom:8px;align-self:flex-start">${pdf.numPages} page${pdf.numPages>1?'s':''} · Retina rendering${hlCount ? ` · ${hlCount} highlight${hlCount>1?'s':''}` : ''}</div>`;
+
+      await _renderPdfPages(pdf, vp);
+
+      // Capture text selections as highlights (normalized 0-1 coords)
+      vp.addEventListener('mouseup', () => {
+        if (!window._pdfHlMode) return;
+        const sel = window.getSelection();
+        if (!sel || sel.isCollapsed || !sel.rangeCount) return;
+        const range = sel.getRangeAt(0);
+        const wrapper = range.startContainer.parentElement?.closest('.pdf-page-wrapper');
+        if (!wrapper) return;
+        const pageNum = parseInt(wrapper.dataset.page);
+        const W = parseFloat(wrapper.dataset.w);
+        const H = parseFloat(wrapper.dataset.h);
+        const wRect = wrapper.getBoundingClientRect();
+        // Store as normalized fractions — zoom-proof
+        const rects = [...range.getClientRects()]
+          .map(r => ({
+            nx: (r.left - wRect.left) / W,
+            ny: (r.top  - wRect.top)  / H,
+            nw: r.width  / W,
+            nh: r.height / H
+          }))
+          .filter(r => r.nw > 0.001 && r.nh > 0.001);
+        if (!rects.length) return;
+
+        const allHl = JSON.parse(localStorage.getItem(_pdfHlKey) || '[]');
+        allHl.push({ p: pageNum, r: rects });
+        localStorage.setItem(_pdfHlKey, JSON.stringify(allHl));
+
+        // Paint immediately at current scale
+        const hlLayer = document.getElementById(`pdf-hl-layer-${pageNum}`);
+        if (hlLayer) {
+          rects.forEach(r => {
+            const el = document.createElement('div');
+            el.className = 'pdf-hl';
+            el.style.cssText = `left:${r.nx*W}px;top:${r.ny*H}px;width:${r.nw*W}px;height:${r.nh*H}px;`;
+            hlLayer.appendChild(el);
+          });
+        }
+        sel.removeAllRanges();
+        showToast('✓ Highlight saved');
+      });
+
+    } catch(renderErr) {
+      const vp = document.getElementById('pdfViewport');
+      if (vp) vp.innerHTML = `
+        <div style="color:white;text-align:center;padding:48px 24px">
+          <div style="font-size:52px;margin-bottom:16px">📄</div>
+          <div style="font-size:16px;font-weight:600;margin-bottom:8px">${safeName}</div>
+          <div style="font-size:13px;opacity:0.65;margin-bottom:24px">${renderErr.message}</div>
+          <a href="${dlUrl}" download="${safeName}" class="btn btn-primary" style="text-decoration:none">⬇ Download PDF</a>
+        </div>`;
+    }
+  } catch(e) {
+    showToast('Could not open file');
+  }
+}
+
+function closePdfModal() {
+  closeModal();
+  if (_pdfBlobUrl) { URL.revokeObjectURL(_pdfBlobUrl); _pdfBlobUrl = null; }
+}
+
+async function removeAttach(modId, role, dbId) {
+  if (!confirm('Remove this attachment?')) return;
+  try {
+    const isSupabasePath = _currentUser && _sb && typeof dbId === 'string' && dbId.includes('/');
+    if (isSupabasePath) {
+      await _sb.storage.from(STORAGE_BUCKET).remove([dbId]);
+    } else {
+      await idbDelete(dbId);
+    }
+  } catch(e) { console.warn('Delete error', e); }
+  if (state.attachments[modId]?.[role]) {
+    state.attachments[modId][role] = state.attachments[modId][role].filter(f => f.dbId !== dbId);
+  }
+  saveState(); render();
+  showToast('Attachment removed');
+}
+
+function showAdminAttachModal(modId) {
+  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  if (!mod) return;
+
+  const renderModalBody = () => renderAttachmentsTab(modId, 'admin');
+
+  showModal(`
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Attachments</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-top:2px">Module ${mod.number}: ${esc(mod.title)}</div>
+      </div>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="attachModalBody">
+      ${renderModalBody()}
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Done</button>
+    </div>`);
+
+  // Wire drag & drop for admin modal drop zone if present
+  // (not needed — admin uses button only, no drop zone in admin tab)
+}
+
+// Override triggerAttach to re-render modal body after upload when in modal context
+const _origHandlePdf = handlePdfFiles;
+
+// ====================================================================
+// INTERACTIONS — Student
+// ====================================================================
+function setMode(mode) {
+  state.mode=mode;
+  document.getElementById('studentModeBtn').classList.toggle('active',mode==='student');
+  document.getElementById('adminModeBtn').classList.toggle('active',mode==='admin');
+  render();
+}
+function selectMod(id) { state.selectedModule=id; state.activeTab='reading'; render(); }
+function setTab(tab) { state.activeTab=tab; render(); }
+
+function toggleReading(modId,rId,val){ensureP(modId);state.progress[modId].readings[rId]=val;saveState();refreshPct(modId);}
+function toggleWatching(modId,wId,val){ensureP(modId);state.progress[modId].watching[wId]=val;saveState();refreshPct(modId);}
+function toggleAssignment(modId,val){ensureP(modId);state.progress[modId].assignmentDone=val;saveState();refreshPct(modId);}
+function toggleReflection(modId,val){ensureP(modId);state.progress[modId].reflectionDone=val;saveState();refreshPct(modId);}
+function toggleComplete(modId){ensureP(modId);state.progress[modId].complete=!state.progress[modId].complete;saveState();render();}
+function ensureP(id){if(!state.progress[id])state.progress[id]={readings:{},watching:{}};if(!state.progress[id].readings)state.progress[id].readings={};if(!state.progress[id].watching)state.progress[id].watching={};}
+
+const _noteTimers={};
+function autoSave(modId,field){
+  const key=`${modId}_${field}`;
+  clearTimeout(_noteTimers[key]);
+  _noteTimers[key]=setTimeout(()=>{
+    const elMap={notes:'moduleNotes',assignmentNotes:'assignmentNotes',reflectionNotes:'reflectionNotes'};
+    const el=document.getElementById(elMap[field]);
+    if(el){ensureP(modId);state.progress[modId][field]=el.value;saveState();}
+  },600);
+}
+
+// Rich text editor helpers
+function rteCmd(cmd, val) {
+  // Save selection before toolbar click steals focus
+  const sel = window.getSelection();
+  let savedRange = null;
+  if (sel && sel.rangeCount > 0) savedRange = sel.getRangeAt(0).cloneRange();
+
+  // Restore focus + selection, then apply command
+  const ed = document.querySelector('.rte-editor[contenteditable]');
+  if (ed) ed.focus();
+  if (savedRange) {
+    sel.removeAllRanges();
+    sel.addRange(savedRange);
+  }
+
+  document.execCommand(cmd, false, val || null);
+}
+
+function autoSaveRte(el) {
+  const modId = el.dataset.modid;
+  const field = el.dataset.field;
+  const key = `${modId}_${field}`;
+  clearTimeout(_noteTimers[key]);
+  _noteTimers[key] = setTimeout(() => {
+    ensureP(modId);
+    state.progress[modId][field] = el.innerHTML;
+    saveState();
+  }, 600);
+}
+
+function initRteFields() {
+  // Legacy single-field editors (notes, reflection, etc.)
+  document.querySelectorAll('.rte-editor[data-field]').forEach(el => {
+    const saved = state.progress[el.dataset.modid]?.[el.dataset.field] || '';
+    el.innerHTML = saved;
+  });
+  // Section editors
+  document.querySelectorAll('.rte-editor[data-secid]').forEach(el => {
+    const modId = el.dataset.modid;
+    const secId = el.dataset.secid;
+    const sec = (state.progress[modId]?.assignmentSections || []).find(s => s.id === secId);
+    el.innerHTML = sec?.content || '';
+  });
+}
+
+// ── Assignment Sections ──────────────────────────────────────────────────────
+function _secId() { return 'sec_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
+
+function ensureSections(modId) {
+  ensureP(modId);
+  if (!state.progress[modId].assignmentSections) state.progress[modId].assignmentSections = [];
+}
+
+function addSection(modId) {
+  ensureSections(modId);
+  const sec = { id: _secId(), title: '', content: '', collapsed: false };
+  state.progress[modId].assignmentSections.push(sec);
+  saveState();
+  render();
+  // Focus the new section title
+  setTimeout(() => {
+    const titles = document.querySelectorAll('.asgn-sec-title');
+    if (titles.length) titles[titles.length - 1].focus();
+  }, 80);
+}
+
+function deleteSection(modId, secId) {
+  ensureSections(modId);
+  state.progress[modId].assignmentSections = state.progress[modId].assignmentSections.filter(s => s.id !== secId);
+  saveState();
+  render();
+}
+
+function toggleSecCollapse(modId, secId, btn) {
+  ensureSections(modId);
+  const sec = state.progress[modId].assignmentSections.find(s => s.id === secId);
+  if (!sec) return;
+  sec.collapsed = !sec.collapsed;
+  saveState();
+  // Toggle without full re-render for speed
+  const wrapper = btn.closest('.asgn-section');
+  const body = wrapper.querySelector('.asgn-sec-body');
+  body.classList.toggle('collapsed', sec.collapsed);
+  btn.classList.toggle('collapsed', sec.collapsed);
+  btn.title = sec.collapsed ? 'Expand' : 'Collapse';
+}
+
+function saveSecTitle(el) {
+  const modId = el.dataset.modid;
+  const secId = el.dataset.secid;
+  const key = `${modId}_title_${secId}`;
+  clearTimeout(_noteTimers[key]);
+  _noteTimers[key] = setTimeout(() => {
+    ensureSections(modId);
+    const sec = state.progress[modId].assignmentSections.find(s => s.id === secId);
+    if (sec) { sec.title = el.textContent.trim(); saveState(); }
+  }, 600);
+}
+
+function autoSaveSec(el) {
+  const modId = el.dataset.modid;
+  const secId = el.dataset.secid;
+  const key = `${modId}_content_${secId}`;
+  clearTimeout(_noteTimers[key]);
+  _noteTimers[key] = setTimeout(() => {
+    ensureSections(modId);
+    const sec = state.progress[modId].assignmentSections.find(s => s.id === secId);
+    if (sec) { sec.content = el.innerHTML; saveState(); }
+  }, 600);
+}
+
+// rteCmdSec: like rteCmd but scoped to a specific section's editor
+function rteCmdSec(cmd, secId, val) {
+  const sel = window.getSelection();
+  let savedRange = null;
+  if (sel && sel.rangeCount > 0) savedRange = sel.getRangeAt(0).cloneRange();
+
+  const ed = document.querySelector(`.rte-editor[data-secid="${secId}"]`);
+  if (ed) ed.focus();
+  if (savedRange) { sel.removeAllRanges(); sel.addRange(savedRange); }
+
+  document.execCommand(cmd, false, val || null);
+}
+
+// ── Source linking ───────────────────────────────────────────────────────────
+let _srcPickerRange = null;
+let _srcPickerModId = null;
+let _srcPickerSecId = null;
+let _srcPickerJustOpened = false; // guard: stop the opening click from immediately closing the picker
+
+function openSrcPicker(modId, secId, btn) {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) { showToast('Select some text first, then click Cite'); return; }
+
+  // Save selection (clicking the picker will lose it)
+  _srcPickerRange = sel.getRangeAt(0).cloneRange();
+  _srcPickerModId = modId;
+  _srcPickerSecId = secId;
+
+  const mod = state.curriculum.modules.find(m => m.id === modId);
+  const readings = mod?.readings || [];
+
+  let picker = document.getElementById('srcPicker');
+  if (!picker) {
+    picker = document.createElement('div');
+    picker.id = 'srcPicker';
+    picker.className = 'src-picker';
+    document.body.appendChild(picker);
+  }
+
+  // Use data-title attribute — no inline onclick, avoids all quote/escaping issues
+  picker.innerHTML = `<div class="src-picker-header">Link to a reading</div>` +
+    (readings.length
+      ? readings.map(r => `<div class="src-picker-item" data-rid="${r.id}" data-title="${esc(r.title)}">${esc(r.title)}</div>`).join('')
+      : `<div class="src-picker-empty">No readings in this module.</div>`);
+
+  // Position below the button
+  const rect = btn.getBoundingClientRect();
+  picker.style.top = (rect.bottom + window.scrollY + 6) + 'px';
+  picker.style.left = Math.min(rect.left + window.scrollX, window.innerWidth - 330) + 'px';
+  picker.classList.add('open');
+  _srcPickerJustOpened = true;
+  setTimeout(() => { _srcPickerJustOpened = false; }, 0); // clear after current event cycle
+}
+
+function _closeSrcPicker() {
+  const picker = document.getElementById('srcPicker');
+  if (picker) picker.classList.remove('open');
+}
+
+function applySrcLink(rid, title) {
+  const picker = document.getElementById('srcPicker');
+  if (picker) picker.classList.remove('open');
+
+  if (!_srcPickerRange) return;
+  const modId = _srcPickerModId;
+  const secId = _srcPickerSecId;
+
+  // Restore focus + selection
+  const ed = document.querySelector(`.rte-editor[data-secid="${secId}"]`);
+  if (!ed) return;
+  ed.focus();
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(_srcPickerRange);
+
+  const selectedText = _srcPickerRange.toString();
+  const displayText = selectedText || `[${title}]`;
+  document.execCommand('insertHTML', false,
+    `<span class="src-cite" contenteditable="false" data-rid="${rid}" data-modid="${modId}" title="${title}">${displayText}</span>&nbsp;`
+  );
+
+  autoSaveSec(ed);
+  _srcPickerRange = null;
+}
+
+function jumpToReading(modId, rid) {
+  state.selectedModule = modId;
+  state.activeTab = 'reading';
+  render();
+  setTimeout(() => {
+    const el = document.querySelector(`.reading-item[data-rid="${rid}"]`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('reading-highlight');
+      setTimeout(() => el.classList.remove('reading-highlight'), 2500);
+    }
+  }, 120);
+}
+
+// Drag-and-drop for sections
+let _dragSecId = null;
+function secDragStart(e, modId, secId) {
+  _dragSecId = secId;
+  e.dataTransfer.effectAllowed = 'move';
+  setTimeout(() => e.currentTarget?.classList.add('dragging'), 0);
+}
+function secDragOver(e, secId) {
+  if (!_dragSecId || secId === _dragSecId) return;
+  e.preventDefault();
+  document.querySelectorAll('.asgn-section.drag-over').forEach(el => el.classList.remove('drag-over'));
+  e.currentTarget.classList.add('drag-over');
+}
+function secDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+function secDragEnd() {
+  document.querySelectorAll('.asgn-section').forEach(el => el.classList.remove('dragging', 'drag-over'));
+  _dragSecId = null;
+}
+function secDrop(e, modId, targetSecId) {
+  e.preventDefault();
+  const fromId = _dragSecId;
+  secDragEnd();
+  if (!fromId || fromId === targetSecId) return;
+  ensureSections(modId);
+  const secs = state.progress[modId].assignmentSections;
+  const fromIdx = secs.findIndex(s => s.id === fromId);
+  const toIdx = secs.findIndex(s => s.id === targetSecId);
+  if (fromIdx < 0 || toIdx < 0) return;
+  const [moved] = secs.splice(fromIdx, 1);
+  secs.splice(toIdx, 0, moved);
+  saveState();
+  render();
+}
+
+function refreshPct(modId){
+  const mod=state.curriculum?.modules.find(m=>m.id===modId); if(!mod)return;
+  const pct=getModPct(mod);
+  const card=document.querySelector(`.module-card[onclick="selectMod('${modId}')"]`);
+  if(card){
+    card.querySelector('.mini-bar-fill').style.width=pct+'%';
+    card.querySelector('.module-progress-mini span').textContent=pct+'%';
+    const badge=card.querySelector('.module-badge');
+    if(pct===100){badge.className='module-badge badge-complete';badge.textContent='Complete';}
+    else if(pct>0){badge.className='module-badge badge-progress';badge.textContent='In progress';}
+    else{badge.className='module-badge badge-notstarted';badge.textContent='';}
+  }
+  const ov=getOverall();
+  const fill=document.querySelector('.progress-bar-fill'); if(fill)fill.style.width=ov.pct+'%';
+  const lbl=document.querySelector('.progress-bar-label span:last-child'); if(lbl)lbl.textContent=ov.pct+'%';
+  const nums=document.querySelectorAll('.stat-num'); if(nums.length>=2){nums[0].textContent=ov.complete;nums[1].textContent=ov.inProgress;}
+}
+
+// ====================================================================
+// ADMIN ACTIONS
+// ====================================================================
+function loadDefault(){
+  state.curriculum=JSON.parse(JSON.stringify(JANE_CURRICULUM));
+  state.progress={}; state.selectedModule=null;
+  saveState(); showToast('✓ Canon loaded'); render();
+}
+async function clearAll(){
+  if(!confirm('Clear all curriculum data, progress, and attachments? This cannot be undone.'))return;
+  // Clear IndexedDB blobs
+  openIDB().then(db=>{
+    const tx=db.transaction(IDB_STORE,'readwrite');
+    tx.objectStore(IDB_STORE).clear();
+  }).catch(()=>{});
+  // Delete all Supabase storage files for this user
+  if (_currentUser && _sb) {
+    try {
+      const uid = _currentUser.id;
+      const { data: files } = await _sb.storage.from(STORAGE_BUCKET).list(uid, { limit: 1000 });
+      if (files?.length) {
+        const paths = files.map(f => `${uid}/${f.name}`);
+        await _sb.storage.from(STORAGE_BUCKET).remove(paths);
+      }
+      // Also delete the user_state row so cloud is cleared too
+      await _sb.from('user_state').delete().eq('user_id', _currentUser.id);
+    } catch(e) { console.warn('Cloud clear failed', e); }
+  }
+  state.curriculum=null;state.progress={};state.attachments={};state.selectedModule=null;
+  saveState();render();
+}
+function deleteMod(id){
+  if(!confirm('Delete this module? Progress and attachments will also be removed.'))return;
+  const att=getAttachments(id);
+  const allIds=[...att.admin,...att.student].map(f=>f.dbId).filter(Boolean);
+  idbDeleteMany(allIds).catch(()=>{});
+  state.curriculum.modules=state.curriculum.modules.filter(m=>m.id!==id);
+  delete state.progress[id]; delete state.attachments[id];
+  saveState();showToast('Module deleted');render();
+}
+
+function showUpload(){
+  showModal(`
+    <div class="modal-header">
+      <div class="modal-title">Upload Curriculum .md File</div>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px">Upload a Markdown file formatted like Surabhi's curriculum. Replaces the current curriculum.</p>
+      <div class="upload-zone" id="mdDropZone"
+           onclick="document.getElementById('mdInput').click()"
+           ondragover="event.preventDefault();this.classList.add('drag-over')"
+           ondragleave="this.classList.remove('drag-over')"
+           ondrop="handleMdDrop(event)">
+        <div class="upload-icon">📄</div>
+        <div class="upload-text">Click to choose file, or drag & drop</div>
+        <div class="upload-subtext">Accepts .md and .txt files</div>
+      </div>
+      <div id="uploadMsg" style="margin-top:14px;font-size:13px;color:var(--text-muted)"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal()">Cancel</button></div>`);
+}
+
+function handleMdFile(input){
+  const file=input.files[0]; if(!file)return;
+  const msgEl=document.getElementById('uploadMsg');
+  if(msgEl)msgEl.textContent=`Reading ${file.name}…`;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const c=parseMarkdown(e.target.result);
+      if(!c.modules.length){if(msgEl)msgEl.textContent='⚠️ No modules found. Modules must start with "# MODULE N: Title".';return;}
+      state.curriculum=c;state.progress={};state.attachments={};state.selectedModule=null;
+      saveState();closeModal();showToast(`✓ Loaded: ${c.title} (${c.modules.length} modules)`);render();
+    }catch(err){if(msgEl)msgEl.textContent='✕ Error: '+err.message;}
+  };
+  reader.readAsText(file);
+}
+
+function handleMdDrop(e){
+  e.preventDefault();
+  const zone=document.getElementById('mdDropZone'); if(zone)zone.classList.remove('drag-over');
+  const file=e.dataTransfer.files[0]; if(!file)return;
+  handleMdFile({files:[file]});
+}
+
+function showModuleForm(editId){
+  const mod=editId?state.curriculum?.modules.find(m=>m.id===editId):null;
+  const nextNum=(state.curriculum?.modules.length||0)+1;
+  const readingsVal=mod?mod.readings.map(r=>`${r.title} | ${r.url||('search:'+r.searchTerm)} | ${r.description||''}`).join('\n'):'';
+  const watchingVal=mod?mod.watching.map(w=>`${w.searchTerm}${w.description?' — '+w.description:''}`).join('\n'):'';
+  showModal(`
+    <div class="modal-header">
+      <div class="modal-title">${mod?'Edit Module':'Add Module'}</div>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:80px 1fr;gap:16px">
+        <div class="form-group"><label class="form-label">Number</label><input class="form-input" id="fNum" type="number" value="${mod?.number||nextNum}"></div>
+        <div class="form-group"><label class="form-label">Title</label><input class="form-input" id="fTitle" placeholder="e.g. Strategic Thinking" value="${esc(mod?.title||'')}"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Subtitle / Gap Description</label><input class="form-input" id="fSub" placeholder="Your gap: …" value="${esc(mod?.subtitle||'')}"></div>
+      <div class="form-group"><label class="form-label">Why It Matters</label><textarea class="form-textarea" id="fWhy" placeholder="Why this module matters…">${esc(mod?.whyItMatters||'')}</textarea></div>
+      <div class="form-group">
+        <label class="form-label">Readings (one per line: Title | URL or search:term | Description)</label>
+        <textarea class="form-textarea" id="fReadings" style="min-height:120px;font-size:12px;font-family:monospace" placeholder="Book Title | https://example.com | Short description&#10;Another Book | search:search term here | Description">${readingsVal}</textarea>
+        <div class="form-hint">Use | as separator. For verified links use a full URL; for search items prefix with search:</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Watching (one per line: Search term — optional description)</label>
+        <textarea class="form-textarea" id="fWatching" style="font-size:12px;font-family:monospace" placeholder="Roger Martin strategy talk Playing to Win — (~45 min)">${watchingVal}</textarea>
+      </div>
+      <div class="form-group"><label class="form-label">Assignment</label><textarea class="form-textarea" id="fAssign" style="min-height:120px" placeholder="Describe the assignment…">${esc(mod?.assignment||'')}</textarea></div>
+      <div class="form-group"><label class="form-label">Reflection Prompt</label><textarea class="form-textarea" id="fReflect" placeholder="The reflection question…">${esc(mod?.reflection||'')}</textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveMod(${JSON.stringify(editId)})">${mod?'Save Changes':'Add Module'}</button>
+    </div>`);
+}
+
+function saveMod(editId){
+  const title=document.getElementById('fTitle').value.trim();
+  if(!title){showToast('Title is required');return;}
+  const number=parseInt(document.getElementById('fNum').value)||1;
+  const readings=document.getElementById('fReadings').value.split('\n').filter(l=>l.trim()).map((line,i)=>{
+    const parts=line.split('|').map(s=>s.trim());
+    const[t,urlOrSearch,desc]=parts;
+    const isUrl=urlOrSearch?.startsWith('http');
+    return{id:`r_${Math.random().toString(36).substr(2,8)}`,number:String(i+1),title:t||'',url:isUrl?urlOrSearch:'',searchTerm:!isUrl?(urlOrSearch?.replace(/^search:/i,'')||''):'',type:isUrl?'verified':'search',description:desc||''};
+  });
+  const watching=document.getElementById('fWatching').value.split('\n').filter(l=>l.trim()).map(line=>{
+    const dash=line.indexOf(' — ');
+    return{id:`w_${Math.random().toString(36).substr(2,8)}`,searchTerm:dash>0?line.slice(0,dash).trim():line.trim(),description:dash>0?line.slice(dash+3).trim():''};
+  });
+  if(!state.curriculum)state.curriculum={title:'My Curriculum',subtitle:'',modules:[]};
+  const mod={id:editId||`m${number}_${Math.random().toString(36).substr(2,4)}`,number,title,subtitle:document.getElementById('fSub').value.trim(),whyItMatters:document.getElementById('fWhy').value.trim(),readings,watching,assignment:document.getElementById('fAssign').value.trim(),reflection:document.getElementById('fReflect').value.trim()};
+  if(editId){const idx=state.curriculum.modules.findIndex(m=>m.id===editId);if(idx>=0)state.curriculum.modules[idx]=mod;}
+  else{state.curriculum.modules.push(mod);}
+  state.curriculum.modules.sort((a,b)=>a.number-b.number);
+  saveState();closeModal();showToast(editId?'✓ Module updated':'✓ Module added');render();
+}
+
+// ====================================================================
+// MODAL
+// ====================================================================
+function showModal(html){
+  const ov=document.getElementById('modalOverlay');
+  ov.style.display='flex';
+  ov.innerHTML=`<div class="modal">${html}</div>`;
+}
+function closeModal(){document.getElementById('modalOverlay').style.display='none';}
+function handleOverlayClick(e){
+  if(e.target===document.getElementById('modalOverlay')){
+    // If a PDF blob is open, revoke it on dismiss
+    if(_pdfBlobUrl){URL.revokeObjectURL(_pdfBlobUrl);_pdfBlobUrl=null;}
+    closeModal();
+  }
+}
+
+// ====================================================================
+// TOAST
+// ====================================================================
+let _toastTimer;
+function showToast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.remove('hide');
+  clearTimeout(_toastTimer);
+  _toastTimer=setTimeout(()=>el.classList.add('hide'),2800);
+}
+
+// ====================================================================
+// UTILS
+// ====================================================================
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function formatProse(text){if(!text)return'';return esc(text).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');}
+function formatBytes(bytes){if(!bytes)return'?';const k=1024;const sizes=['B','KB','MB','GB'];const i=Math.floor(Math.log(bytes)/Math.log(k));return parseFloat((bytes/Math.pow(k,i)).toFixed(1))+' '+sizes[i];}
+
+// ====================================================================
+// DARK MODE
+// ====================================================================
+function toggleDarkMode() {
+  state.darkMode = !state.darkMode;
+  applyDarkMode();
+  saveState();
+}
+function applyDarkMode() {
+  document.documentElement.setAttribute('data-theme', state.darkMode ? 'dark' : 'light');
+  const btn = document.getElementById('darkToggleBtn');
+  if (btn) btn.textContent = state.darkMode ? '☀️' : '🌙';
+}
+
+// ====================================================================
+// ADMIN DRAG-TO-REORDER
+// ====================================================================
+let _dragModId = null;
+
+function adminDragStart(e, modId) {
+  _dragModId = modId;
+  e.dataTransfer.effectAllowed = 'move';
+  setTimeout(() => e.currentTarget?.classList.add('dragging'), 0);
+}
+function adminDragOver(e, modId) {
+  if (!_dragModId || modId === _dragModId) return;
+  e.preventDefault();
+  document.querySelectorAll('.admin-module-row.drag-over').forEach(el => el.classList.remove('drag-over'));
+  e.currentTarget.classList.add('drag-over');
+}
+function adminDragLeave(e) {
+  e.currentTarget.classList.remove('drag-over');
+}
+function adminDragEnd() {
+  document.querySelectorAll('.admin-module-row').forEach(el => el.classList.remove('dragging', 'drag-over'));
+  _dragModId = null;
+}
+function adminDrop(e, targetModId) {
+  e.preventDefault();
+  const fromId = _dragModId;
+  adminDragEnd();
+  if (!fromId || fromId === targetModId) return;
+  const mods = state.curriculum.modules;
+  const fromIdx = mods.findIndex(m => m.id === fromId);
+  const toIdx = mods.findIndex(m => m.id === targetModId);
+  if (fromIdx < 0 || toIdx < 0) return;
+  const [moved] = mods.splice(fromIdx, 1);
+  mods.splice(toIdx, 0, moved);
+  mods.forEach((m, i) => { m.number = i + 1; });
+  saveState();
+  renderAdmin();
+  showToast('✓ Order updated');
+}
+
+// ====================================================================
+// INIT
+// ====================================================================
+
+// 1. Load state from localStorage first (instant, no network)
+loadState();
+
+// 2. Seed defaults if nothing in localStorage
+if (!state.curriculum) {
+  state.curriculum = JSON.parse(JSON.stringify(JANE_CURRICULUM));
+  _writeLocalStorage();
+}
+
+// 3. Migrations (local copy — cloud will be patched after sync via _applyStateAfterSync)
+if (state.curriculum && !state.curriculum.modules.find(m => m.id === 'm10')) {
+  const pubMod = JANE_CURRICULUM.modules.find(m => m.id === 'm10');
+  if (pubMod) { state.curriculum.modules.push(JSON.parse(JSON.stringify(pubMod))); _writeLocalStorage(); }
+}
+if (!state.progress) state.progress = {};
+if (!state.progress.m10) state.progress.m10 = { readings: {}, watching: {} };
+if (!state.progress.m10.assignmentSections || state.progress.m10.assignmentSections.length === 0) {
+  state.progress.m10.assignmentSections = PUBLISHING_DEFAULT_SECTIONS.map((s, i) => ({
+    id: 'sec_pub_' + i + '_' + Math.random().toString(36).slice(2, 7),
+    title: s.title, content: s.content, collapsed: true
+  }));
+  _writeLocalStorage();
+}
+
+applyDarkMode();
+
+// ── Keyboard shortcuts ──────────────────────────────────────────────────────
+document.addEventListener('keydown', function(e) {
+  // j / k — navigate modules
+  if ((e.key === 'j' || e.key === 'k') && !e.metaKey && !e.ctrlKey && !e.altKey) {
+    const active = document.activeElement;
+    if (active && (active.isContentEditable || ['INPUT','TEXTAREA','SELECT'].includes(active.tagName))) return;
+    const mods = state.curriculum?.modules || [];
+    if (!mods.length) return;
+    const idx = mods.findIndex(m => m.id === state.selectedModule);
+    let next = e.key === 'j' ? idx + 1 : idx - 1;
+    if (next < 0) next = mods.length - 1;
+    if (next >= mods.length) next = 0;
+    selectMod(mods[next].id);
+    e.preventDefault();
+  }
+  // Escape — deselect module
+  if (e.key === 'Escape' && state.selectedModule) {
+    state.selectedModule = null;
+    render();
+  }
+  // Cmd+Shift+A — reveal/hide admin mode toggle
+  if (e.key === 'A' && e.shiftKey && (e.metaKey || e.ctrlKey)) {
+    const toggle = document.getElementById('modeToggle');
+    if (toggle) toggle.style.display = toggle.style.display === 'none' ? 'flex' : 'none';
+    e.preventDefault();
+  }
+});
+
+// Picker item clicks — delegated so no inline onclick escaping issues
+document.addEventListener('click', function(e) {
+  const item = e.target.closest('.src-picker-item');
+  if (item) {
+    const rid   = item.dataset.rid;
+    const title = item.dataset.title;
+    _closeSrcPicker();
+    applySrcLink(rid, title);
+    return;
+  }
+  // Close picker when clicking outside it (but not on the same click that opened it)
+  const picker = document.getElementById('srcPicker');
+  if (!_srcPickerJustOpened && picker && picker.classList.contains('open') && !picker.contains(e.target)) {
+    _closeSrcPicker();
+  }
+});
+
+// Citation clicks — must use mousedown (click is swallowed by contenteditable engine)
+document.addEventListener('mousedown', function(e) {
+  const cite = e.target.closest('.src-cite');
+  if (cite) {
+    e.preventDefault();
+    jumpToReading(cite.dataset.modid, cite.dataset.rid);
+  }
+});
+
+// 4. Boot: check Supabase auth, then reveal app or show sign-in screen
+initAuth().catch(err => {
+  // If auth init fails entirely (CDN down, network error), show app with local state
+  console.warn('Auth init error — running in local mode:', err);
+  document.getElementById('authScreen').style.display = 'none';
+  render();
+});
+</script>
+</body>
+</html>
