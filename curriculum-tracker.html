@@ -568,8 +568,8 @@
       <button class="user-signout" onclick="handleSignOut()">Sign out</button>
     </div>
     <div class="mode-toggle" id="modeToggle">
-      <button class="mode-btn active" id="studentModeBtn" onclick="setMode('student')">Student</button>
-      <button class="mode-btn" id="adminModeBtn" onclick="setMode('admin')">Admin</button>
+      <button class="mode-btn active" id="studentModeBtn" onclick="setMode('student')" title="Practice with intention — track progress, write notes, and execute your plan">Learn</button>
+      <button class="mode-btn" id="adminModeBtn" onclick="setMode('admin')" title="Curate your curriculum — shape modules, add readings, and upload resources">Design</button>
     </div>
   </div>
 </header>
@@ -1310,12 +1310,9 @@ function getAttachments(modId) {
 function render() {
   document.getElementById('headerTitle').textContent = state.curriculum?.title || 'No curriculum loaded';
 
-  // Admin toggle only visible to the curriculum owner
+  // Design mode available to all signed-in users
   const modeToggle = document.getElementById('modeToggle');
-  if (modeToggle) modeToggle.style.display = _isAdmin() ? 'flex' : 'none';
-
-  // Force non-admin users back to student view
-  if (!_isAdmin() && state.mode === 'admin') state.mode = 'student';
+  if (modeToggle) modeToggle.style.display = _currentUser ? 'flex' : 'none';
 
   if (state.mode==='student') {
     document.getElementById('studentView').style.display='';
@@ -1331,7 +1328,7 @@ function render() {
 function renderStudent() {
   const el = document.getElementById('studentView');
   if (!state.curriculum?.modules?.length) {
-    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No curriculum loaded</div><div class="empty-text">Switch to Admin mode to upload a curriculum .md file.</div><br><button class="btn btn-primary" style="margin:0 auto;display:block" onclick="loadDefault()">Load Surabhi's Curriculum</button></div>`;
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No curriculum loaded</div><div class="empty-text">Switch to Design mode to upload your own curriculum or start from a template.</div><br><button class="btn btn-primary" style="margin:0 auto;display:block" onclick="loadDefault()">Start from Canon template</button></div>`;
     return;
   }
   const ov=getOverall();
@@ -1636,7 +1633,7 @@ function renderAdmin() {
     <div class="admin-toolbar">
       <button class="btn btn-primary" onclick="showUpload()">⬆ Upload .md File</button>
       <button class="btn btn-outline" onclick="showModuleForm(null)">+ Add Module</button>
-      <button class="btn btn-outline" onclick="loadDefault()">↺ Reset to Surabhi's Curriculum</button>
+      <button class="btn btn-outline" onclick="loadDefault()">↺ Reset to Canon template</button>
       ${state.curriculum?`<button class="btn btn-danger" onclick="clearAll()">✕ Clear All</button>`:''}
     </div>
     ${_isAdmin() && state.curriculum ? `
@@ -1649,7 +1646,7 @@ function renderAdmin() {
     </div>` : ''}`;
 
   if (!state.curriculum?.modules?.length) {
-    html+=`<div class="empty-state"><div class="empty-icon">📁</div><div class="empty-title">No curriculum loaded</div><div class="empty-text">Upload a .md file or add modules manually.</div></div>`;
+    html+=`<div class="empty-state"><div class="empty-icon">📁</div><div class="empty-title">No curriculum yet</div><div class="empty-text">Upload a .md file, add modules manually, or start from the Canon template.</div><br><button class="btn btn-primary" style="margin:0 auto;display:block" onclick="loadDefault()">Start from Canon template</button></div>`;
   } else {
     html+=`<div style="margin-bottom:16px;font-size:13px;color:var(--text-muted)">${esc(state.curriculum.title)} &nbsp;·&nbsp; ${state.curriculum.modules.length} modules</div>`;
     for (const mod of state.curriculum.modules) {
@@ -2079,8 +2076,8 @@ const _origHandlePdf = handlePdfFiles;
 // ====================================================================
 function setMode(mode) {
   state.mode=mode;
-  document.getElementById('studentModeBtn').classList.toggle('active',mode==='student');
-  document.getElementById('adminModeBtn').classList.toggle('active',mode==='admin');
+  document.getElementById('studentModeBtn').classList.toggle('active', mode==='student');
+  document.getElementById('adminModeBtn').classList.toggle('active', mode==='admin');
   render();
 }
 function selectMod(id) { state.selectedModule=id; state.activeTab='reading'; render(); }
