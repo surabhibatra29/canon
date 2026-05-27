@@ -4,7 +4,7 @@
 
 A self-contained curriculum tracker I built during my PM career break — to actually execute the 9-module AI-era PM curriculum I designed with Claude, not just collect it in a Notion doc.
 
-**[→ Live demo](https://surabhibatra29.github.io/canon/curriculum-tracker.html)**
+**[→ Live demo](https://surabhibatra29.github.io/canon/curriculum-tracker.html)** *(takes ~60s to go live on first deploy)*
 
 ---
 
