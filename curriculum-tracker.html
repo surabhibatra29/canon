@@ -824,9 +824,14 @@ function getModVisual(mod) { return MOD_VISUALS[(mod.number - 1) % MOD_VISUALS.l
 // ====================================================================
 // SUPABASE — cloud sync + file storage
 // ====================================================================
-const SUPABASE_URL  = 'https://ybnlkungkyqqafbnmlgt.supabase.co';
-const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlibmxrdW5na3lxcWFmYm5tbGd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4NjIwNjMsImV4cCI6MjA5NTQzODA2M30.UFKpbW7aLaXGZiXzhXtC72K3w5Nqf0oalXrmgSp16Jg';
-const STORAGE_BUCKET = 'attachments';
+const SUPABASE_URL    = 'https://ybnlkungkyqqafbnmlgt.supabase.co';
+const SUPABASE_KEY    = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlibmxrdW5na3lxcWFmYm5tbGd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4NjIwNjMsImV4cCI6MjA5NTQzODA2M30.UFKpbW7aLaXGZiXzhXtC72K3w5Nqf0oalXrmgSp16Jg';
+const STORAGE_BUCKET  = 'attachments';
+const CANON_ADMIN_EMAIL = 'batra.surabhi@gmail.com'; // only this account can publish curriculum
+
+function _isAdmin() {
+  return _currentUser?.email === CANON_ADMIN_EMAIL;
+}
 let _sb = null;            // Supabase client instance
 let _currentUser = null;   // Currently signed-in user (or null)
 let _syncTimer   = null;   // Debounce handle for cloud saves
@@ -974,30 +979,70 @@ async function _pushToCloud() {
 async function _syncFromCloud() {
   if (!_sb || !_currentUser) return;
   try {
-    const { data, error } = await _sb
-      .from('user_state')
-      .select('curriculum, progress, attachments_meta')
-      .eq('user_id', _currentUser.id)
-      .maybeSingle();
+    // Always fetch canonical curriculum (published by admin)
+    // Admin gets their own saved curriculum; everyone else gets the canonical one
+    const [userRes, canonRes] = await Promise.all([
+      _sb.from('user_state')
+        .select('curriculum, progress, attachments_meta')
+        .eq('user_id', _currentUser.id)
+        .maybeSingle(),
+      _sb.from('canonical_curriculum')
+        .select('curriculum')
+        .eq('id', 1)
+        .maybeSingle()
+    ]);
 
-    if (error) throw error;
+    const userData   = userRes.data;
+    const canonical  = canonRes.data?.curriculum || null;
 
-    if (!data) {
-      // First time this user logs in — migrate localStorage to cloud
-      if (state.curriculum) {
-        await _pushToCloud();
-      }
+    if (!userData) {
+      // First login — seed cloud with local state, apply canonical curriculum
+      if (canonical) state.curriculum = canonical;
+      await _pushToCloud();
       return;
     }
 
-    // Cloud has data — use it (cloud is source of truth for cross-device sync)
-    if (data.curriculum)       state.curriculum  = data.curriculum;
-    if (data.progress)         state.progress    = data.progress;
-    if (data.attachments_meta) state.attachments = data.attachments_meta;
+    // Restore progress + attachments from user's own row (always private)
+    if (userData.progress)         state.progress    = userData.progress;
+    if (userData.attachments_meta) state.attachments = userData.attachments_meta;
+
+    // Curriculum source depends on role:
+    // Admin → uses their own saved curriculum (what they're actively editing)
+    // Everyone else → canonical published curriculum
+    if (_isAdmin()) {
+      if (userData.curriculum) state.curriculum = userData.curriculum;
+    } else {
+      if (canonical)           state.curriculum = canonical;
+      else if (userData.curriculum) state.curriculum = userData.curriculum; // fallback
+    }
+
     _writeLocalStorage();
   } catch(e) {
     console.warn('Sync from cloud failed', e);
-    // Gracefully continue with local state
+  }
+}
+
+async function publishCurriculum() {
+  if (!_isAdmin()) return;
+  if (!state.curriculum) { showToast('No curriculum to publish'); return; }
+  if (!confirm(`Publish "${state.curriculum.title}" to all users?\n\nAll signed-in users will receive this curriculum on their next login.`)) return;
+
+  try {
+    _setSyncDot('syncing');
+    const { error } = await _sb.from('canonical_curriculum').upsert({
+      id: 1,
+      curriculum:   state.curriculum,
+      published_at: new Date().toISOString(),
+      published_by: _currentUser.id
+    }, { onConflict: 'id' });
+    if (error) throw error;
+    _setSyncDot('synced');
+    setTimeout(() => _setSyncDot(''), 2000);
+    showToast('✓ Published — all users will see this curriculum on next login');
+  } catch(e) {
+    console.warn('Publish failed', e);
+    showToast('Publish failed — ' + (e.message || 'please try again'));
+    _setSyncDot('');
   }
 }
 
@@ -1264,6 +1309,14 @@ function getAttachments(modId) {
 // ====================================================================
 function render() {
   document.getElementById('headerTitle').textContent = state.curriculum?.title || 'No curriculum loaded';
+
+  // Admin toggle only visible to the curriculum owner
+  const modeToggle = document.getElementById('modeToggle');
+  if (modeToggle) modeToggle.style.display = _isAdmin() ? 'flex' : 'none';
+
+  // Force non-admin users back to student view
+  if (!_isAdmin() && state.mode === 'admin') state.mode = 'student';
+
   if (state.mode==='student') {
     document.getElementById('studentView').style.display='';
     document.getElementById('adminView').style.display='none';
@@ -1585,7 +1638,15 @@ function renderAdmin() {
       <button class="btn btn-outline" onclick="showModuleForm(null)">+ Add Module</button>
       <button class="btn btn-outline" onclick="loadDefault()">↺ Reset to Surabhi's Curriculum</button>
       ${state.curriculum?`<button class="btn btn-danger" onclick="clearAll()">✕ Clear All</button>`:''}
-    </div>`;
+    </div>
+    ${_isAdmin() && state.curriculum ? `
+    <div style="background:rgba(80,70,229,0.06);border:1px solid rgba(80,70,229,0.18);border-radius:12px;padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--purple);margin-bottom:2px">Publish curriculum to all users</div>
+        <div style="font-size:12px;color:var(--text-muted)">All signed-in users will receive your current curriculum on their next login</div>
+      </div>
+      <button class="btn btn-primary" onclick="publishCurriculum()" style="white-space:nowrap;flex-shrink:0">⬆ Publish to all</button>
+    </div>` : ''}`;
 
   if (!state.curriculum?.modules?.length) {
     html+=`<div class="empty-state"><div class="empty-icon">📁</div><div class="empty-title">No curriculum loaded</div><div class="empty-text">Upload a .md file or add modules manually.</div></div>`;
