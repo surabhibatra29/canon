@@ -73,8 +73,8 @@
     [data-theme="dark"] .module-card-icon { opacity: 0.7; }
 
     /* ── Split Layout (module selected) ── */
-    .student-split { display: grid; grid-template-columns: 288px 1fr; gap: 20px; align-items: start; }
-    .modules-column { display: flex; flex-direction: column; gap: 8px; position: sticky; top: 80px; max-height: calc(100vh - 108px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; padding-right: 2px; }
+    .student-split { display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
+    .modules-column { display: flex; flex-direction: column; gap: 8px; position: sticky; top: 80px; max-height: calc(100vh - 100px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; padding-right: 2px; }
     .modules-column::-webkit-scrollbar { width: 4px; }
     .modules-column::-webkit-scrollbar-track { background: transparent; }
     .modules-column::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
@@ -127,11 +127,13 @@
     .modules-column .artifact-pill { display: none; }
     [data-theme="dark"] .artifact-pill { background: rgba(180,140,80,0.18); color: #E8B27A; }
     /* Artifact banner in detail view */
-    .artifact-banner { padding: 12px 28px; background: rgba(180,140,80,0.08); border-bottom: 1px solid rgba(180,140,80,0.18); display: flex; align-items: center; gap: 10px; font-size: 13px; color: #6B4214; }
-    .artifact-banner-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; opacity: 0.75; }
-    .artifact-banner-name { font-weight: 600; }
-    [data-theme="dark"] .artifact-banner { background: rgba(180,140,80,0.12); border-color: rgba(180,140,80,0.22); color: #E8B27A; }
-    @media (max-width: 700px) { .artifact-banner { padding: 10px 16px; font-size: 12px; } }
+    /* Artifact callout inside Assignment tab */
+    .asgn-artifact-goal { display: flex; align-items: center; gap: 10px; padding: 10px 14px; margin-bottom: 16px; background: rgba(180,140,80,0.07); border: 1px solid rgba(180,140,80,0.2); border-radius: 8px; }
+    .asgn-artifact-goal-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: #92591A; opacity: 0.8; white-space: nowrap; }
+    .asgn-artifact-goal-name { font-size: 13px; font-weight: 600; color: #6B4214; }
+    [data-theme="dark"] .asgn-artifact-goal { background: rgba(180,140,80,0.1); border-color: rgba(180,140,80,0.25); }
+    [data-theme="dark"] .asgn-artifact-goal-label { color: #E8B27A; }
+    [data-theme="dark"] .asgn-artifact-goal-name { color: #E8B27A; }
 
     /* ── Tabs ── */
     .detail-tabs { display: flex; border-bottom: 1px solid rgba(0,0,0,0.06); padding: 0 28px; background: rgba(255,255,255,0.4); overflow-x: auto; scrollbar-width: none; }
@@ -415,11 +417,18 @@
     [data-theme="dark"] .btn-attach:hover { background: rgba(37,99,235,0.25); }
     [data-theme="dark"] .toast { background: rgba(30,27,74,0.95); border: 1px solid rgba(255,255,255,0.1); }
 
-    /* ── Responsive: tablet ── */
+    /* ── Responsive: narrow desktop (sidebar shrinks but stays vertical) ── */
+    @media (max-width: 1100px) and (min-width: 901px) {
+      .student-split { grid-template-columns: 280px 1fr; }
+    }
+
+    /* ── Responsive: tablet (sidebar becomes horizontal scroll strip) ── */
     @media (max-width: 900px) {
       .student-split { grid-template-columns: 1fr; gap: 12px; }
-      .modules-column { position: static; max-height: 200px; flex-direction: row; overflow-x: auto; overflow-y: hidden; padding-bottom: 4px; padding-right: 0; gap: 8px; }
-      .modules-column .module-card { min-width: 200px; flex-shrink: 0; }
+      .modules-column { position: static; max-height: 160px; flex-direction: row; overflow-x: auto; overflow-y: hidden; padding-bottom: 6px; padding-right: 0; gap: 8px; scrollbar-width: thin; }
+      .modules-column .module-card { min-width: 190px; max-width: 220px; flex-shrink: 0; }
+      .modules-column .module-card-header { padding: 8px 10px; }
+      .modules-column .module-title { font-size: 12px; }
       .detail-column .detail-panel { margin-top: 0; }
     }
 
@@ -1518,7 +1527,7 @@ function renderDetail(mod) {
     {id:'assignment',label:'Assignment',show:!!mod.assignment},
     {id:'reflection',label:'Reflection',show:!!mod.reflection},
     {id:'attachments',label:`Attachments${attCount?` (${attCount})`:''}`,show:true},
-    {id:'notes',label:'Scratchpad',show:true}
+    {id:'notes',label:'Notes',show:true}
   ].filter(t=>t.show);
 
   const activeTab=tabs.find(t=>t.id===state.activeTab)?state.activeTab:tabs[0]?.id;
@@ -1614,6 +1623,7 @@ function renderDetail(mod) {
         </div>
       </div>`).join('');
     content=`
+      ${mod.artifact?`<div class="asgn-artifact-goal"><span class="asgn-artifact-goal-label">You're building</span><span class="asgn-artifact-goal-name">${esc(mod.artifact)}</span></div>`:''}
       <label class="done-check-row">
         <input type="checkbox" class="check-input" ${p.assignmentDone?'checked':''} onchange="toggleAssignment('${mod.id}',this.checked)">
         <span>Mark assignment as done</span>
@@ -1641,9 +1651,8 @@ function renderDetail(mod) {
 
   } else if (activeTab==='notes') {
     content=`
-      <div class="notes-label">General notes for this module</div>
-      <textarea class="notes-area" id="moduleNotes" style="min-height:220px" placeholder="Any thoughts, links, ideas…" oninput="autoSave('${mod.id}','notes')">${esc(p.notes)}</textarea>
-      <div class="notes-hint">Notes save automatically as you type.</div>`;
+      <textarea class="notes-area" id="moduleNotes" style="min-height:260px" placeholder="Any thoughts, links, ideas, or things you want to remember from this module…" oninput="autoSave('${mod.id}','notes')">${esc(p.notes)}</textarea>
+      <div class="notes-hint">Saves automatically.</div>`;
   }
 
   const isComplete=pct===100||p.complete;
@@ -1658,7 +1667,6 @@ function renderDetail(mod) {
         <button class="close-btn" onclick="selectMod(null)">✕ Close</button>
       </div>
       ${mod.whyItMatters?`<div class="why-banner"><div class="why-label">Why this matters for you</div>${esc(mod.whyItMatters)}</div>`:''}
-      ${mod.artifact?`<div class="artifact-banner"><span class="artifact-banner-label">📦 Artifact</span><span class="artifact-banner-name">${esc(mod.artifact)}</span></div>`:''}
       <div class="detail-tabs">${tabsHtml}</div>
       <div class="tab-content">${content}</div>
       <div class="detail-footer">
