@@ -464,6 +464,32 @@
       .modal-footer { padding: 12px 16px; }
     }
 
+    /* ── Inline Reading Editor (Design mode) ── */
+    .reading-editor-wrap { background: rgba(248,247,244,0.9); border-top: 1px solid var(--border); padding: 16px 20px 20px; }
+    .reading-editor-section { margin-bottom: 18px; }
+    .reading-editor-section:last-child { margin-bottom: 0; }
+    .reading-editor-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 10px; }
+    .reading-edit-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+    .reading-edit-row:last-of-type { border-bottom: none; }
+    .reading-edit-input { padding: 6px 10px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; font-family: inherit; background: white; color: var(--text); outline: none; transition: border-color 0.15s; }
+    .reading-edit-input:focus { border-color: var(--purple); }
+    .reading-edit-input.title { flex: 1; min-width: 0; }
+    .reading-edit-input.url { width: 220px; flex-shrink: 0; font-size: 12px; color: var(--text-muted); }
+    .reading-attach-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; background: var(--purple-light); border-radius: 6px; font-size: 11px; font-weight: 500; color: var(--purple); cursor: pointer; white-space: nowrap; max-width: 160px; overflow: hidden; text-overflow: ellipsis; border: none; flex-shrink: 0; }
+    .reading-attach-pill:hover { background: rgba(80,70,229,0.15); }
+    .reading-add-btn { display: flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1.5px dashed var(--border); border-radius: 8px; background: transparent; font-size: 13px; color: var(--text-muted); cursor: pointer; width: 100%; margin-top: 8px; transition: border-color 0.15s, color 0.15s; font-family: inherit; }
+    .reading-add-btn:hover { border-color: var(--purple); color: var(--purple); }
+    .expand-btn { background: none; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text-muted); font-size: 11px; padding: 4px 8px; transition: all 0.15s; flex-shrink: 0; white-space: nowrap; }
+    .expand-btn:hover { background: var(--gray-light); }
+    .expand-btn.open { border-color: var(--purple); color: var(--purple); background: var(--purple-light); }
+    /* Reading attachment pill in Learn mode */
+    .reading-attach-view { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; background: var(--purple-light); border-radius: 6px; font-size: 12px; font-weight: 500; color: var(--purple); cursor: pointer; border: none; font-family: inherit; margin-top: 4px; }
+    .reading-attach-view:hover { background: rgba(80,70,229,0.15); }
+    .reading-my-attach { background: var(--green-light); color: var(--green); }
+    .reading-my-attach:hover { background: rgba(5,150,105,0.15); }
+    [data-theme="dark"] .reading-editor-wrap { background: rgba(30,28,26,0.6); }
+    [data-theme="dark"] .reading-edit-input { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); color: var(--text); }
+
     /* ── Auth Screen ── */
     .auth-screen { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: var(--bg); background-image: radial-gradient(ellipse at 10% 60%, rgba(180,140,80,0.1) 0%, transparent 55%), radial-gradient(ellipse at 90% 15%, rgba(80,70,229,0.08) 0%, transparent 55%); }
     .auth-card { background: white; border-radius: 20px; padding: 40px; width: 100%; max-width: 400px; box-shadow: var(--shadow-lg); }
@@ -582,6 +608,7 @@
 <!-- Hidden file inputs -->
 <input type="file" id="mdInput" accept=".md,.txt" style="display:none" onchange="handleMdFile(this)">
 <input type="file" id="pdfInput" accept=".pdf,application/pdf" multiple style="display:none" onchange="handlePdfFiles(this)">
+<input type="file" id="readingPdfInput" accept=".pdf,application/pdf" style="display:none" onchange="handleReadingAttachFile(this)">
 
 <div id="modalOverlay" class="modal-overlay" style="display:none" onclick="handleOverlayClick(event)"></div>
 <div id="toast" class="toast hide"></div>
@@ -1413,12 +1440,18 @@ function renderDetail(mod) {
   let content='';
   if (activeTab==='reading') {
     content=mod.readings.map(r=>{
-      const done=p.readings[r.id];
+      const done = p.readings[r.id];
+      const adminAttach = r.attachmentPath && r.attachmentName;
+      const studentAttach = state.attachments[mod.id]?.readings?.[r.id];
       return `<div class="reading-item" data-rid="${r.id}">
         <input type="checkbox" class="check-input" ${done?'checked':''} onchange="toggleReading('${mod.id}','${r.id}',this.checked)">
         <div class="reading-content">
           <div class="reading-title ${done?'done':''}">${r.number}. ${esc(r.title)}</div>
-          ${r.type==='verified'&&r.url?`<a href="${r.url}" target="_blank" rel="noopener" class="reading-link">✅ Open link ↗</a>`:r.searchTerm?`<span class="search-pill">🔍 ${esc(r.searchTerm)}</span>`:''}
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:4px">
+            ${r.type==='verified'&&r.url?`<a href="${r.url}" target="_blank" rel="noopener" class="reading-link">✅ Open link ↗</a>`:r.searchTerm?`<span class="search-pill">🔍 ${esc(r.searchTerm)}</span>`:''}
+            ${adminAttach?`<button class="reading-attach-view" onclick="viewAttach('${r.attachmentPath}','${esc(r.attachmentName)}')" title="Resource PDF">📄 Open PDF</button>`:''}
+            ${studentAttach?`<button class="reading-attach-view reading-my-attach" onclick="viewAttach('${studentAttach.dbId}','${esc(studentAttach.name)}')" title="Your uploaded copy">📄 My copy</button>`:''}
+          </div>
           ${r.description?`<div class="reading-desc">${esc(r.description).substring(0,220)}${r.description.length>220?'…':''}</div>`:''}
         </div>
       </div>`;
@@ -1652,29 +1685,224 @@ function renderAdmin() {
     for (const mod of state.curriculum.modules) {
       const att=getAttachments(mod.id);
       const attCount=att.admin.length+att.student.length;
+      const isExpanded = _expandedModId === mod.id;
       html+=`
-        <div class="admin-module-row" data-mid="${mod.id}" draggable="true"
+        <div class="admin-module-row" data-mid="${mod.id}" draggable="${isExpanded?'false':'true'}"
           ondragstart="adminDragStart(event,'${mod.id}')"
           ondragover="adminDragOver(event,'${mod.id}')"
           ondragleave="adminDragLeave(event)"
           ondrop="adminDrop(event,'${mod.id}')"
-          ondragend="adminDragEnd()">
-          <div class="drag-handle" title="Drag to reorder">⠿</div>
-          <div class="admin-mod-num">${mod.number}</div>
-          <div class="admin-mod-info">
-            <div class="admin-mod-title">${esc(mod.title)}</div>
-            <div class="admin-mod-meta">${mod.readings.length} readings · ${mod.watching.length} videos${mod.assignment?' · assignment':''}${mod.reflection?' · reflection':''}${attCount?` · 📎 ${attCount} attachment${attCount>1?'s':''}`:''}
+          ondragend="adminDragEnd()" style="flex-wrap:wrap;padding-bottom:0">
+          <div style="display:flex;align-items:center;gap:10px;flex:1;padding-bottom:12px;min-width:0">
+            <div class="drag-handle" title="Drag to reorder">⠿</div>
+            <div class="admin-mod-num">${mod.number}</div>
+            <div class="admin-mod-info" style="flex:1;min-width:0">
+              <div class="admin-mod-title">${esc(mod.title)}</div>
+              <div class="admin-mod-meta">${mod.readings.length} readings · ${mod.watching.length} videos${mod.assignment?' · assignment':''}${mod.reflection?' · reflection':''}${attCount?` · 📎 ${attCount}`:''}
+              </div>
+            </div>
+            <div class="admin-actions">
+              <button class="expand-btn ${isExpanded?'open':''}" onclick="toggleModExpand('${mod.id}')" title="${isExpanded?'Collapse':'Expand readings'}">
+                ${isExpanded ? '▲ Collapse' : '▼ Edit readings'}
+              </button>
+              <button class="btn btn-attach btn-sm" onclick="showAdminAttachModal('${mod.id}')">📎</button>
+              <button class="btn btn-outline btn-sm" onclick="showModuleForm('${mod.id}')">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteMod('${mod.id}')">Delete</button>
             </div>
           </div>
-          <div class="admin-actions">
-            <button class="btn btn-attach btn-sm" onclick="showAdminAttachModal('${mod.id}')">📎 Attachments</button>
-            <button class="btn btn-outline btn-sm" onclick="showModuleForm('${mod.id}')">Edit</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteMod('${mod.id}')">Delete</button>
-          </div>
+          ${isExpanded ? renderInlineReadingEditor(mod) : ''}
         </div>`;
     }
   }
   el.innerHTML=html;
+}
+
+// ====================================================================
+// INLINE READING EDITOR (Design mode)
+// ====================================================================
+let _expandedModId = null;
+let _readingAttachTarget = null; // { modId, readingId }
+
+function toggleModExpand(modId) {
+  _expandedModId = _expandedModId === modId ? null : modId;
+  renderAdmin();
+}
+
+function renderInlineReadingEditor(mod) {
+  const readingsHtml = mod.readings.length ? mod.readings.map((r, idx) => {
+    const urlVal = r.type === 'verified' ? r.url : (r.searchTerm ? r.searchTerm : '');
+    const hasAttach = r.attachmentPath && r.attachmentName;
+    return `<div class="reading-edit-row">
+      <span style="font-size:11px;color:var(--text-muted);min-width:18px;text-align:right">${idx+1}</span>
+      <input class="reading-edit-input title" value="${esc(r.title)}" placeholder="Reading title"
+             onblur="saveReadingField('${mod.id}','${r.id}','title',this.value)"
+             onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
+      <input class="reading-edit-input url" value="${esc(urlVal)}" placeholder="https://... or search term"
+             onblur="saveReadingField('${mod.id}','${r.id}','url',this.value)"
+             onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
+      ${hasAttach
+        ? `<button class="reading-attach-pill" onclick="viewAttach('${r.attachmentPath}','${esc(r.attachmentName)}')" title="${esc(r.attachmentName)}">📄 ${esc(r.attachmentName.length>20?r.attachmentName.slice(0,18)+'…':r.attachmentName)}</button>
+           <button class="btn btn-sm" style="padding:4px 8px;color:var(--red);border:none;background:none;cursor:pointer" onclick="removeReadingAttach('${mod.id}','${r.id}')" title="Remove attachment">✕</button>`
+        : `<button class="reading-attach-pill" onclick="triggerReadingAttach('${mod.id}','${r.id}')" title="Attach a PDF to this reading">📎 Attach</button>`
+      }
+      <button class="btn btn-sm" style="padding:4px 8px;color:var(--red);border:none;background:none;cursor:pointer;flex-shrink:0" onclick="deleteReading('${mod.id}','${r.id}')" title="Remove reading">✕</button>
+    </div>`;
+  }).join('') : `<div style="font-size:13px;color:var(--text-muted);padding:8px 0">No readings yet — add one below.</div>`;
+
+  const watchingHtml = mod.watching.length ? mod.watching.map((w, idx) => `
+    <div class="reading-edit-row">
+      <span style="font-size:11px;color:var(--text-muted);min-width:18px;text-align:right">${idx+1}</span>
+      <input class="reading-edit-input title" value="${esc(w.searchTerm)}" placeholder="YouTube search term"
+             onblur="saveWatchingField('${mod.id}','${w.id}','searchTerm',this.value)"
+             onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
+      <input class="reading-edit-input url" value="${esc(w.description||'')}" placeholder="Optional description"
+             onblur="saveWatchingField('${mod.id}','${w.id}','description',this.value)"
+             onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
+      <button class="btn btn-sm" style="padding:4px 8px;color:var(--red);border:none;background:none;cursor:pointer;flex-shrink:0" onclick="deleteWatching('${mod.id}','${w.id}')" title="Remove">✕</button>
+    </div>`).join('') : `<div style="font-size:13px;color:var(--text-muted);padding:8px 0">No videos yet.</div>`;
+
+  return `<div class="reading-editor-wrap" style="width:100%;flex-basis:100%">
+    <div class="reading-editor-section">
+      <div class="reading-editor-label">Readings</div>
+      ${readingsHtml}
+      <button class="reading-add-btn" onclick="addReading('${mod.id}')">+ Add reading</button>
+    </div>
+    <div class="reading-editor-section">
+      <div class="reading-editor-label">Watching</div>
+      ${watchingHtml}
+      <button class="reading-add-btn" onclick="addWatching('${mod.id}')">+ Add video</button>
+    </div>
+  </div>`;
+}
+
+function saveReadingField(modId, readingId, field, value) {
+  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  if (!mod) return;
+  const r = mod.readings.find(r => r.id === readingId);
+  if (!r) return;
+  if (field === 'url') {
+    const trimmed = value.trim();
+    if (trimmed.startsWith('http')) { r.url = trimmed; r.type = 'verified'; r.searchTerm = ''; }
+    else { r.searchTerm = trimmed.replace(/^search:/i, ''); r.type = 'search'; r.url = ''; }
+  } else {
+    r[field] = value.trim();
+  }
+  saveState();
+}
+
+function saveWatchingField(modId, watchingId, field, value) {
+  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  if (!mod) return;
+  const w = mod.watching.find(w => w.id === watchingId);
+  if (!w) return;
+  w[field] = value.trim();
+  saveState();
+}
+
+function deleteReading(modId, readingId) {
+  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  if (!mod) return;
+  mod.readings = mod.readings.filter(r => r.id !== readingId);
+  mod.readings.forEach((r, i) => { r.number = String(i + 1); });
+  saveState();
+  renderAdmin();
+}
+
+function deleteWatching(modId, watchingId) {
+  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  if (!mod) return;
+  mod.watching = mod.watching.filter(w => w.id !== watchingId);
+  saveState();
+  renderAdmin();
+}
+
+function addReading(modId) {
+  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  if (!mod) return;
+  const newR = { id: 'r_' + Math.random().toString(36).substr(2,8), number: String(mod.readings.length+1), title: '', url: '', searchTerm: '', type: 'search', description: '' };
+  mod.readings.push(newR);
+  saveState();
+  renderAdmin();
+  setTimeout(() => { const els = document.querySelectorAll('.reading-edit-input.title'); if (els.length) els[els.length-1].focus(); }, 60);
+}
+
+function addWatching(modId) {
+  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  if (!mod) return;
+  const newW = { id: 'w_' + Math.random().toString(36).substr(2,8), searchTerm: '', description: '' };
+  mod.watching.push(newW);
+  saveState();
+  renderAdmin();
+  setTimeout(() => { const els = document.querySelectorAll('.reading-edit-input.title'); if (els.length) els[els.length-1].focus(); }, 60);
+}
+
+function triggerReadingAttach(modId, readingId) {
+  _readingAttachTarget = { modId, readingId };
+  const input = document.getElementById('readingPdfInput');
+  input.value = '';
+  input.click();
+}
+
+async function handleReadingAttachFile(input) {
+  if (!_readingAttachTarget || !input.files.length) return;
+  const { modId, readingId } = _readingAttachTarget;
+  const file = input.files[0];
+  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  if (!mod) return;
+  const r = mod.readings.find(r => r.id === readingId);
+  if (!r) return;
+
+  showToast('Uploading…');
+  try {
+    const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const uuid = Math.random().toString(36).slice(2) + '_' + Date.now();
+
+    // Remove old attachment from storage if replacing
+    if (r.attachmentPath && _sb) {
+      try { await _sb.storage.from(STORAGE_BUCKET).remove([r.attachmentPath]); } catch(e) {}
+    }
+
+    let storagePath;
+    if (_sb && _currentUser) {
+      // Admin files go under canonical/ so all users can read them
+      // Student files go under their own userId/readings/
+      const folder = _isAdmin() ? `canonical/readings/${readingId}` : `${_currentUser.id}/readings/${readingId}`;
+      storagePath = `${folder}/${uuid}-${safe}`;
+      const { error } = await _sb.storage.from(STORAGE_BUCKET).upload(storagePath, file, { contentType: 'application/pdf', upsert: false });
+      if (error) throw error;
+    } else {
+      // Offline fallback — store blob as a fake path marker
+      const blob = new Blob([await file.arrayBuffer()], { type: 'application/pdf' });
+      const dbId = await idbPut(blob, { modId, readingId, name: file.name });
+      storagePath = String(dbId); // IDB integer stored as string
+    }
+
+    r.attachmentPath = storagePath;
+    r.attachmentName = file.name;
+    saveState();
+    renderAdmin();
+    showToast('✓ PDF attached to reading');
+  } catch(err) {
+    console.error('Reading attach failed', err);
+    showToast('Attach failed — ' + (err.message || 'please try again'));
+  }
+  input.value = '';
+}
+
+async function removeReadingAttach(modId, readingId) {
+  if (!confirm('Remove this attachment?')) return;
+  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  if (!mod) return;
+  const r = mod.readings.find(r => r.id === readingId);
+  if (!r || !r.attachmentPath) return;
+  if (_sb) {
+    try { await _sb.storage.from(STORAGE_BUCKET).remove([r.attachmentPath]); } catch(e) {}
+  }
+  delete r.attachmentPath;
+  delete r.attachmentName;
+  saveState();
+  renderAdmin();
+  showToast('Attachment removed');
 }
 
 // ====================================================================
