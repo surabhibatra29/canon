@@ -464,6 +464,36 @@
       .modal-footer { padding: 12px 16px; }
     }
 
+    /* ── Design mode — master/detail split ── */
+    .design-split { display: grid; grid-template-columns: 260px 1fr; gap: 20px; align-items: start; }
+    .design-modules-col { display: flex; flex-direction: column; gap: 4px; position: sticky; top: 80px; max-height: calc(100vh - 180px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; padding-right: 2px; }
+    .design-modules-col::-webkit-scrollbar { width: 4px; }
+    .design-modules-col::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+    .design-mod-item { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: rgba(255,255,255,0.65); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.85); border-radius: 10px; cursor: pointer; transition: all 0.15s; user-select: none; }
+    .design-mod-item:hover { background: rgba(255,255,255,0.9); box-shadow: var(--shadow); }
+    .design-mod-item.selected { border-color: rgba(80,70,229,0.4); background: white; box-shadow: 0 0 0 3px rgba(80,70,229,0.08), var(--shadow); }
+    .design-mod-item.dragging { opacity: 0.4; }
+    .design-mod-item.drag-over { box-shadow: 0 0 0 2px var(--purple); }
+    .design-mod-num { font-size: 10px; font-weight: 700; color: var(--purple); min-width: 18px; text-align: right; flex-shrink: 0; }
+    .design-mod-title { font-size: 12.5px; font-weight: 500; color: var(--text); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .design-panel-col { min-width: 0; }
+    .design-panel { background: rgba(255,255,255,0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.85); border-radius: var(--radius); box-shadow: var(--shadow-md); overflow: hidden; }
+    .design-panel-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .design-panel-modnum { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--purple); margin-bottom: 2px; }
+    .design-panel-modtitle { font-size: 16px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; }
+    .design-panel-body { padding: 24px; display: flex; flex-direction: column; gap: 22px; max-height: calc(100vh - 240px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    .design-field-group { display: flex; flex-direction: column; gap: 7px; }
+    .design-field-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: var(--text-muted); }
+    .design-field-input { padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; font-family: inherit; color: var(--text); background: white; outline: none; transition: border-color 0.15s; width: 100%; }
+    .design-field-input:focus { border-color: var(--purple); }
+    .design-field-textarea { padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 13px; font-family: inherit; color: var(--text); background: white; outline: none; min-height: 80px; resize: vertical; transition: border-color 0.15s; line-height: 1.6; width: 100%; }
+    .design-field-textarea:focus { border-color: var(--purple); }
+    [data-theme="dark"] .design-mod-item { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.08); }
+    [data-theme="dark"] .design-mod-item.selected { background: rgba(255,255,255,0.1); }
+    [data-theme="dark"] .design-panel { background: rgba(30,28,26,0.7); }
+    [data-theme="dark"] .design-field-input, [data-theme="dark"] .design-field-textarea { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); color: var(--text); }
+    @media (max-width: 900px) { .design-split { grid-template-columns: 1fr; } .design-modules-col { position: static; max-height: 200px; flex-direction: row; flex-wrap: nowrap; overflow-x: auto; } .design-panel-body { max-height: none; } }
+
     /* ── Inline Reading Editor (Design mode) ── */
     .reading-editor-wrap { background: rgba(248,247,244,0.9); border-top: 1px solid var(--border); padding: 16px 20px 20px; }
     .reading-editor-section { margin-bottom: 18px; }
@@ -1660,61 +1690,229 @@ function renderFileItem(modId, role, f, canDelete) {
     </div>`;
 }
 
+// ── Design mode state ──
+let _designModId = null;
+
+function selectDesignMod(modId) {
+  _designModId = modId;
+  renderAdmin();
+  // Scroll panel to top after selection
+  setTimeout(() => {
+    const pb = document.querySelector('.design-panel-body');
+    if (pb) pb.scrollTop = 0;
+  }, 50);
+}
+
+function saveModField(modId, field, value) {
+  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  if (!mod) return;
+  if (field === 'number') mod.number = parseInt(value) || mod.number;
+  else mod[field] = value;
+  if (field === 'number') state.curriculum.modules.sort((a,b) => a.number - b.number);
+  saveState();
+  if (field === 'title' || field === 'number') {
+    // Refresh the module list item title without full re-render
+    const item = document.querySelector(`.design-mod-item[data-mid="${modId}"] .design-mod-title`);
+    const numEl = document.querySelector(`.design-mod-item[data-mid="${modId}"] .design-mod-num`);
+    if (item) item.textContent = value || 'Untitled module';
+    if (numEl && field === 'number') numEl.textContent = value;
+    if (field === 'number') renderAdmin(); // reorder may have changed list
+  }
+}
+
+function addBlankModule() {
+  if (!state.curriculum) state.curriculum = { title: 'My Curriculum', subtitle: '', modules: [] };
+  const nextNum = (state.curriculum.modules.length || 0) + 1;
+  const mod = {
+    id: `m${nextNum}_${Math.random().toString(36).substr(2,6)}`,
+    number: nextNum,
+    title: '',
+    subtitle: '',
+    whyItMatters: '',
+    readings: [],
+    watching: [],
+    assignment: '',
+    reflection: ''
+  };
+  state.curriculum.modules.push(mod);
+  _designModId = mod.id;
+  saveState();
+  renderAdmin();
+  // Focus title input
+  setTimeout(() => {
+    const inp = document.querySelector('.design-panel-body .design-field-input[data-field="title"]');
+    if (inp) { inp.focus(); inp.select(); }
+  }, 80);
+}
+
+function renderDesignPanel(mod) {
+  const att = getAttachments(mod.id);
+  const attCount = att.admin.length + att.student.length;
+
+  const readingsHtml = mod.readings.length ? mod.readings.map((r, idx) => {
+    const urlVal = r.type === 'verified' ? (r.url || '') : (r.searchTerm || '');
+    const hasAttach = r.attachmentPath && r.attachmentName;
+    return `<div class="reading-edit-row">
+      <span style="font-size:11px;color:var(--text-muted);min-width:18px;text-align:right">${idx+1}</span>
+      <input class="reading-edit-input title" value="${esc(r.title)}" placeholder="Reading title"
+             onblur="saveReadingField('${mod.id}','${r.id}','title',this.value)"
+             onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
+      <input class="reading-edit-input url" value="${esc(urlVal)}" placeholder="https://... or search term"
+             onblur="saveReadingField('${mod.id}','${r.id}','url',this.value)"
+             onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
+      ${hasAttach
+        ? `<button class="reading-attach-pill" onclick="viewAttach('${r.attachmentPath}','${esc(r.attachmentName)}')" title="${esc(r.attachmentName)}">📄 ${esc(r.attachmentName.length>20?r.attachmentName.slice(0,18)+'…':r.attachmentName)}</button>
+           <button class="btn btn-sm" style="padding:4px 8px;color:var(--red);border:none;background:none;cursor:pointer" onclick="removeReadingAttach('${mod.id}','${r.id}')" title="Remove attachment">✕</button>`
+        : `<button class="reading-attach-pill" onclick="triggerReadingAttach('${mod.id}','${r.id}')" title="Attach a PDF to this reading">📎 Attach</button>`
+      }
+      <button class="btn btn-sm" style="padding:4px 8px;color:var(--red);border:none;background:none;cursor:pointer;flex-shrink:0" onclick="deleteReading('${mod.id}','${r.id}')" title="Remove reading">✕</button>
+    </div>`;
+  }).join('') : `<div style="font-size:13px;color:var(--text-muted);padding:6px 0">No readings yet.</div>`;
+
+  const watchingHtml = mod.watching.length ? mod.watching.map((w, idx) => `
+    <div class="reading-edit-row">
+      <span style="font-size:11px;color:var(--text-muted);min-width:18px;text-align:right">${idx+1}</span>
+      <input class="reading-edit-input title" value="${esc(w.searchTerm)}" placeholder="YouTube search term"
+             onblur="saveWatchingField('${mod.id}','${w.id}','searchTerm',this.value)"
+             onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
+      <input class="reading-edit-input url" value="${esc(w.description||'')}" placeholder="Optional description"
+             onblur="saveWatchingField('${mod.id}','${w.id}','description',this.value)"
+             onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
+      <button class="btn btn-sm" style="padding:4px 8px;color:var(--red);border:none;background:none;cursor:pointer;flex-shrink:0" onclick="deleteWatching('${mod.id}','${w.id}')" title="Remove">✕</button>
+    </div>`).join('') : `<div style="font-size:13px;color:var(--text-muted);padding:6px 0">No videos yet.</div>`;
+
+  return `<div class="design-panel-col">
+    <div class="design-panel">
+      <div class="design-panel-header">
+        <div>
+          <div class="design-panel-modnum">Module ${mod.number}</div>
+          <div class="design-panel-modtitle">${esc(mod.title) || '<span style="color:var(--text-muted);font-style:italic">Untitled module</span>'}</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-shrink:0">
+          <button class="btn btn-attach btn-sm" onclick="showAdminAttachModal('${mod.id}')" title="Module resources (${attCount} files)">📎${attCount ? ` ${attCount}` : ''}</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteMod('${mod.id}')">Delete</button>
+        </div>
+      </div>
+      <div class="design-panel-body">
+
+        <div style="display:grid;grid-template-columns:80px 1fr;gap:12px">
+          <div class="design-field-group">
+            <label class="design-field-label">Number</label>
+            <input class="design-field-input" type="number" value="${mod.number}" data-field="number"
+                   onblur="saveModField('${mod.id}','number',this.value)"
+                   onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
+          </div>
+          <div class="design-field-group">
+            <label class="design-field-label">Title</label>
+            <input class="design-field-input" value="${esc(mod.title)}" placeholder="e.g. Strategic Thinking" data-field="title"
+                   onblur="saveModField('${mod.id}','title',this.value)"
+                   onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
+          </div>
+        </div>
+
+        <div class="design-field-group">
+          <label class="design-field-label">Subtitle / Gap Description</label>
+          <input class="design-field-input" value="${esc(mod.subtitle||'')}" placeholder="Your gap: …"
+                 onblur="saveModField('${mod.id}','subtitle',this.value)"
+                 onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
+        </div>
+
+        <div class="design-field-group">
+          <label class="design-field-label">Why It Matters</label>
+          <textarea class="design-field-textarea"
+                    onblur="saveModField('${mod.id}','whyItMatters',this.value)"
+                    placeholder="Why this module matters…">${esc(mod.whyItMatters||'')}</textarea>
+        </div>
+
+        <div class="design-field-group">
+          <label class="design-field-label">Readings</label>
+          <div class="reading-editor-section" style="margin-bottom:0">
+            ${readingsHtml}
+            <button class="reading-add-btn" onclick="addReading('${mod.id}')">+ Add reading</button>
+          </div>
+        </div>
+
+        <div class="design-field-group">
+          <label class="design-field-label">Watching</label>
+          <div class="reading-editor-section" style="margin-bottom:0">
+            ${watchingHtml}
+            <button class="reading-add-btn" onclick="addWatching('${mod.id}')">+ Add video</button>
+          </div>
+        </div>
+
+        <div class="design-field-group">
+          <label class="design-field-label">Assignment</label>
+          <textarea class="design-field-textarea" style="min-height:100px"
+                    onblur="saveModField('${mod.id}','assignment',this.value)"
+                    placeholder="Describe the assignment…">${esc(mod.assignment||'')}</textarea>
+        </div>
+
+        <div class="design-field-group">
+          <label class="design-field-label">Reflection Prompt</label>
+          <textarea class="design-field-textarea"
+                    onblur="saveModField('${mod.id}','reflection',this.value)"
+                    placeholder="The reflection question…">${esc(mod.reflection||'')}</textarea>
+        </div>
+
+      </div>
+    </div>
+  </div>`;
+}
+
 function renderAdmin() {
   const el = document.getElementById('adminView');
+
+  // Toolbar + publish banner
   let html = `
-    <div class="admin-toolbar">
-      <button class="btn btn-primary" onclick="showUpload()">⬆ Upload .md File</button>
-      <button class="btn btn-outline" onclick="showModuleForm(null)">+ Add Module</button>
-      <button class="btn btn-outline" onclick="loadDefault()">↺ Reset to Canon template</button>
-      ${state.curriculum?`<button class="btn btn-danger" onclick="clearAll()">✕ Clear All</button>`:''}
+    <div class="admin-toolbar" style="margin-bottom:16px">
+      <button class="btn btn-primary" onclick="showUpload()">⬆ Upload .md</button>
+      <button class="btn btn-outline" onclick="addBlankModule()">+ Add Module</button>
+      <button class="btn btn-outline" onclick="loadDefault()">↺ Reset to Canon</button>
+      ${state.curriculum ? `<button class="btn btn-danger" onclick="clearAll()">✕ Clear All</button>` : ''}
     </div>
     ${_isAdmin() && state.curriculum ? `
-    <div style="background:rgba(80,70,229,0.06);border:1px solid rgba(80,70,229,0.18);border-radius:12px;padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+    <div style="background:rgba(80,70,229,0.06);border:1px solid rgba(80,70,229,0.18);border-radius:12px;padding:12px 18px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
       <div>
-        <div style="font-size:13px;font-weight:600;color:var(--purple);margin-bottom:2px">Publish curriculum to all users</div>
-        <div style="font-size:12px;color:var(--text-muted)">All signed-in users will receive your current curriculum on their next login</div>
+        <div style="font-size:13px;font-weight:600;color:var(--purple);margin-bottom:2px">Publish to all users</div>
+        <div style="font-size:12px;color:var(--text-muted)">All signed-in users receive your curriculum on next login</div>
       </div>
-      <button class="btn btn-primary" onclick="publishCurriculum()" style="white-space:nowrap;flex-shrink:0">⬆ Publish to all</button>
+      <button class="btn btn-primary" onclick="publishCurriculum()" style="white-space:nowrap;flex-shrink:0">⬆ Publish</button>
     </div>` : ''}`;
 
   if (!state.curriculum?.modules?.length) {
-    html+=`<div class="empty-state"><div class="empty-icon">📁</div><div class="empty-title">No curriculum yet</div><div class="empty-text">Upload a .md file, add modules manually, or start from the Canon template.</div><br><button class="btn btn-primary" style="margin:0 auto;display:block" onclick="loadDefault()">Start from Canon template</button></div>`;
-  } else {
-    html+=`<div style="margin-bottom:16px;font-size:13px;color:var(--text-muted)">${esc(state.curriculum.title)} &nbsp;·&nbsp; ${state.curriculum.modules.length} modules</div>`;
-    for (const mod of state.curriculum.modules) {
-      const att=getAttachments(mod.id);
-      const attCount=att.admin.length+att.student.length;
-      const isExpanded = _expandedModId === mod.id;
-      html+=`
-        <div class="admin-module-row" data-mid="${mod.id}" draggable="${isExpanded?'false':'true'}"
-          ondragstart="adminDragStart(event,'${mod.id}')"
-          ondragover="adminDragOver(event,'${mod.id}')"
-          ondragleave="adminDragLeave(event)"
-          ondrop="adminDrop(event,'${mod.id}')"
-          ondragend="adminDragEnd()" style="flex-wrap:wrap;padding-bottom:0">
-          <div style="display:flex;align-items:center;gap:10px;flex:1;padding-bottom:12px;min-width:0">
-            <div class="drag-handle" title="Drag to reorder">⠿</div>
-            <div class="admin-mod-num">${mod.number}</div>
-            <div class="admin-mod-info" style="flex:1;min-width:0">
-              <div class="admin-mod-title">${esc(mod.title)}</div>
-              <div class="admin-mod-meta">${mod.readings.length} readings · ${mod.watching.length} videos${mod.assignment?' · assignment':''}${mod.reflection?' · reflection':''}${attCount?` · 📎 ${attCount}`:''}
-              </div>
-            </div>
-            <div class="admin-actions">
-              <button class="expand-btn ${isExpanded?'open':''}" onclick="toggleModExpand('${mod.id}')" title="${isExpanded?'Collapse':'Expand readings'}">
-                ${isExpanded ? '▲ Collapse' : '▼ Edit readings'}
-              </button>
-              <button class="btn btn-attach btn-sm" onclick="showAdminAttachModal('${mod.id}')">📎</button>
-              <button class="btn btn-outline btn-sm" onclick="showModuleForm('${mod.id}')">Edit</button>
-              <button class="btn btn-danger btn-sm" onclick="deleteMod('${mod.id}')">Delete</button>
-            </div>
-          </div>
-          ${isExpanded ? renderInlineReadingEditor(mod) : ''}
-        </div>`;
-    }
+    html += `<div class="empty-state"><div class="empty-icon">📁</div><div class="empty-title">No curriculum yet</div><div class="empty-text">Upload a .md file, add modules manually, or start from the Canon template.</div><br><button class="btn btn-primary" style="margin:0 auto;display:block" onclick="loadDefault()">Start from Canon template</button></div>`;
+    el.innerHTML = html;
+    return;
   }
-  el.innerHTML=html;
+
+  // Auto-select first module if none selected (or selection was deleted)
+  if (!_designModId || !state.curriculum.modules.find(m => m.id === _designModId)) {
+    _designModId = state.curriculum.modules[0].id;
+  }
+  const selectedMod = state.curriculum.modules.find(m => m.id === _designModId);
+
+  // Module list (left column)
+  const moduleListHtml = state.curriculum.modules.map(mod => `
+    <div class="design-mod-item ${mod.id === _designModId ? 'selected' : ''}" data-mid="${mod.id}"
+         onclick="selectDesignMod('${mod.id}')"
+         draggable="true"
+         ondragstart="adminDragStart(event,'${mod.id}')"
+         ondragover="adminDragOver(event,'${mod.id}')"
+         ondragleave="adminDragLeave(event)"
+         ondrop="adminDrop(event,'${mod.id}')"
+         ondragend="adminDragEnd()">
+      <span class="design-mod-num">${mod.number}</span>
+      <span class="design-mod-title">${esc(mod.title) || '<span style="color:var(--text-muted);font-style:italic">Untitled</span>'}</span>
+    </div>`).join('');
+
+  html += `<div class="design-split">
+    <div class="design-modules-col">
+      ${moduleListHtml}
+    </div>
+    ${selectedMod ? renderDesignPanel(selectedMod) : ''}
+  </div>`;
+
+  el.innerHTML = html;
 }
 
 // ====================================================================
@@ -2629,6 +2827,7 @@ function deleteMod(id){
   idbDeleteMany(allIds).catch(()=>{});
   state.curriculum.modules=state.curriculum.modules.filter(m=>m.id!==id);
   delete state.progress[id]; delete state.attachments[id];
+  if(_designModId===id) _designModId=null; // will auto-select next on re-render
   saveState();showToast('Module deleted');render();
 }
 
