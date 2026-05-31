@@ -12,11 +12,15 @@ A self-contained curriculum tracker built during a PM career break, to actually 
 
 - Tracks progress across 11 PM modules: readings, videos, assignments, reflections
 - Every module has a named **output artifact**: a specific deliverable, not just content consumed
+- **Evaluate tab** — every module has a rubric with weak/strong artifact criteria and "ask yourself" prompts, plus a self-evaluation workspace
+- **Skip / Restore** — dismiss any reading or watching item you don't want; it's struck out and excluded from your progress, restorable any time
+- **Spine + pace structure** — core modules marked, pace note on the dashboard ("one module every 10 days")
 - Rich-text assignment workspace with collapsible sections and source citations
 - PDF attachment support (admin resources + personal uploads)
-- Module 10: a private build log for drafting LinkedIn posts as you go
+- Module 10: a private build log for drafting writing as you go
 - Cloud sync via Supabase, works across desktop and mobile browser
 - Full dark mode, keyboard navigation (j/k), Design mode for curriculum editing
+- All resources curated to verified links — direct TED, MIT OCW, HBR, practitioner sites; no dead-end search terms
 
 ## The design philosophy
 

@@ -161,6 +161,26 @@
     .artifact-pill .artifact-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .modules-column .artifact-pill { display: none; }
     [data-theme="dark"] .artifact-pill { background: rgba(180,140,80,0.18); color: #E8B27A; }
+    /* ── Spine / core module pill ── */
+    .spine-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; background: rgba(79,90,240,0.1); color: var(--purple); border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; margin-left: 6px; vertical-align: middle; }
+    [data-theme="dark"] .spine-pill { background: rgba(129,140,248,0.15); color: #A5B4FC; }
+    /* ── Pace banner (dashboard) ── */
+    .pace-banner { display: flex; align-items: flex-start; gap: 10px; padding: 12px 16px; background: rgba(79,90,240,0.05); border: 1px solid rgba(79,90,240,0.12); border-radius: 10px; margin-bottom: 20px; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+    .pace-banner-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+    [data-theme="dark"] .pace-banner { background: rgba(79,90,240,0.07); border-color: rgba(79,90,240,0.15); }
+    /* ── Evaluate tab ── */
+    .rubric-section { margin-bottom: 20px; }
+    .rubric-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .rubric-label.weak { color: var(--amber); }
+    .rubric-label.strong { color: var(--green); }
+    .rubric-label.check { color: var(--purple); }
+    .rubric-block { font-size: 13.5px; line-height: 1.75; color: var(--text); padding: 12px 16px; border-radius: 8px; white-space: pre-wrap; }
+    .rubric-block.weak { background: rgba(180,83,9,0.06); border-left: 3px solid var(--amber); }
+    .rubric-block.strong { background: rgba(5,150,105,0.06); border-left: 3px solid var(--green); }
+    .rubric-block.check { background: rgba(79,90,240,0.06); border-left: 3px solid var(--purple); }
+    [data-theme="dark"] .rubric-block.weak { background: rgba(180,83,9,0.1); }
+    [data-theme="dark"] .rubric-block.strong { background: rgba(5,150,105,0.08); }
+    [data-theme="dark"] .rubric-block.check { background: rgba(79,90,240,0.09); }
     /* Artifact banner in detail view */
     /* Artifact callout inside Assignment tab */
     .asgn-artifact-goal { display: flex; align-items: center; gap: 10px; padding: 10px 14px; margin-bottom: 16px; background: rgba(180,140,80,0.07); border: 1px solid rgba(180,140,80,0.2); border-radius: 8px; }
@@ -182,11 +202,17 @@
     .tab-content { padding: 24px 28px; max-height: 520px; overflow-y: auto; }
 
     /* ── Reading Items ── */
-    .reading-item { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); border-radius: 6px; transition: background 0.3s; }
+    .reading-item { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); border-radius: 6px; transition: background 0.3s, opacity 0.2s; }
     .reading-item:last-child { border-bottom: none; }
     .reading-item.reading-highlight { background: rgba(79,90,240,0.08); padding-left: 8px; }
+    .reading-item.rejected { opacity: 0.4; }
+    .reading-item.rejected .reading-title { text-decoration: line-through; }
     .check-input { flex-shrink: 0; width: 18px; height: 18px; margin-top: 3px; cursor: pointer; accent-color: var(--purple); }
-    .reading-content { flex: 1; }
+    .reading-content { flex: 1; min-width: 0; }
+    .skip-btn { flex-shrink: 0; background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 9px; font-size: 11px; font-weight: 500; color: var(--text-muted); cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap; align-self: flex-start; margin-top: 2px; }
+    .skip-btn:hover { border-color: var(--red); color: var(--red); background: rgba(220,38,38,0.05); }
+    .reading-item.rejected .skip-btn, .watch-item.rejected .skip-btn { border-color: var(--purple); color: var(--purple); background: rgba(79,90,240,0.06); }
+    .reading-item.rejected .skip-btn:hover, .watch-item.rejected .skip-btn:hover { border-color: var(--green); color: var(--green); background: rgba(5,150,105,0.06); }
     .reading-title { font-weight: 600; font-size: 14px; margin-bottom: 5px; line-height: 1.4; }
     .reading-title.done { text-decoration: line-through; color: var(--text-muted); }
     .reading-link { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--purple); text-decoration: none; margin-bottom: 5px; background: var(--purple-light); padding: 2px 8px; border-radius: 4px; }
@@ -195,9 +221,11 @@
     .reading-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
 
     /* ── Watch Items ── */
-    .watch-item { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .watch-item { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); transition: opacity 0.2s; }
     .watch-item:last-child { border-bottom: none; }
-    .watch-content { flex: 1; }
+    .watch-item.rejected { opacity: 0.4; }
+    .watch-item.rejected .watch-term { text-decoration: line-through; }
+    .watch-content { flex: 1; min-width: 0; }
     .watch-term { font-weight: 600; font-size: 14px; margin-bottom: 6px; }
     .watch-term.done { text-decoration: line-through; color: var(--text-muted); }
     .yt-btn { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; background: #FEE2E2; color: #DC2626; padding: 3px 10px; border-radius: 4px; text-decoration: none; }
@@ -746,46 +774,51 @@
 const CANONICAL_CURRICULUM = {
   title: "AI-Era PM Relaunch",
   subtitle: "A structured, artifact-first curriculum for product managers re-entering the market.",
+  paceNote: "Aim for one module every 10 days. Modules 0, 1, 6, and 9 are load-bearing — do these even if life compresses the rest. Everything else is support material that deepens the spine.",
   modules: [
     {
-      id: "m0", number: 0,
+      id: "m0", number: 0, spine: true,
       title: "Mindset & Meta-cognition",
       subtitle: "Before frameworks, the operating system. How you think, decide, and recover under pressure.",
       whyItMatters: "Every great PM curriculum starts here for a reason. Frameworks are interchangeable. The person applying them is not. This module is about getting honest with yourself about how you actually think, where your judgement is sharp, where it predictably wobbles, and what conditions let you operate at your best. It is the lens through which everything else in this curriculum will be filtered.",
       artifact: "Operating Manual for Yourself",
+      rubric: { weak: "Generic self-praise — 'I work best in collaborative environments,' 'I'm a strategic thinker.' Could describe any senior person. No specific incidents, no uncomfortable observations, nothing a reader couldn't have written without knowing you.", strong: "Names three specific career moments with enough detail that a former colleague would recognise them. Includes at least one observation you'd rather not have written down. Describes failure modes in concrete terms, not categories. The last sentence surprises you when you re-read it.", selfCheck: "Could someone who doesn't know me have written this? (if yes: too generic)\nDid I flinch at anything I wrote? (if no: not honest enough)\nIs my failure mode named specifically — not just as a category like 'I can be impatient'?" },
       readings: [
-        { id:"m0r1", number:"1", title:"\"What Having a 'Growth Mindset' Actually Means\" — Carol Dweck, HBR", url:"https://hbr.org/2016/01/what-having-a-growth-mindset-actually-means", searchTerm:"", type:"verified", description:"Short. The 2016 piece where Dweck clarifies what most people get wrong about her own framework. Read this before the book." },
-        { id:"m0r2", number:"2", title:"\"What Self-Awareness Really Is (and How to Cultivate It)\" — Tasha Eurich, HBR", url:"https://hbr.org/2018/01/what-self-awareness-really-is-and-how-to-cultivate-it", searchTerm:"", type:"verified", description:"Distinguishes internal vs external self-awareness. Most senior PMs have one and not the other." },
-        { id:"m0r3", number:"3", title:"Thinking in Bets — Annie Duke", url:"", searchTerm:"Annie Duke Thinking in Bets summary chapters", type:"search", description:"The book on decision-making under uncertainty. Read chapters 1-3 minimum. Reframes 'good decision' away from outcome and toward process." },
-        { id:"m0r4", number:"4", title:"Shreyas Doshi on PM meta-skills", url:"", searchTerm:"Shreyas Doshi top 1 percent PMs skill", type:"search", description:"His pieces on meta-skills are the best modern writing on what actually separates senior PMs from the rest. Browse his Twitter and Substack." },
-        { id:"m0r5", number:"5", title:"One Useful Thing — Ethan Mollick", url:"https://www.oneusefulthing.org", searchTerm:"", type:"verified", description:"For the AI-era angle on thinking. Read his pieces on cognitive offloading and where AI helps vs replaces thinking." }
+        { id:"m0r1", number:"1", title:"\"What Having a 'Growth Mindset' Actually Means\" — Carol Dweck, HBR", url:"https://hbr.org/2016/01/what-having-a-growth-mindset-actually-means", searchTerm:"", type:"verified", description:"Short. The 2016 piece where Dweck clarifies what most people get wrong about her own framework. Start here." },
+        { id:"m0r2", number:"2", title:"\"What Self-Awareness Really Is (and How to Cultivate It)\" — Tasha Eurich, HBR", url:"https://hbr.org/2018/01/what-self-awareness-really-is-and-how-to-cultivate-it", searchTerm:"", type:"verified", description:"Distinguishes internal vs external self-awareness. Most senior PMs have one and not the other. Read this alongside the Operating Manual assignment." },
+        { id:"m0r3", number:"3", title:"\"Thinking in Bets\" — Annie Duke (author site + excerpt)", url:"https://www.annieduke.com/books/", searchTerm:"", type:"verified", description:"Former poker champion turned decision researcher. Her site has free excerpts. Core argument: separate the quality of a decision from the quality of its outcome. Chapters 1–3 are sufficient." },
+        { id:"m0r4", number:"4", title:"Shreyas Doshi — 'The Most Important Leadership Competency' (Lenny's Newsletter)", url:"https://www.lennysnewsletter.com/p/the-most-important-leadership-competency", searchTerm:"Shreyas Doshi Lenny newsletter leadership competency", type:"verified", description:"Shreyas is one of the sharpest senior PM thinkers writing today. This piece on upstream thinking is the best introduction to how he thinks. If the link changes, search 'Shreyas Doshi Lenny' — always the first result." },
+        { id:"m0r5", number:"5", title:"\"The Feynman Technique\" — Farnam Street", url:"https://fs.blog/feynman-technique/", searchTerm:"", type:"verified", description:"A practical test for whether you understand something vs. just recognise it when you read it. Directly useful for evaluating your own module work. Shane Parrish runs one of the best thinking-skills sites available." },
+        { id:"m0r6", number:"6", title:"One Useful Thing — Ethan Mollick (Wharton professor, AI practitioner)", url:"https://www.oneusefulthing.org", searchTerm:"", type:"verified", description:"The best practitioner writing on AI and cognition. Read 'On Being a Co-Intelligence' and 'The Jagged Frontier'. He actually uses the tools and reports back honestly." }
       ],
       watching: [
-        { id:"m0w1", searchTerm:"Daniel Kahneman system 1 system 2 talk", description:"His Google Talks lecture is the clearest non-academic explanation of fast vs slow thinking" },
-        { id:"m0w2", searchTerm:"Brene Brown TED power of vulnerability", description:"Relevant for the honest self-assessment this module requires" },
-        { id:"m0w3", searchTerm:"Naval Ravikant Tim Ferriss decision making", description:"For the philosophy-of-thinking angle" }
+        { id:"m0w1", title:"Daniel Kahneman — 'The Riddle of Experience vs. Memory' (TED)", url:"https://www.ted.com/talks/daniel_kahneman_the_riddle_of_experience_vs_memory", searchTerm:"Daniel Kahneman TED experience memory", description:"20 min. Nobel laureate on how we live experiences vs. how we remember them. Changes how you think about your own career narrative and the stories you tell about yourself." },
+        { id:"m0w2", title:"Brené Brown — 'The Power of Vulnerability' (TED)", url:"https://www.ted.com/talks/brene_brown_the_power_of_vulnerability", searchTerm:"Brene Brown TED power vulnerability", description:"One of the most-watched TED talks of all time. Directly relevant to the honest self-assessment this module asks for. Watch it again even if you've seen it — different context now." },
+        { id:"m0w3", title:"Annie Duke — 'Thinking in Bets' (Talks at Google)", url:"", searchTerm:"Annie Duke Thinking in Bets Talks at Google 2019", description:"45 min. More practical than the TED format. She works through specific decision scenarios directly applicable to senior PM work. Search the exact title — it's the top result." }
       ],
       assignment:"Write your Operating Manual. Be specific, not aspirational. Use evidence from your actual career, not what you wish were true.\n\nCover:\n1. Three moments in your career where you did your best work. What was true about you, the work, and the environment in each?\n2. Three moments where you struggled or under-performed. What was true about you, the work, and the environment?\n3. Your decision-making defaults under pressure (do you over-research, freeze, ship too fast, defer to authority, escalate)?\n4. The conditions you now know you need (autonomy levels, feedback frequency, type of stakeholders, decision velocity, domain affinity).\n5. The kinds of work you should structurally avoid even if you could do them.\n\nEnd with one sentence: \"The single thing I now know about how I work, that I would not have written down five years ago, is ___.\"",
       reflection:"What did the way you engaged with this exercise tell you about how you work? Where did you flinch, rationalise, or want to look away? That is the signal."
     },
     {
-      id: "m1", number: 1,
+      id: "m1", number: 1, spine: true,
       title: "Strategic Thinking & Systems Thinking",
       subtitle: "You already think strategically. This module gives you the frameworks to prove it in any room.",
       whyItMatters: "The organisations worth working for don't want executors. They want people who can hold complexity, see the system behind the problem, and make a call when the data is ambiguous. You are that person. This module gives you the vocabulary and the frameworks to show it clearly.",
       artifact: "Strategic Position Map",
+      rubric: { weak: "Lists product features and calls them differentiators. Doesn't commit to what the product won't do. Uses strategy vocabulary (moat, positioning) without making a real choice. The map could describe almost any learning app.", strong: "Names at least one thing the product deliberately does NOT do, with the strategic logic explained. Identifies which competitive force matters most and why. Can explain why a well-funded competitor couldn't simply copy this position. The map reveals genuine tension, not just clarity.", selfCheck: "Have I named what we're choosing NOT to do — and why?\nIs there a real tradeoff on this map, or just a feature list?\nCould a smart, well-funded team easily replicate this position? (if yes: not a real position)" },
       readings: [
-        { id:"m1r1", number:"1", title:'"What Is Strategy?" — Michael Porter, HBR 1996', url:"https://hbr.org/1996/11/what-is-strategy", searchTerm:"", type:"verified", description:"The foundational text. Porter's argument that strategy is about what you won't do is still the sharpest definition available." },
-        { id:"m1r2", number:"2", title:'"The Big Lie of Strategic Planning" — Roger Martin, HBR', url:"https://hbr.org/2014/12/the-big-lie-of-strategic-planning", searchTerm:"", type:"verified", description:"Read this alongside Porter. Martin is the best living writer on strategy." },
-        { id:"m1r3", number:"3", title:'"7 Powers: The Foundations of Business Strategy" — Hamilton Helmer', url:"", searchTerm:"Hamilton Helmer 7 Powers summary", type:"search", description:"Book (~$15 Kindle). The best modern strategy framework for tech PMs. Counter-positioning, scale economies, switching costs, network effects — explained with real rigour." },
-        { id:"m1r4", number:"4", title:"Thinking in Systems — Donella Meadows", url:"", searchTerm:"Donella Meadows Thinking in Systems PDF excerpt", type:"search", description:"The systems thinking bible. Read chapters 1–3 minimum." },
+        { id:"m1r1", number:"1", title:'"What Is Strategy?" — Michael Porter, HBR 1996', url:"https://hbr.org/1996/11/what-is-strategy", searchTerm:"", type:"verified", description:"The foundational text. Porter's argument that strategy is about what you won't do — not just what you will — is still the sharpest definition available. Read before anything else in this module." },
+        { id:"m1r2", number:"2", title:'"The Big Lie of Strategic Planning" — Roger Martin, HBR', url:"https://hbr.org/2014/01/the-big-lie-of-strategic-planning", searchTerm:"Roger Martin big lie strategic planning HBR", type:"verified", description:"Martin is the best living writer on strategy. This short piece punctures the idea that strategy is a planning exercise. Read alongside Porter." },
+        { id:"m1r2b", number:"2b", title:'"Playing to Win" — Roger Martin (free summary on his site)', url:"https://rogerlmartin.com/lets-read/playing-to-win", searchTerm:"", type:"verified", description:"Martin's own summary of the full book — free. The 'where to play / how to win' cascade is the most practical strategy framework for a PM to actually use in a room." },
+        { id:"m1r3", number:"3", title:'"7 Powers: The Foundations of Business Strategy" — Hamilton Helmer', url:"https://www.amazon.com/7-Powers-Foundations-Business-Strategy/dp/0998116802", searchTerm:"Hamilton Helmer 7 Powers summary", type:"verified", description:"Book (~$15 Kindle). The best modern strategy framework for tech PMs. Counter-positioning, scale economies, switching costs, network effects — explained with real rigour. Read the intro + any two chapters." },
+        { id:"m1r4", number:"4", title:'"Thinking in Systems" — Donella Meadows Institute (free resources)', url:"https://donellameadows.org/systems-thinking-resources/", searchTerm:"", type:"verified", description:"Meadows wrote the definitive systems thinking book. The institute's site has free excerpts and accessible resources. Chapters 1–2 are enough to reframe how you see product problems." },
         { id:"m1r5", number:"5", title:'Stratechery — Ben Thompson: "Aggregation Theory"', url:"https://stratechery.com/2015/aggregation-theory/", searchTerm:"", type:"verified", description:"Free. The most important framework for understanding platform power in the internet age." },
-        { id:"m1r6", number:"6", title:"GovTech Singapore's Digital Government strategy documents", url:"https://www.tech.gov.sg/our-digital-government-efforts/", searchTerm:"", type:"verified", description:"Read their actual published strategy. If you're going to work there, you should know how they think about themselves." }
+        { id:"m1r6", number:"6", title:"GovTech Singapore — Digital Government Blueprint", url:"https://www.tech.gov.sg/our-digital-government-efforts/", searchTerm:"", type:"verified", description:"Read their actual published strategy — not a summary. If you're targeting Singapore's public sector, you should know how they think about themselves and what they say they're optimising for." }
       ],
       watching: [
-        { id:"m1w1", searchTerm:"Roger Martin strategy talk Playing to Win", description:"Several good recordings of him explaining his framework (~45 min)" },
-        { id:"m1w2", searchTerm:"Hamilton Helmer 7 Powers talk", description:"The Invest Like the Best one is excellent" },
-        { id:"m1w3", searchTerm:"MIT OpenCourseWare System Dynamics John Sterman", description:"Long but extraordinary if you want to go deep on systems thinking" }
+        { id:"m1w1", title:"Roger Martin — 'What Is Strategy?' (Rotman School)", url:"", searchTerm:"Roger Martin what is strategy Rotman School lecture", description:"45–60 min. Multiple recordings exist of him delivering this live — more dynamic than the article alone. Search the exact phrase and filter to videos over 30 min." },
+        { id:"m1w2", title:"Hamilton Helmer — '7 Powers' (Invest Like the Best)", url:"", searchTerm:"Hamilton Helmer 7 Powers Invest Like the Best Patrick OShaughnessy", description:"The best audio explainer of the framework. Search 'Hamilton Helmer Invest Like the Best' — it's the first result. The Founders podcast also has a strong episode on the book." },
+        { id:"m1w3", title:"MIT OpenCourseWare — Introduction to System Dynamics (Prof. John Sterman)", url:"https://ocw.mit.edu/courses/15-871-introduction-to-system-dynamics-fall-2013/", searchTerm:"MIT system dynamics Sterman", description:"Full MIT course materials, free. Video lectures, readings, problem sets. If you want to actually understand systems thinking rather than just recognise it, this is the real thing." }
       ],
       assignment:"Map the strategic position of \"Canon\" as a product.\n\n- Who are the real users? Career re-entrants vs. active PMs vs. companies upskilling teams — they're different customers with different willingness to pay and different definitions of success.\n- What's the unique position no generic tool (Notion, Coursera, even ChatGPT) can replicate?\n- Apply Porter: what tradeoffs define this product? What does it deliberately not do?\n- Apply 7 Powers: which of the seven — network effects, switching costs, scale economies, brand — are achievable for a learning app? Which will you target first?\n\nWrite 600 words. End with one sentence: \"The one thing this product must never compromise on is ___.\"",
       reflection:"When you've done your best strategic work in your career — what did it feel like in your body? Energising or draining? Was it the strategy itself, or the environment it happened in?"
@@ -796,17 +829,19 @@ const CANONICAL_CURRICULUM = {
       subtitle:"Beyond the vocabulary. Applying the methodology the way it was designed to be used.",
       whyItMatters:"The best product decisions start with a genuine human insight, not a feature request. You know this. This module gives you the structured methods to generate those insights deliberately, not just when you get lucky.",
       artifact: "Discovery Map",
+      rubric: { weak: "Research confirmed what you already believed. Questions were designed to validate, not challenge. You answered your own research questions without talking to real users. No finding surprised you. The map shows a problem you already knew existed.", strong: "At least one finding contradicted your going-in assumption. You can clearly distinguish what users said from what they did. The discovery map surfaces a genuine gap between stated problem and actual behaviour. You identified a user need you did not know existed before the research.", selfCheck: "Did anything surprise me? (if no: you designed research to confirm yourself)\nWhat did I observe vs. what was I only told?\nIs the insight specific enough to change a product decision — or is it still 'users want X'?" },
       readings: [
-        { id:"m2r1", number:"1", title:"Stanford d.school Design Thinking Bootleg — FREE", url:"https://dschool.stanford.edu/resources", searchTerm:"", type:"verified", description:"Download \"The Bootleg Deck\". It's the canonical Stanford design thinking methodology, free, beautifully designed." },
-        { id:"m2r2", number:"2", title:"IDEO Design Kit — FREE", url:"https://www.designkit.org/methods", searchTerm:"", type:"verified", description:"Browse the methods library. Pick 5 methods that seem interesting and read those entries in full." },
-        { id:"m2r3", number:"3", title:'"Design Thinking" — Tim Brown, HBR 2008', url:"https://hbr.org/2008/06/design-thinking", searchTerm:"", type:"verified", description:"Short. The piece that brought design thinking into the mainstream business conversation." },
-        { id:"m2r4", number:"4", title:"Google PAIR Guidebook — FREE", url:"https://pair.withgoogle.com/guidebook/", searchTerm:"", type:"verified", description:"People + AI Research. Google's free guidebook for designing AI-powered products. Read the whole thing." },
-        { id:"m2r5", number:"5", title:'"The Design of Everyday Things" — Don Norman', url:"", searchTerm:"Don Norman Design of Everyday Things", type:"search", description:"If you haven't read it: read chapters 1 and 2. It lands differently after burnout." }
+        { id:"m2r1", number:"1", title:"Stanford d.school — 'The Bootleg Deck' (FREE download)", url:"https://dschool.stanford.edu/resources", searchTerm:"", type:"verified", description:"The canonical Stanford design thinking methodology, free, beautifully produced. Download the Bootleg Deck specifically — it's the practitioner's guide, not the theory." },
+        { id:"m2r2", number:"2", title:"IDEO Design Kit — 57 Methods Library (FREE)", url:"https://www.designkit.org/methods", searchTerm:"", type:"verified", description:"Browse the methods library. Pick 5 methods you'd actually use — read those entries fully. This is where design thinking stops being vocabulary and becomes a skill." },
+        { id:"m2r3", number:"3", title:'"The Mom Test" — Rob Fitzpatrick (free chapters)', url:"https://www.momtestbook.com", searchTerm:"", type:"verified", description:"The best book on customer interviewing ever written. Short (~120 pages). Core argument: users lie to protect your feelings — here's how to get the truth anyway. Free first chapter on the site." },
+        { id:"m2r4", number:"4", title:"Teresa Torres — 'Continuous Discovery Habits' (author site)", url:"https://www.producttalk.org/2021/08/product-discovery/", searchTerm:"", type:"verified", description:"Teresa Torres invented the opportunity solution tree framework — the most practical modern approach to continuous product discovery. This article is the best free introduction to her method." },
+        { id:"m2r5", number:"5", title:"Nielsen Norman Group — 'User Interviews: How, When, and Why to Conduct Them'", url:"https://www.nngroup.com/articles/user-interviews/", searchTerm:"", type:"verified", description:"NNG is the gold standard in UX research. This article is rigorous, practical, and free. Their site is one of the best research resources available — bookmark it." },
+        { id:"m2r6", number:"6", title:"Google PAIR Guidebook — Designing Human-AI Interactions (FREE)", url:"https://pair.withgoogle.com/guidebook/", searchTerm:"", type:"verified", description:"Google's free guidebook for designing AI-powered products from a human-centred perspective. Directly relevant to the AI modules ahead. Read the full thing — it's well-structured." }
       ],
       watching: [
-        { id:"m2w1", searchTerm:"IDEO design thinking shopping cart ABC Nightline", description:"The 1999 video that made design thinking famous. (~22 min)" },
-        { id:"m2w2", searchTerm:"Stanford d.school design thinking bootcamp", description:"" },
-        { id:"m2w3", searchTerm:"Google PAIR design AI", description:"" }
+        { id:"m2w1", title:"IDEO — 'The Deep Dive' (ABC Nightline, 1999)", url:"", searchTerm:"IDEO deep dive shopping cart ABC Nightline 1999", description:"22 min. The video that made design thinking famous. An IDEO team redesigns a shopping cart in 5 days. Still the best demonstration of the methodology in action. Search exact title — it's always the first result." },
+        { id:"m2w2", title:"Tim Brown (IDEO CEO) — 'Tales of Creativity and Play' (TED)", url:"https://www.ted.com/talks/tim_brown_tales_of_creativity_and_play", searchTerm:"Tim Brown IDEO TED creativity play", description:"27 min. The CEO of IDEO on where design thinking actually comes from and what it requires of the people doing it. More substantive than the name suggests." },
+        { id:"m2w3", title:"Teresa Torres — 'Continuous Discovery Habits' (ProductTank talk)", url:"", searchTerm:"Teresa Torres continuous discovery habits ProductTank talk", description:"Her live talks are the best introduction to the opportunity solution tree. More practical than reading. Search her name + ProductTank — several recordings exist from different conferences." }
       ],
       assignment:"Run discovery on your own product.\n\n1. Write 3 user personas who might use this app: a career re-entrant (you), an active PM who wants structured self-study, and an L&D manager at a company. For each: what's their job-to-be-done? What does \"done\" look like for them?\n\n2. Write 5 interview questions you'd ask a career re-entrant in Singapore — then answer them yourself honestly. What surprised you in your own answers?\n\n3. Identify the 2 biggest UX assumptions baked into the current app that you haven't validated with anyone other than yourself.\n\n4. Describe one feature the current app completely lacks that genuine user research would likely surface.\n\nThe goal is one insight about your own product that you didn't have before you started.",
       reflection:"Think of a product decision you made that you're genuinely proud of. Was it driven by data or by a human insight that caught you off guard? What does that tell you about where your best thinking comes from?"
@@ -817,6 +852,7 @@ const CANONICAL_CURRICULUM = {
       subtitle:"Understanding the AI wave at the level that actually matters for product decisions.",
       whyItMatters:"You don't need to be a researcher to think rigorously about AI. You need to understand failure modes, architectural constraints, and what evaluation means in practice. That's what separates the PMs who sound smart about AI from the ones who actually are. This module gets you there.",
       artifact: "AI Opportunity Map",
+      rubric: { weak: "Rephrases the AI news cycle or Wikipedia. Makes broad claims ('AI will transform everything') without taking a position. Could have been written by anyone who skimmed the same articles. No original synthesis, no uncomfortable claims.", strong: "Takes a position on at least one contested AI claim and defends it. Explains one core concept (hallucination, context window, RLHF, evals) in your own words using an analogy you generated. Identifies one specific AI risk or limitation most senior PMs underestimate. A reader learns something they wouldn't get from a generic AI overview.", selfCheck: "Did I take at least one position that could be wrong?\nCan I explain hallucination or evals to a non-technical founder without using 'training data' or 'neural network'?\nWhat do I now believe that I didn't before this module?" },
       readings: [
         { id:"m3r1", number:"1", title:"Ethan Mollick — One Useful Thing (Substack)", url:"https://www.oneusefulthing.org", searchTerm:"", type:"verified", description:"Subscribe. Start with: \"The Cybernetic Teammate\", \"On Trust and the Practical Challenges of AI\", \"Getting your AI to do good work\"." },
         { id:"m3r2", number:"2", title:'"What is ChatGPT Doing and Why Does It Work?" — Stephen Wolfram', url:"https://writings.stephenwolfram.com/2023/02/what-is-chatgpt-doing-and-why-does-it-work/", searchTerm:"", type:"verified", description:"Long. Dense. Read sections 1–5. The best non-mathematical explanation of how LLMs work." },
@@ -827,11 +863,11 @@ const CANONICAL_CURRICULUM = {
         { id:"m3r7", number:"7", title:"Simon Willison on LLM agents — lessons learned", url:"", searchTerm:"Simon Willison LLM agents lessons learned 2024", type:"search", description:"Willison is the clearest practical thinker writing publicly about agents. Skeptical, specific, PM-friendly. Read anything he has written in the last 12 months on tool use and agents." }
       ],
       watching: [
-        { id:"m3w1", searchTerm:"Andrej Karpathy intro to large language models", description:"1 hour. The single best non-technical explanation of how LLMs work." },
-        { id:"m3w2", searchTerm:"3Blue1Brown but what is a neural network", description:"19 minutes. Beautiful visual explanation." },
-        { id:"m3w3", searchTerm:"Andrej Karpathy State of GPT", description:"His Microsoft Build talk — excellent for understanding where the models are going." },
-        { id:"m3w4", searchTerm:"Anthropic Claude tool use agent tutorial cookbook", description:"DIY: Anthropic's official cookbook tutorial for building a Claude agent with tool use. Copy-paste Python, no prior experience needed. Run it once. The goal is to watch the loop execute, not to become an engineer." },
-        { id:"m3w5", searchTerm:"n8n Claude AI agent tutorial 2024", description:"DIY, no-code: build a 3-step agent in n8n or Make.com that does one useful thing (read a URL, summarise it, send yourself a message). This is the fastest way for a PM to understand what agents actually do without writing a line of code." }
+        { id:"m3w1", title:"Andrej Karpathy — 'Intro to Large Language Models' (YouTube, 1 hr)", url:"", searchTerm:"Andrej Karpathy intro large language models 1 hour 2023", description:"1 hour. Karpathy is Tesla's former AI director and now one of the best explainers alive. This is the single best non-technical explanation of how LLMs work. Search his name + 'intro LLMs' — it's always first result." },
+        { id:"m3w2", title:"3Blue1Brown — 'But What Is a Neural Network?' (YouTube, 19 min)", url:"", searchTerm:"3Blue1Brown but what is a neural network chapter 1 deep learning", description:"19 min. Grant Sanderson produces the most mathematically beautiful explainer videos on the internet. You don't need the maths — the visual intuition is what matters. Chapter 1 of his deep learning series." },
+        { id:"m3w3", title:"Andrej Karpathy — 'State of GPT' (Microsoft Build 2023)", url:"", searchTerm:"Andrej Karpathy State of GPT Microsoft Build 2023", description:"40 min. His Microsoft Build keynote on where language models are going and what they can do. More technical than the LLM intro but still PM-accessible. Particularly useful for understanding fine-tuning and RLHF." },
+        { id:"m3w4", title:"Anthropic — Claude agent with tool use (official cookbook tutorial)", url:"https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/implement-tool-use", searchTerm:"Anthropic tool use cookbook Claude agent", description:"DIY: the official Anthropic guide to building a Claude agent with tool use. Copy-paste code, no prior experience needed. Run it once. The goal is to watch the agent loop execute — not to become an engineer." },
+        { id:"m3w5", title:"MIT 6.S191 — Introduction to Deep Learning (full course, free)", url:"http://introtodeeplearning.com/", searchTerm:"MIT 6S191 introduction deep learning 2024", description:"MIT's free annual deep learning course. Lecture 1 (foundations) and Lecture 3 (NLP/LLMs) are the most relevant for PMs. The site has all slides and video recordings. No maths required to follow the conceptual arc." }
       ],
       assignment:"Map the AI opportunity surface for this product.\n\n1. Where in the current app does AI add zero value vs. where it adds genuine leverage? Be honest — not every feature benefits from AI.\n\n2. Write a capability map: for each of the 9 modules in your curriculum, what would an AI tutor specifically do that the static curriculum can't? (e.g. give feedback on your assignment notes, ask Socratic follow-up questions, flag when you're rationalising instead of thinking)\n\n3. Identify 2 AI risks specific to a learning product — hallucinated citations, over-reliance, assessment gaming, false confidence. How would you design against them?\n\n4. Write a 1-page \"AI product thesis\" for an evolved version of this app: what's the core AI-native insight that makes it genuinely different from a course platform with a chatbot bolted on?\n\n5. Agentic teardown (one page): pick any agent product you have encountered — Cursor, Perplexity, a company's internal tool, anything. Map its loop: what triggers it, what tools it calls, where it hands back to the human, and where trust could break. This is how PMs should think about agentic products before speccing them.",
       reflection:"What part of the AI wave feels even mildly interesting to you — not what you think should interest you, but what actually catches your attention when you read about it? Hold onto that signal."
@@ -842,17 +878,22 @@ const CANONICAL_CURRICULUM = {
       subtitle:"The play module. You build fluency with these tools by using them, not reading about them.",
       whyItMatters:"There is no shortcut here. You get comfortable with AI tools by building things with them. This module is structured around doing, not watching. What you build here will directly improve the product you are building for yourself.",
       artifact: "Working AI Feature + Prompt Iteration Log",
+      rubric: { weak: "The demo works but you can't explain why the prompt is written the way it is. No meaningful iteration — you wrote a prompt, it was 'good enough,' you moved on. The log is a list of outputs, not a record of decisions. You can't name one place where AI actively misled you.", strong: "Shows at least 3 prompt iterations with explicit reasoning for each change. The log captures what you expected vs. what actually happened. You can name one specific place AI gave confidently wrong output and what you did about it. The built feature solves a real problem for you — not just a technically interesting demo.", selfCheck: "Can I explain why each prompt change was made — not just what changed?\nDid AI think FOR me at any point? (if yes: did I catch it and correct it?)\nWould a PM interviewer find this iteration log more interesting than a polished demo?" },
       readings: [
         { id:"m4r1", number:"1", title:"The a16z AI Canon", url:"https://a16z.com/ai-canon/", searchTerm:"", type:"verified", description:"The best curated reading list on AI available anywhere. Bookmark. Graze." },
-        { id:"m4r2", number:"2", title:"Lenny Rachitsky — Newsletter", url:"https://www.lennysnewsletter.com", searchTerm:"", type:"verified", description:"Search his archive for \"AI\" — his practical PM-level pieces on AI product development are excellent." }
+        { id:"m4r2", number:"2", title:"Lenny Rachitsky — Newsletter", url:"https://www.lennysnewsletter.com", searchTerm:"", type:"verified", description:"Search his archive for 'AI' — his practical PM-level pieces on AI product development are excellent." },
+        { id:"m4r3", number:"3", title:"Anthropic Prompt Engineering Guide", url:"https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview", searchTerm:"", type:"verified", description:"The canonical reference for writing good prompts. Read the sections on role prompting, chain of thought, and XML structuring. Directly applicable to the assignment." },
+        { id:"m4r4", number:"4", title:"One Useful Thing — Ethan Mollick", url:"https://www.oneusefulthing.org", searchTerm:"", type:"verified", description:"The best newsletter on AI for practitioners. His pieces on 'jagged frontier' and 'co-intelligence' are essential reading for PMs thinking about where AI helps vs. misleads." },
+        { id:"m4r5", number:"5", title:"Simon Willison's Weblog", url:"https://simonwillison.net", searchTerm:"", type:"verified", description:"The most honest, technically grounded commentary on LLMs written for a non-engineer audience. His notes on hallucination, prompt injection, and tool use are worth reading before you build anything." },
+        { id:"m4r6", number:"6", title:"Prompting fundamentals — Learn Prompting", url:"https://learnprompting.org/docs/introduction", searchTerm:"", type:"verified", description:"Free, practical, comprehensive. Skip the theory sections and go straight to the technique chapters: few-shot, chain of thought, role prompting." }
       ],
       watching: [
-        { id:"m4w1", searchTerm:"Fireship", description:"His channel for fast, sharp tool overviews (2–5 min videos)" },
-        { id:"m4w2", searchTerm:"Greg Isenberg building with AI", description:"Product/builder angle, calmer energy" },
-        { id:"m4w3", searchTerm:"Matt Wolfe AI tools", description:"Comprehensive weekly roundups if you want to stay current" }
+        { id:"m4w1", searchTerm:"Fireship AI tools overview", description:"Fast, sharp tool overviews (2–5 min videos). Good for getting the shape of a new tool before committing time to it." },
+        { id:"m4w2", searchTerm:"Greg Isenberg building with AI 2024", description:"Product and builder angle — focuses on what you can actually ship, not just what's technically possible." },
+        { id:"m4w3", searchTerm:"Ethan Mollick AI classroom lecture", description:"His Wharton lecture on AI and work is the most grounded academic take. Slower pace but substantive." }
       ],
-      assignment:"Use AI to actually improve the curriculum you're studying with.\n\n1. Take one of your written assignment submissions from Modules 1–3 and run it through Claude (or another model) as a critical reviewer. Write good prompts — not \"is this good?\" but \"what's the weakest strategic assumption in this argument?\". Document the prompts, the outputs, and what you changed as a result.\n\n2. Use AI to rewrite the \"Why this matters for you\" section of whichever module feels least relevant to your actual situation. Make it specific to your background and your target roles.\n\n3. Build a simple prompt that acts as a study coach for one module — something you could paste into Claude before each study session. Iterate the prompt at least 3 times. Document what changed between versions and why.\n\n4. Reflect honestly: where did AI help you think better vs. where did it think for you? What's the difference, and how do you know?",
-      reflection:"Tools to spend time with:\n1. Claude — Use Projects. Try extended thinking on a hard problem.\n2. Lovable (https://lovable.dev) — Build something small.\n3. v0 by Vercel (https://v0.dev) — Good for UI components.\n4. NotebookLM (https://notebooklm.google.com) — Upload your reading materials.\n5. Perplexity (https://www.perplexity.ai) — Use as your research tool.\n6. Gamma (https://gamma.app) — AI-generated decks.\n7. n8n (https://n8n.io) — Free automation tool."
+      assignment:"Tools to spend time with before starting the tasks below:\n• Claude (claude.ai) — Use Projects. Try extended thinking on a hard strategic question.\n• NotebookLM (notebooklm.google.com) — Upload your Module 1–3 reading materials and interrogate them.\n• Perplexity (perplexity.ai) — Use as your primary research tool for this module.\n• Lovable (lovable.dev) or v0 (v0.dev) — Build something small with a UI.\n• Gamma (gamma.app) — Turn one of your assignment write-ups into a deck.\n\nThe actual assignment:\n\n1. Take one written submission from Modules 1–3 and use Claude as a critical reviewer. Write deliberate prompts — not 'is this good?' but 'what's the weakest strategic assumption in this argument?' Document the prompt, the output, and what you changed as a result. Do this at least twice with different prompts.\n\n2. Build a study coach prompt for one module — something you'd paste into Claude before each study session. Iterate it at least 3 times. Document what changed between versions and why the change improved it.\n\n3. Use NotebookLM with your actual reading materials from one module. What could you find or synthesise that you couldn't without it? What did it get wrong?\n\n4. Document your full prompt iteration log: for each prompt, record what you expected, what you got, and what you changed. This log is the artifact — not the final output.",
+      reflection:"Where did using AI feel like thinking more clearly — and where did it think FOR you instead of WITH you? What's the difference, and how did you know which side you were on in the moment?"
     },
     {
       id:"m5", number:5,
@@ -860,27 +901,29 @@ const CANONICAL_CURRICULUM = {
       subtitle:"A skill senior PMs are expected to own. This module makes it explicit.",
       whyItMatters:"You have spent years understanding how value is created at a systems level. This module applies that lens to product pricing and gives you the frameworks to walk into any commercial conversation with confidence. Pricing is not a finance problem. It is a product decision.",
       artifact: "Commercial Model + Pricing Page Copy",
+      rubric: { weak: "Chose a pricing model because similar products use it. Pricing page reads like a feature matrix. Can't state the value metric with confidence. The 150-word copy is about the product's capabilities, not the buyer's problem.", strong: "Named the value metric explicitly and defended why it scales with value delivered. The pricing page copy focuses on the buyer's before/after — not the product's features. Addresses at least one pricing objection proactively. The free tier has a deliberate, defensible limitation.", selfCheck: "Can I state the value metric in one sentence without hesitating?\nDoes my pricing page copy make someone want to upgrade, or just understand what they're paying for?\nHave I named what the free tier will NOT do — and explained the strategic reason why?" },
       readings: [
-        { id:"m5r1", number:"1", title:'"Monetizing Innovation" — Madhavan Ramaswami & Georg Tacke', url:"", searchTerm:"Monetizing Innovation Simon-Kucher", type:"search", description:"Book (~$20 Kindle). The best practical pricing book for product people." },
-        { id:"m5r2", number:"2", title:'"The Good-Better-Best Approach to Pricing" — Rafi Mohammed, HBR', url:"https://hbr.org/2018/09/the-good-better-best-approach-to-pricing", searchTerm:"", type:"verified", description:"Short, practical, directly applicable." },
-        { id:"m5r3", number:"3", title:'"Don\'t Just Roll the Dice" — Neil Davidson', url:"", searchTerm:"Don't Just Roll the Dice software pricing PDF Neil Davidson", type:"search", description:"Free. The most pragmatic short guide to software pricing available." },
-        { id:"m5r4", number:"4", title:"AI-specific pricing models", url:"", searchTerm:"Lenny Rachitsky AI pricing models", type:"search", description:"The shift from seat-based to consumption-based pricing is a genuinely new problem." },
-        { id:"m5r5", number:"5", title:"B2G Pricing — GovTech context", url:"", searchTerm:"pricing government contracts technology Singapore", type:"search", description:"GovTech procurement works differently from commercial SaaS. Understanding GeBIZ is useful background." }
+        { id:"m5r1", number:"1", title:'"The Good-Better-Best Approach to Pricing" — Rafi Mohammed, HBR', url:"https://hbr.org/2018/09/the-good-better-best-approach-to-pricing", searchTerm:"", type:"verified", description:"Short, sharp, directly applicable. The tiering framework that most SaaS companies actually use — explained clearly with examples. Read this first." },
+        { id:"m5r2", number:"2", title:'"Don\'t Just Roll the Dice" — Neil Davidson (free PDF)', url:"https://neildavidson.com/downloads/dont-just-roll-the-dice.pdf", searchTerm:"Neil Davidson dont just roll the dice software pricing", type:"verified", description:"Free, ~80 pages. The most pragmatic guide to software pricing ever written. Covers value-based pricing, psychological pricing, and why engineers price wrong. Download and read in one sitting." },
+        { id:"m5r3", number:"3", title:"Patrick McKenzie — 'Pricing' (Stripe Atlas guide)", url:"https://stripe.com/gb/atlas/guides/saas-pricing", searchTerm:"Patrick McKenzie patio11 pricing software", type:"verified", description:"McKenzie (patio11) is the clearest practical thinker on software pricing. This Stripe Atlas guide is his most accessible piece. His blog at kalzumeus.com has deeper posts if you want more." },
+        { id:"m5r4", number:"4", title:'"Monetizing Innovation" — Ramaswami & Tacke (Simon-Kucher)', url:"", searchTerm:"Monetizing Innovation Simon-Kucher Ramaswami Tacke summary chapters", type:"search", description:"Book (~$20 Kindle). Simon-Kucher are the world's leading pricing consultants. This is their practitioner framework distilled. Read Chapters 1, 3, and 5 minimum — the willingness-to-pay research methodology is directly usable." },
+        { id:"m5r5", number:"5", title:"Lenny Rachitsky — 'How to price your product' (newsletter)", url:"https://www.lennysnewsletter.com/p/how-to-price-your-product", searchTerm:"Lenny Rachitsky how to price your product", type:"verified", description:"Lenny interviewed dozens of top product leaders specifically on pricing. This is one of his most useful pieces — practical, specific, and modern. Covers AI/consumption-based pricing shifts." }
       ],
       watching: [
-        { id:"m5w1", searchTerm:"Patrick McKenzie pricing software", description:"The best practical thinker on pricing for tech products" },
-        { id:"m5w2", searchTerm:"Y Combinator startup pricing", description:"Several good short talks" },
-        { id:"m5w3", searchTerm:"Shreyas Doshi product pricing", description:"" }
+        { id:"m5w1", title:"Patrick McKenzie (patio11) — pricing talk (MicroConf)", url:"", searchTerm:"Patrick McKenzie patio11 pricing MicroConf talk", description:"McKenzie is the most rigorous practical thinker on software pricing. His MicroConf talks are the best place to hear him develop the frameworks live. Search 'patio11 pricing MicroConf' — several recordings exist." },
+        { id:"m5w2", title:"Y Combinator — Kevin Hale on startup pricing (YC lecture)", url:"", searchTerm:"Kevin Hale Y Combinator pricing lecture 2019", description:"45 min. Hale is one of YC's most rigorous partners. His pricing lecture is the best 45-minute introduction to value-based pricing available anywhere for free. Search 'Kevin Hale YC pricing'." },
+        { id:"m5w3", title:"Simon-Kucher — pricing webinars (YouTube channel)", url:"https://www.youtube.com/@SimonKucherPartners", searchTerm:"Simon Kucher pricing strategy webinar", description:"The world's leading pricing consultants publish free webinars on their YouTube channel. Filter for software/SaaS topics. More rigorous than most startup pricing content." }
       ],
       assignment:"Design the business model for this app as if you were going to commercialise it.\n\n1. Define 3 customer segments and their willingness to pay: a career re-entrant self-funding, a company buying it for a team of PMs, and a bootcamp or accelerator licensing it for cohorts. What does each segment value most?\n\n2. Choose a pricing model and defend it — one-time purchase, subscription, per-seat, freemium, cohort licensing. What's the strategic logic? What does it signal about who the product is really for?\n\n3. Apply the framework from \"Don't Just Roll the Dice\": what's the value metric (what scales with value delivered)? What price anchors the conversation?\n\n4. Define the free tier if any. What's the deliberate limitation that makes the paid tier worth it — and why won't the free tier cannibalise paid?\n\n5. Write the actual pricing page copy — the 150 words a user would read before deciding whether to pay. No tables, no bullet points. Just the argument.",
       reflection:"Have you ever directly owned a pricing decision in your career? What happened? If not — why do you think pricing got delegated away from you?"
     },
     {
-      id:"m6", number:6,
+      id:"m6", number:6, spine: true,
       title:"AI Product Strategy",
       subtitle:"Where your product experience meets the AI wave. The highest-leverage module in this curriculum.",
       whyItMatters:"This is where seniority compounds. Anyone can learn to use an AI tool. Fewer people can define what to build with AI, and why, and for whom. This module gives you the strategic vocabulary and the frameworks to operate at that level with confidence.",
       artifact: "12-Month AI Product Thesis",
+      rubric: { weak: "Predicts AI will continue to change everything. Identifies obvious opportunities (AI in healthcare, education) without naming a specific mechanism. Doesn't commit to anything that could be proven wrong in 12 months. Reads like a summary of AI news, not a thesis.", strong: "Makes a specific, falsifiable bet on where AI creates durable value in one market. Names who loses when this plays out. Identifies the specific capability — not just 'AI' — that enables the opportunity. Someone reading this in 12 months could score it: right, wrong, or partially right.", selfCheck: "Is my thesis falsifiable — could it be wrong in 12 months?\nHave I named a specific loser, not just winners?\nAm I betting on a durable structural shift, or on current model capabilities that could disappear?" },
       readings: [
         { id:"m6r1", number:"1", title:'"The New Business of AI" — Andreessen Horowitz', url:"https://a16z.com/the-new-business-of-ai/", searchTerm:"", type:"verified", description:"Essential. Explains why AI product economics are structurally different from SaaS." },
         { id:"m6r2", number:"2", title:'"Who Owns the Generative AI Platform?" — Andreessen Horowitz', url:"https://a16z.com/who-owns-the-generative-ai-platform/", searchTerm:"", type:"verified", description:"Where is value actually accruing in the AI stack?" },
@@ -890,9 +933,9 @@ const CANONICAL_CURRICULUM = {
         { id:"m6r6", number:"6", title:"GovTech Singapore — Open Government Products", url:"https://www.open.gov.sg", searchTerm:"", type:"verified", description:"Read their case studies on what they've built and why." }
       ],
       watching: [
-        { id:"m6w1", searchTerm:"Reid Hoffman AI product strategy", description:"" },
-        { id:"m6w2", searchTerm:"a16z AI application layer", description:"" },
-        { id:"m6w3", searchTerm:"Andrew Ng AI transformation playbook", description:"Practical framework for bringing AI into organisations" }
+        { id:"m6w1", title:"Reid Hoffman — 'AI Is a Superpower' (TED)", url:"https://www.ted.com/talks/reid_hoffman_ai_is_a_superpower_but_we_need_to_choose_how_we_use_it", searchTerm:"Reid Hoffman AI superpower TED", description:"20 min. LinkedIn co-founder and Inflection AI investor. One of the most strategically grounded takes on what AI means for how products are built and who wins. Watch before writing your AI thesis." },
+        { id:"m6w2", title:"Andrew Ng — 'AI for Everyone' intro lecture (Coursera / YouTube)", url:"", searchTerm:"Andrew Ng AI for Everyone full course lecture 1", description:"Andrew Ng's free Coursera course has the clearest non-technical explanation of AI strategy for business. Lecture 1 is free on YouTube. He's trained more AI practitioners than anyone alive — his framing is authoritative." },
+        { id:"m6w3", title:"Sequoia Capital — 'AI's $200B Question' (YouTube)", url:"", searchTerm:"Sequoia Capital AI 200 billion dollar question keynote 2024", description:"Sequoia's annual AI analysis is the most rigorous investor-grade assessment of where AI is going. Their YouTube channel publishes the key sessions. Search 'Sequoia AI 2024 keynote' — updated annually." }
       ],
       assignment:"Define the AI product strategy for the next version of this app.\n\n1. What's the AI-native feature that couldn't exist without AI? Not \"AI summarises your notes\" — that's a feature. What's the strategy? What does AI unlock that changes the fundamental value proposition?\n\n2. Who are the real AI competitors? Not just \"Coursera with AI\" — think about what happens when any LLM can generate a custom curriculum on demand in 30 seconds. What's your moat when the content layer is commoditised?\n\n3. Write a 12-month product roadmap with 3 phases. What AI features ship in each phase, and why in that order? What assumption does each phase test?\n\n4. Define the data flywheel: what user behaviour data makes the product smarter over time? How does each new user make the product better for the next one?\n\nThis is your first real portfolio artifact — treat it accordingly.",
       reflection:"Reading about AI strategy — do you find yourself mentally correcting things, having opinions, noticing gaps? Or does it feel foreign and anxiety-inducing? The answer is useful information about where you actually are."
@@ -903,17 +946,18 @@ const CANONICAL_CURRICULUM = {
       subtitle:"The craft of leading without authority. And knowing the conditions where you do it at your best.",
       whyItMatters:"You have done this work before. You know how to read a room, build alignment across competing priorities, and move things forward without a mandate. This module sharpens those instincts, adds structure to what is already intuitive, and helps you understand the environments where you do this work best.",
       artifact: "GTM Plan + Ideal Environment Spec",
+      rubric: { weak: "Generic advice about 'building relationships' and 'communicating clearly.' Doesn't reference a real situation where an influence attempt failed. The ideal environment spec could apply to almost any senior PM. Could have been written before this module.", strong: "Uses a real past failure — not a success story — to diagnose a specific influence gap. The playbook includes at least one tactic specific to your operating style, not copied from a framework. The ideal environment spec is specific enough that you could disqualify a job based on it.", selfCheck: "Did I use a real failure as my primary example, or did I reach for a comfortable success?\nIs any tactic here specific to how I actually operate — or is it generic advice I've read before?\nCould I walk into an interview and use my ideal environment spec to ask better questions?" },
       readings: [
-        { id:"m7r1", number:"1", title:'"Resilient Management" — Lara Hogan', url:"https://larahogan.me/resources/", searchTerm:"", type:"verified", description:"Her writing on navigating difficult stakeholder dynamics is the most honest available." },
-        { id:"m7r2", number:"2", title:"Shreyas Doshi — senior PM dynamics", url:"", searchTerm:"Shreyas Doshi upstream thinking product", type:"search", description:"He writes the most honest things about what senior PM work actually involves. Also: \"Shreyas Doshi influence without authority\"." },
-        { id:"m7r3", number:"3", title:'"Managing Your Boss" — Gabarro & Kotter, HBR', url:"https://hbr.org/2005/01/managing-your-boss", searchTerm:"", type:"verified", description:"Classic. Still the best piece on the upward relationship." },
-        { id:"m7r4", number:"4", title:'"The Courage to Be Disliked" — Kishimi & Koga', url:"", searchTerm:"The Courage to Be Disliked summary", type:"search", description:"About separating your tasks from others' tasks — which is the core of stakeholder management at its most fundamental." },
-        { id:"m7r5", number:"5", title:'"Dare to Lead" — Brené Brown', url:"", searchTerm:"Dare to Lead Brene Brown armored leadership", type:"search", description:"Re-read the section on \"armored vs. daring leadership\". The framework for what happens to skilled people in high-fear environments." }
+        { id:"m7r1", number:"1", title:'"Managing Your Boss" — Gabarro & Kotter, HBR', url:"https://hbr.org/2005/01/managing-your-boss", searchTerm:"", type:"verified", description:"Classic, still the sharpest piece on the upward relationship. Core insight: your boss is a resource to be managed, not an obstacle to route around. Changes how you think about alignment." },
+        { id:"m7r2", number:"2", title:"Shreyas Doshi — 'Influence Without Authority' (Twitter/X thread)", url:"https://twitter.com/shreyas/status/1249039638037110785", searchTerm:"Shreyas Doshi influence without authority thread", type:"verified", description:"His most-shared thread on how senior PMs actually get things done without a mandate. If the link changes, search 'Shreyas Doshi influence without authority' — always the first result. Read the whole thread." },
+        { id:"m7r3", number:"3", title:"Lara Hogan — 'Resilient Management' (free excerpts)", url:"https://larahogan.me/resources/", searchTerm:"", type:"verified", description:"Hogan's writing on stakeholder dynamics and management communication is the most honest available. Her site has free chapters, essays, and her 'questions for your first one-on-one' framework." },
+        { id:"m7r4", number:"4", title:'"The Fearless Organization" — Amy Edmondson (overview)', url:"https://amycedmondson.com/fearless-organization/", searchTerm:"", type:"verified", description:"Edmondson is the Harvard Business School professor who coined 'psychological safety'. Her site has free resources. Core argument: smart people stop sharing what they know in unsafe environments — and this is a product problem, not just an HR one." },
+        { id:"m7r5", number:"5", title:'"Working Backwards" — Colin Bryar & Bill Carr (Amazon PM culture)', url:"", searchTerm:"Working Backwards Colin Bryar Bill Carr Amazon press release FAQ method", type:"search", description:"Two former Amazon VPs on how Amazon builds products — specifically the press release/FAQ method, which is the best stakeholder alignment tool in use anywhere. Free summaries widely available; book is ~$15." }
       ],
       watching: [
-        { id:"m7w1", searchTerm:"Shreyas Doshi product leadership talk", description:"" },
-        { id:"m7w2", searchTerm:"Lara Hogan management communication", description:"" },
-        { id:"m7w3", searchTerm:"Amy Edmondson psychological safety", description:"Why smart people stop speaking up in unsafe environments" }
+        { id:"m7w1", title:"Amy Edmondson — 'Building a Psychologically Safe Workplace' (TEDx)", url:"https://www.ted.com/talks/amy_edmondson_building_a_psychologically_safe_workplace", searchTerm:"Amy Edmondson building psychologically safe workplace TEDx", description:"11 min. The research behind psychological safety — why it matters more than individual talent in team performance. Directly relevant to the environments you're evaluating in your next role search." },
+        { id:"m7w2", title:"Shreyas Doshi — 'The 3 Prioritization Frameworks' (talk)", url:"", searchTerm:"Shreyas Doshi 3 prioritization frameworks product talk 2022", description:"His live talk on prioritisation and stakeholder alignment is more practical than his written pieces. Search 'Shreyas Doshi prioritisation talk' — multiple recordings from product conferences." },
+        { id:"m7w3", title:"Lara Hogan — 'Navigating Team Dynamics' (YouTube)", url:"", searchTerm:"Lara Hogan team dynamics engineering management talk", description:"Her talks on management communication and navigating difficult dynamics are available on YouTube. Search her name — several conference recordings from LeadDev and similar events." }
       ],
       assignment:"Write the go-to-market and execution plan for launching this product in Singapore.\n\n1. Who are the first 100 users and exactly how do you reach them? Be specific — not \"LinkedIn\" but which communities, which people, which message, in which order. Why those 100 and not a different 100?\n\n2. Identify your 3 most important stakeholders for a B2B version (e.g. an L&D lead at GovTech, a Singapore accelerator running PM cohorts, a regional tech company upskilling mid-level PMs). What does each need to believe before they say yes?\n\n3. Write the stakeholder communication plan: what does each stakeholder need to hear, from whom, and when?\n\n4. Write the pre-mortem: it's 6 months post-launch and the product failed. What was the most likely cause? Now write the mitigation — what would you do in the first 30 days to prevent it?\n\nThis is the most important assignment in the curriculum. Execution is where PMs actually fail.",
       reflection:"What would a stakeholder environment look like that made you feel energised rather than depleted? Try to be specific — not \"less political\" but what specifically would be different. That description is your filter for the next role."
@@ -924,6 +968,7 @@ const CANONICAL_CURRICULUM = {
       subtitle:"Defining what success actually looks like. Then building the rigour to measure it honestly.",
       whyItMatters:"AI product metrics are genuinely different from what most senior PMs learned earlier in their careers. Understanding evals, evaluation frameworks, and AI-specific north star thinking is not just technical knowledge. It is the difference between a PM who sounds credible in an AI product interview and one who actually is.",
       artifact: "Metrics Framework + Weekly Review Template",
+      rubric: { weak: "Chose a north star metric that's easy to measure, not one that tracks real value. The north star could apply to any product. No input metrics defined. Nothing deliberately excluded from the framework. The weekly review template is a to-do list with dates.", strong: "The north star is specific enough that a team could debate whether a given feature moves it. Named at least two leading input metrics that predict the north star. Explicitly listed one metric you're choosing NOT to track and explained the strategic reason. The review template would let a team make a real tradeoff call.", selfCheck: "Is my north star specific enough that I could argue about whether a feature moves it?\nCan I name a feature that improves vanity metrics but does NOT move my north star?\nWhat am I deliberately choosing not to measure — and why is that a better choice?" },
       readings: [
         { id:"m8r1", number:"1", title:"Hamel Husain — everything on evals", url:"https://hamel.dev", searchTerm:"", type:"verified", description:"Read all his evaluation-related posts. Specifically: \"Your AI Product Needs Evals\" and any follow-ups." },
         { id:"m8r2", number:"2", title:'"North Star Playbook" — Amplitude', url:"https://amplitude.com/northstar", searchTerm:"", type:"verified", description:"Free guide. Amplitude's framework for defining metrics that actually matter. Read the whole thing." },
@@ -932,30 +977,31 @@ const CANONICAL_CURRICULUM = {
         { id:"m8r5", number:"5", title:'DeepLearning.AI: "Evaluating and Debugging Generative AI"', url:"https://www.deeplearning.ai/short-courses/evaluating-debugging-generative-ai/", searchTerm:"", type:"verified", description:"Free. Do this course in full. Directly addresses your Micro1 gap." }
       ],
       watching: [
-        { id:"m8w1", searchTerm:"Andrew Ng evaluation AI systems", description:"" },
-        { id:"m8w2", searchTerm:"Brian Balfour north star metric Reforge", description:"" },
-        { id:"m8w3", searchTerm:"Mixpanel north star metric", description:"Practical walkthroughs" }
+        { id:"m8w1", title:"John Doerr — 'Why the Secret to Success Is Setting the Right Goals' (TED)", url:"https://www.ted.com/talks/john_doerr_why_the_secret_to_success_is_setting_the_right_goals", searchTerm:"John Doerr TED OKRs goals success", description:"11 min. The investor who brought OKRs to Google. This is the most persuasive short argument for why measurement discipline matters and how to think about it at the goal level, not just the metric level." },
+        { id:"m8w2", title:"Brian Balfour — 'North Star Metric' (Reforge / YouTube)", url:"", searchTerm:"Brian Balfour north star metric Reforge growth", description:"Balfour co-founded Reforge and has the sharpest framework on growth metrics available anywhere. Search 'Brian Balfour north star metric' — his talk and articles are the best free introduction to the framework." },
+        { id:"m8w3", title:"Hamel Husain — 'Your AI Product Needs Evals' (talk / podcast)", url:"", searchTerm:"Hamel Husain evals AI product talk podcast 2024", description:"Husain is the clearest practitioner writing on AI evaluation. His talk versions of the hamel.dev blog posts are more accessible than the written version. Search his name — he appears on Latent Space and other AI podcasts." }
       ],
       assignment:"Build the full metrics framework for this product.\n\n1. Define the North Star Metric. Hint: it's probably not DAU or revenue — what does \"learning actually happened\" look like as a measurable signal? What's the difference between activity (opened the app) and outcome (can do something they couldn't do before)?\n\n2. Build the metric tree: what 3–4 input metrics drive the North Star? What are the leading indicators you'd watch weekly vs. the lagging indicators you'd check monthly?\n\n3. Define what \"success at 90 days\" looks like for a single user — and write down exactly how you'd know from data alone, without asking them.\n\n4. Name 2 vanity metrics that would be tempting to track (and celebrate) but would be actively misleading about whether the product is working.\n\n5. Write the weekly product review template: the 5 numbers you'd open every Monday and the 3 questions you'd ask about them.\n\nOne page. This is the second portfolio artifact.",
       reflection:"Think about a time you were given the wrong metric to optimise for. What happened? What would you have measured instead?"
     },
     {
-      id:"m9", number:9,
+      id:"m9", number:9, spine: true,
       title:"Career Thesis",
       subtitle:"Only when you are ready. The point of the curriculum is the decision it sets up.",
       whyItMatters:"All the structured thinking in the prior modules should not end in portfolio assembly. It should end in a sharper answer to the question that started the whole thing: what should I do next? This module turns everything you have produced into a personal decision document. The portfolio is the byproduct, not the goal.",
       artifact: "Career Thesis Document",
+      rubric: { weak: "CV in narrative form. Claims broad expertise across many domains. Doesn't make a specific bet on where PM value is going. A 25-year-old applying for the same roles could write an equivalent document with different job titles.", strong: "Makes a specific claim about where senior PM value is going in the next 3–5 years and positions your background as evidence for that bet — not just a list of credentials. The portfolio tells a coherent story across modules, not a greatest hits. The thesis would mean something different coming from you than from someone else with a similar title.", selfCheck: "Does my career thesis make a bet that someone could disagree with?\nWould a hiring manager understand why they need me specifically — not just a senior PM with similar years?\nDo the artifacts across modules tell a coherent story, or are they just evidence of completing tasks?" },
       readings: [
-        { id:"m9r1", number:"1", title:"Designing Your Life — Bill Burnett & Dave Evans", url:"https://designingyour.life/the-book/", searchTerm:"", type:"verified", description:"Specifically the Odyssey Plans chapter. The Stanford d.school methodology applied to career decisions. The book is short and worth owning." },
-        { id:"m9r2", number:"2", title:"So Good They Can't Ignore You — Cal Newport", url:"", searchTerm:"Cal Newport So Good They Cant Ignore You summary", type:"search", description:"The 'career capital' framing. Reframes 'follow your passion' as bad career advice and offers a better model." },
-        { id:"m9r3", number:"3", title:"Playing to Win — Roger Martin (Choice Cascade chapter)", url:"", searchTerm:"Roger Martin Playing to Win choice cascade career", type:"search", description:"Read the chapter on Choice Cascades, then apply the framework to your own career, not a company. Where will you play? How will you win?" },
-        { id:"m9r4", number:"4", title:"Quit — Annie Duke", url:"", searchTerm:"Annie Duke Quit walk away framework", type:"search", description:"The companion to Thinking in Bets. On knowing when to leave a path you have invested in. Highly relevant for career re-entry decisions." },
-        { id:"m9r5", number:"5", title:"Hunting Great Businesses — Patrick O'Shaughnessy", url:"", searchTerm:"Patrick OShaughnessy Hunting Great Businesses essay", type:"search", description:"Written about company evaluation, but the framework applies cleanly to evaluating roles. Use it to build your own 'what makes a great role' filter." }
+        { id:"m9r1", number:"1", title:"Designing Your Life — Bill Burnett & Dave Evans (Stanford)", url:"https://designingyour.life/the-book/", searchTerm:"", type:"verified", description:"The Stanford d.school methodology applied to career decisions. Read the Odyssey Plans chapter specifically — it's the most practically useful framework for someone at a career inflection point. The site has free exercises." },
+        { id:"m9r2", number:"2", title:"Paul Graham — 'How to Do What You Love'", url:"http://paulgraham.com/love.html", searchTerm:"", type:"verified", description:"One of the most honest essays about work and meaning available. Graham is blunt about the difference between prestige and genuine interest. 20-minute read that will probably make you think about something uncomfortable." },
+        { id:"m9r3", number:"3", title:"Paul Graham — 'What You'll Wish You'd Known'", url:"http://paulgraham.com/hs.html", searchTerm:"", type:"verified", description:"Ostensibly a high school talk but the insight on how to think about career direction applies at any age. Read alongside 'How to Do What You Love'. Graham's essays are the best free career thinking available." },
+        { id:"m9r4", number:"4", title:'"So Good They Can\'t Ignore You" — Cal Newport (summary)', url:"", searchTerm:"Cal Newport So Good They Cant Ignore You career capital summary", type:"search", description:"Newport's career capital framing directly challenges 'follow your passion' and replaces it with something more useful. The full book is ~$15; strong free summaries are widely available. The argument is what matters, not the prose." },
+        { id:"m9r5", number:"5", title:"Lenny Rachitsky — 'How to get a product job at a top company'", url:"https://www.lennysnewsletter.com/p/how-to-get-a-product-job", searchTerm:"Lenny Rachitsky how to get a PM job top company", type:"verified", description:"Lenny surveyed hundreds of PMs and hiring managers specifically on what actually gets someone the job. More rigorous than most career advice. Relevant to both what to build in your portfolio and how to position yourself." }
       ],
       watching:[
-        { id:"m9w1", searchTerm:"Bill Burnett Stanford Designing Your Life talk", description:"The original Stanford d.school lecture, free on YouTube" },
-        { id:"m9w2", searchTerm:"Reid Hoffman start up of you career strategy", description:"His framework for treating your career as a startup, including pivots" },
-        { id:"m9w3", searchTerm:"Naval Ravikant How to Get Rich tweetstorm career", description:"The relevant parts are on leverage, choosing the right game, and avoiding low-quality bets. Ignore the title." }
+        { id:"m9w1", title:"Bill Burnett — 'Designing Your Life' (Stanford lecture, YouTube)", url:"", searchTerm:"Bill Burnett designing your life Stanford lecture YouTube", description:"The full Stanford class lecture is available on YouTube. More practical than the TED format — he works through the actual exercises. Search 'Bill Burnett Designing Your Life Stanford' — the university has uploaded it officially." },
+        { id:"m9w2", title:"Simon Sinek — 'How Great Leaders Inspire Action' (TED)", url:"https://www.ted.com/talks/simon_sinek_how_great_leaders_inspire_action", searchTerm:"Simon Sinek start with why TED", description:"18 min. The 'Start with Why' talk. Directly useful for articulating your career thesis — what you believe, not just what you've done. The framing exercise for the Career Thesis document." },
+        { id:"m9w3", title:"Reid Hoffman — 'The Start-Up of You' (talk)", url:"", searchTerm:"Reid Hoffman startup of you career strategy talk LinkedIn", description:"LinkedIn's co-founder on treating your career like a startup — including when to pivot. His framework for 'plan A, plan B, plan Z' is the most practical career risk management model available." }
       ],
       assignment:"Write the Career Thesis. Reference your own work across the prior modules.\n\nStructure (1,200 words):\n- The role you are going after: org type, stage, domain, team shape\n- The working conditions you need (from Module 7 + Module 0 Operating Manual)\n- Your commercial logic (from Module 5): how you now think about value creation\n- Your AI thesis (from Module 6): where you place your bet\n- Three things you are explicitly saying no to\n- The first 90 days plan if you got the role\n- The 12-month bet: where you want to be\n\nEnd with two sentences:\n1. \"The role I am going after looks like ___.\"\n2. \"If I take a role that does not satisfy ___, ___, and ___, I am making a worse decision than waiting.\"\n\nThis is the artifact that justifies the whole curriculum. Treat it that way.",
       reflection:"Having read, watched, built, and thought through all of this:\n\nDo you want to be a PM?\n\nNot should you. Not what does the market want. Not what makes a good salary.\n\nDo you want it?\n\nWrite the answer down, privately, before you apply for anything."
@@ -967,8 +1013,19 @@ const CANONICAL_CURRICULUM = {
       subtitle:"Your private writing space. Drafts, ideas, and shipping decisions at your own pace.",
       whyItMatters:"A scratchpad for writing you might one day publish. Posts, essays, interview answers, product announcements. No content calendar, no pressure to ship. Just a place to accumulate raw material so that when you are ready, you are starting from a draft, not a blank page.\n\nWrite when you want. Delete what does not serve you. Ship when it feels right.",
       artifact: "Two to three public-ready drafts",
-      readings:[],
-      watching:[],
+      rubric: { weak: "Chronological diary of what was built. Written for an audience who already knows the project. No decision inflection points — just progress updates. Reads like a README or commit log, not a case study. Comfortable to share.", strong: "Shows at least one moment where you changed direction and explains the reasoning. A reader who doesn't know the project can follow a key product decision. Captures something that didn't work and what you learned. Uncomfortable enough to publish that you hesitated.", selfCheck: "Can someone unfamiliar with this project understand a key decision I made — not just what I built?\nDid I document a failure or course correction, or only progress?\nWould I be slightly nervous sharing this? (if no: probably not honest enough)" },
+      readings:[
+        { id:"m10r1", number:"1", title:"Paul Graham — 'Write Simply'", url:"http://paulgraham.com/simply.html", searchTerm:"", type:"verified", description:"5-minute read. The best single piece of writing advice available anywhere. The argument: if you can't say it simply, you don't understand it. Directly relevant to the kind of writing that builds a public reputation." },
+        { id:"m10r2", number:"2", title:"Paul Graham — 'Putting Ideas into Words'", url:"http://paulgraham.com/words.html", searchTerm:"", type:"verified", description:"Short. Graham's argument that writing is thinking — that you don't know what you believe until you've had to write it down. The reason this module exists." },
+        { id:"m10r3", number:"3", title:"David Perell — 'The Ultimate Guide to Writing Online'", url:"https://perell.com/essay/the-ultimate-guide-to-writing-online/", searchTerm:"", type:"verified", description:"The most comprehensive free guide to building a writing habit and publishing online. Perell has helped thousands of people publish their first serious essay. Long — read the sections on finding your niche and the feedback loop." },
+        { id:"m10r4", number:"4", title:"Kevin Kelly — '1,000 True Fans' (essay)", url:"https://kk.org/thetechnium/1000-true-fans/", searchTerm:"", type:"verified", description:"The foundational argument for why a small, specific audience is more valuable than a large, general one. Directly applicable to how to think about publishing during a career re-entry — you don't need millions of readers." },
+        { id:"m10r5", number:"5", title:"Lenny Rachitsky — 'How I write' (newsletter)", url:"https://www.lennysnewsletter.com/p/how-i-write", searchTerm:"Lenny Rachitsky how I write newsletter process", type:"verified", description:"Lenny built one of the most valuable paid newsletters in the PM world. This piece on his actual process is the most practical writing-for-PM-audience guide available. He writes in public about the same topics you'll be writing about." }
+      ],
+      watching:[
+        { id:"m10w1", title:"David Perell — 'Why You Should Write Online' (YouTube)", url:"", searchTerm:"David Perell why you should write online talk", description:"His foundational talk on the case for building a writing practice and publishing. More motivating than instructional — watch this when you're procrastinating on starting." },
+        { id:"m10w2", title:"Seth Godin — 'How to Get Your Ideas to Spread' (TED)", url:"https://www.ted.com/talks/seth_godin_how_to_get_your_ideas_to_spread", searchTerm:"Seth Godin ideas spread TED", description:"17 min. Godin on what makes ideas worth spreading and why remarkable beats safe. Directly applicable to deciding what to publish and how to position it." },
+        { id:"m10w3", title:"Paul Graham — interviews on writing and startups (YouTube)", url:"", searchTerm:"Paul Graham interview writing startups 2023 2024", description:"Graham rarely gives formal talks but does long-form interviews. Any interview from the last 3 years is worth watching — his clarity of thought on communication is the thing to study, not just the content." }
+      ],
       assignment:"Use the sections below as drafts. Each section is one piece of writing — a post, an essay, a story, an answer.\n\nGuidelines (loose):\n- Write in your real voice, not a LinkedIn voice\n- Cite the readings from other modules that shaped your thinking — use the 🔗 Cite button\n- Don't worry about polish. Drafts are for thinking, not performing.\n- Collapse what you're not actively working on. The UI rewards mess as long as it's organized mess.\n- Add new sections freely. Delete sections you've outgrown.\n\nThe pre-stubbed sections below are starting points — based on conversations you've already had about this product. Treat them as prompts, not assignments. Reorder, rename, or delete them as you like.",
       reflection:"After a few weeks of writing here, look back and ask:\n\n- Which drafts keep growing? Which ones do you abandon?\n- What themes keep showing up across different posts?\n- What are you NOT writing about that you probably should be?\n\nWhat you naturally return to is a strong signal about what you actually care about — and a clue about what you should be publishing first."
     }
@@ -1475,17 +1532,28 @@ function parseWatchingSection(text) {
 // PROGRESS HELPERS
 // ====================================================================
 function getProgress(modId) {
-  return { complete:false, readings:{}, watching:{}, assignmentDone:false, reflectionDone:false, notes:'', assignmentNotes:'', reflectionNotes:'', ...(state.progress[modId]||{}) };
+  return { complete:false, readings:{}, watching:{}, assignmentDone:false, reflectionDone:false, notes:'', assignmentNotes:'', reflectionNotes:'', rejected:{readings:{},watching:{}}, ...(state.progress[modId]||{}) };
 }
 function getModPct(mod) {
   const p = getProgress(mod.id);
   if (p.complete) return 100;
   let total=0, done=0;
-  total+=mod.readings.length; done+=mod.readings.filter(r=>p.readings[r.id]).length;
-  total+=mod.watching.length; done+=mod.watching.filter(w=>p.watching[w.id]).length;
+  const rejR = p.rejected?.readings || {};
+  const rejW = p.rejected?.watching || {};
+  const activeR = mod.readings.filter(r=>!rejR[r.id]);
+  const activeW = mod.watching.filter(w=>!rejW[w.id]);
+  total+=activeR.length; done+=activeR.filter(r=>p.readings[r.id]).length;
+  total+=activeW.length; done+=activeW.filter(w=>p.watching[w.id]).length;
   if (mod.assignment){total++;if(p.assignmentDone)done++;}
   if (mod.reflection){total++;if(p.reflectionDone)done++;}
   return total===0?0:Math.round((done/total)*100);
+}
+function toggleRejected(modId, type, id) {
+  ensureP(modId);
+  if (!state.progress[modId].rejected) state.progress[modId].rejected = {readings:{},watching:{}};
+  if (!state.progress[modId].rejected[type]) state.progress[modId].rejected[type] = {};
+  state.progress[modId].rejected[type][id] = !state.progress[modId].rejected[type][id];
+  saveState(); render();
 }
 function getOverall() {
   if (!state.curriculum) return {complete:0,inProgress:0,total:0,pct:0};
@@ -1618,6 +1686,9 @@ function renderStudent() {
       ${state.curriculum.subtitle ? `<div class="curriculum-hero-subtitle">${esc(state.curriculum.subtitle)}</div>` : ''}
     </div>`;
   }
+  if (state.curriculum?.paceNote) {
+    html += `<div class="pace-banner"><span class="pace-banner-icon">🗓</span><span>${esc(state.curriculum.paceNote)}</span></div>`;
+  }
   html += `
     <div class="progress-banner">
       <div class="progress-bar-section">
@@ -1652,7 +1723,7 @@ function renderStudent() {
         <div class="module-card-header">
           <div><span class="module-badge ${badgeClass}">${badgeText}</span></div>
           <div class="module-num-inline">Module ${mod.number}</div>
-          <div class="module-title">${esc(mod.title)}</div>
+          <div class="module-title">${esc(mod.title)}${mod.spine?`<span class="spine-pill">Core</span>`:''}</div>
           ${mod.subtitle?`<div class="module-subtitle">${esc(mod.subtitle.split('.')[0])}</div>`:''}
           ${mod.artifact?`<div class="artifact-pill"><span class="artifact-icon">📦</span><span class="artifact-text">${esc(mod.artifact)}</span></div>`:''}
         </div>
@@ -1690,6 +1761,7 @@ function renderDetail(mod) {
     {id:'watching',label:`Watching (${mod.watching.length})`,show:mod.watching.length>0},
     {id:'assignment',label:'Assignment',show:!!mod.assignment},
     {id:'reflection',label:'Reflection',show:!!mod.reflection},
+    {id:'evaluate',label:'Evaluate',show:!!mod.rubric},
     {id:'attachments',label:`Attachments${attCount?` (${attCount})`:''}`,show:true},
     {id:'notes',label:'Notes',show:true}
   ].filter(t=>t.show);
@@ -1701,10 +1773,11 @@ function renderDetail(mod) {
   if (activeTab==='reading') {
     content=mod.readings.map(r=>{
       const done = p.readings[r.id];
+      const rejected = p.rejected?.readings?.[r.id] || false;
       const adminAttach = r.attachmentPath && r.attachmentName;
       const studentAttach = state.attachments[mod.id]?.readings?.[r.id];
-      return `<div class="reading-item" data-rid="${r.id}">
-        <input type="checkbox" class="check-input" ${done?'checked':''} onchange="toggleReading('${mod.id}','${r.id}',this.checked)">
+      return `<div class="reading-item${rejected?' rejected':''}" data-rid="${r.id}">
+        <input type="checkbox" class="check-input" ${done?'checked':''} ${rejected?'disabled':''} onchange="toggleReading('${mod.id}','${r.id}',this.checked)">
         <div class="reading-content">
           <div class="reading-title ${done?'done':''}">${r.number}. ${esc(r.title)}</div>
           <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:4px">
@@ -1714,20 +1787,27 @@ function renderDetail(mod) {
           </div>
           ${r.description?`<div class="reading-desc">${esc(r.description).substring(0,220)}${r.description.length>220?'…':''}</div>`:''}
         </div>
+        <button class="skip-btn" onclick="toggleRejected('${mod.id}','readings','${r.id}')">${rejected?'↩ Restore':'✕ Skip'}</button>
       </div>`;
     }).join('')||'<p style="color:var(--text-muted)">No readings in this module.</p>';
 
   } else if (activeTab==='watching') {
     content=mod.watching.map(w=>{
       const done=p.watching[w.id];
+      const rejected = p.rejected?.watching?.[w.id] || false;
+      const directLink = w.url
+        ? `<a href="${w.url}" target="_blank" rel="noopener" class="reading-link">✅ Watch directly ↗</a>`
+        : '';
       const ytUrl=`https://www.youtube.com/results?search_query=${encodeURIComponent(w.searchTerm)}`;
-      return `<div class="watch-item">
-        <input type="checkbox" class="check-input" ${done?'checked':''} onchange="toggleWatching('${mod.id}','${w.id}',this.checked)">
+      const searchLink = w.searchTerm ? `<a href="${ytUrl}" target="_blank" rel="noopener" class="yt-btn">▶ Search YouTube</a>` : '';
+      return `<div class="watch-item${rejected?' rejected':''}">
+        <input type="checkbox" class="check-input" ${done?'checked':''} ${rejected?'disabled':''} onchange="toggleWatching('${mod.id}','${w.id}',this.checked)">
         <div class="watch-content">
-          <div class="watch-term ${done?'done':''}">${esc(w.searchTerm)}</div>
-          <a href="${ytUrl}" target="_blank" rel="noopener" class="yt-btn">▶ Search on YouTube</a>
+          <div class="watch-term ${done?'done':''}">${esc(w.title||w.searchTerm)}</div>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:4px">${directLink}${searchLink}</div>
           ${w.description?`<div class="watch-desc">${esc(w.description)}</div>`:''}
         </div>
+        <button class="skip-btn" onclick="toggleRejected('${mod.id}','watching','${w.id}')">${rejected?'↩ Restore':'✕ Skip'}</button>
       </div>`;
     }).join('')||'<p style="color:var(--text-muted)">No watching items in this module.</p>';
 
@@ -1809,6 +1889,24 @@ function renderDetail(mod) {
       <div class="reflection-block">${formatProse(mod.reflection)}</div>
       <div class="notes-label">My reflection</div>
       <textarea class="notes-area" id="reflectionNotes" placeholder="Write your reflection here…" oninput="autoSave('${mod.id}','reflectionNotes')">${esc(p.reflectionNotes)}</textarea>`;
+
+  } else if (activeTab==='evaluate') {
+    const r=mod.rubric||{};
+    content=`
+      <div class="rubric-section">
+        <div class="rubric-label weak">Weak version of this artifact</div>
+        <div class="rubric-block weak">${esc(r.weak||'')}</div>
+      </div>
+      <div class="rubric-section">
+        <div class="rubric-label strong">Strong version of this artifact</div>
+        <div class="rubric-block strong">${esc(r.strong||'')}</div>
+      </div>
+      <div class="rubric-section">
+        <div class="rubric-label check">Ask yourself</div>
+        <div class="rubric-block check">${esc(r.selfCheck||'')}</div>
+      </div>
+      <div class="notes-label" style="margin-top:20px">My self-evaluation</div>
+      <textarea class="notes-area" id="evaluationNotes" placeholder="How does your artifact hold up against the rubric? Where is it strong, where does it fall short, what would you change?" oninput="autoSave('${mod.id}','evaluationNotes')">${esc(p.evaluationNotes||'')}</textarea>`;
 
   } else if (activeTab==='attachments') {
     content=renderAttachmentsTab(mod.id, 'student');
@@ -2779,7 +2877,7 @@ function autoSave(modId,field){
   const key=`${modId}_${field}`;
   clearTimeout(_noteTimers[key]);
   _noteTimers[key]=setTimeout(()=>{
-    const elMap={notes:'moduleNotes',assignmentNotes:'assignmentNotes',reflectionNotes:'reflectionNotes'};
+    const elMap={notes:'moduleNotes',assignmentNotes:'assignmentNotes',reflectionNotes:'reflectionNotes',evaluationNotes:'evaluationNotes'};
     const el=document.getElementById(elMap[field]);
     if(el){ensureP(modId);state.progress[modId][field]=el.value;saveState();}
   },600);
