@@ -4,7 +4,7 @@
 
 A self-contained curriculum tracker built during a PM career break, to actually execute a structured, self-designed AI-era PM curriculum, not just collect it in a Notion doc.
 
-**[→ Live demo](https://surabhibatra29.github.io/canon/curriculum-tracker.html)** *(takes ~60s to go live on first deploy)*
+**[→ Live demo](https://surabhibatra29.github.io/canon/curriculum-tracker.html)**
 
 ---
 
@@ -61,12 +61,15 @@ Single HTML file, no build step, no dependencies to install, runs directly in a 
 | 2 | Design Thinking & Human-Centred Research | Discovery Map |
 | 3 | AI Fundamentals (Rigorous, Non-Technical) | AI Opportunity Map |
 | 4 | AI Tools, Hands On | Working AI Feature + Prompt Iteration Log |
-| 5 | Pricing & Monetization Strategy | Commercial Model + Pricing Page Copy |
-| 6 | AI Product Strategy | 12-Month AI Product Thesis |
-| 7 | Execution & Stakeholder Management | GTM Plan + Ideal Environment Spec |
-| 8 | Metrics, Evaluation & North Star Thinking | Metrics Framework + Weekly Review Template |
-| 9 | Career Thesis | Career Thesis Document |
-| 10 | Build Log & Publishing *(private scratchpad)* | Two to three public-ready drafts |
+| 5 | Product Taste & Craft | Product Critique + Evaluation Framework |
+| 6 | Pricing & Monetization Strategy | Commercial Model + Pricing Page Copy |
+| 7 | AI Product Strategy | 12-Month AI Product Thesis |
+| 8 | Prioritization & Roadmapping | Prioritised Roadmap + Decision Memo |
+| 9 | Execution & Stakeholder Management | GTM Plan + Ideal Environment Spec |
+| 10 | Written Communication & PM Craft | Product Brief (one-pager) |
+| 11 | Metrics, Evaluation & North Star Thinking | Metrics Framework + Weekly Review Template |
+| 12 | Career Thesis | Career Thesis Document |
+| 13 | Build Log & Publishing *(private scratchpad)* | Two to three public-ready drafts |
 
 ---
 

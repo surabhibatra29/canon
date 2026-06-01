@@ -132,12 +132,15 @@ A `.claude/launch.json` is already configured for the preview panel.
 2. Design Thinking & Human-Centred Research
 3. AI Fundamentals — Rigorous, Non-Technical
 4. AI Tools — Hands On
-5. Pricing & Monetization Strategy
-6. AI Product Strategy — The Layer Above the Tools
-7. Execution & Stakeholder Management — Confidence Rebuild
-8. Metrics, Evaluation & North Star Thinking
-9. Pulling It Together — Artifact & Portfolio
-10. Build Log & Publishing
+5. Product Taste & Craft
+6. Pricing & Monetization Strategy
+7. AI Product Strategy — The Layer Above the Tools
+8. Prioritization & Roadmapping
+9. Execution & Stakeholder Management
+10. Written Communication & PM Craft
+11. Metrics, Evaluation & North Star Thinking
+12. Career Thesis
+13. Build Log & Publishing
 
 ## Known behaviours / gotchas
 - Supabase SDK loads from CDN — if CDN fails, app runs in local-only mode (no auth, no sync).
