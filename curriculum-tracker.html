@@ -1873,7 +1873,10 @@ function renderDetail(mod) {
 
   let content='';
   if (activeTab==='reading') {
-    content=mod.readings.map(r=>{
+    content=mod.readings.slice().sort((a,b)=>{
+      const key=r=>p.rejected?.readings?.[r.id]?2:p.readings[r.id]?1:0;
+      return key(a)-key(b);
+    }).map(r=>{
       const done = p.readings[r.id];
       const rejected = p.rejected?.readings?.[r.id] || false;
       const adminAttach = r.attachmentPath && r.attachmentName;
@@ -1906,7 +1909,10 @@ function renderDetail(mod) {
     }).join('')||'<p style="color:var(--text-muted)">No readings in this module.</p>';
 
   } else if (activeTab==='watching') {
-    content=mod.watching.map(w=>{
+    content=mod.watching.slice().sort((a,b)=>{
+      const key=w=>p.rejected?.watching?.[w.id]?2:p.watching[w.id]?1:0;
+      return key(a)-key(b);
+    }).map(w=>{
       const done=p.watching[w.id];
       const rejected = p.rejected?.watching?.[w.id] || false;
       const directLink = w.url
