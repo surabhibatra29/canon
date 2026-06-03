@@ -214,22 +214,21 @@
     .skip-btn:hover { border-color: var(--red); color: var(--red); background: rgba(220,38,38,0.05); }
     .reading-item.rejected .skip-btn, .watch-item.rejected .skip-btn { border-color: var(--purple); color: var(--purple); background: rgba(79,90,240,0.06); }
     .reading-item.rejected .skip-btn:hover, .watch-item.rejected .skip-btn:hover { border-color: var(--green); color: var(--green); background: rgba(5,150,105,0.06); }
-    .reading-title { font-weight: 600; font-size: 14px; margin-bottom: 5px; line-height: 1.4; }
+    .reading-title-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin-bottom: 4px; }
+    .reading-title { font-weight: 600; font-size: 14px; line-height: 1.4; }
     .reading-title.done { text-decoration: line-through; color: var(--text-muted); }
-    .reading-link { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--purple); text-decoration: none; margin-bottom: 5px; background: var(--purple-light); padding: 2px 8px; border-radius: 4px; }
+    .reading-link { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--purple); text-decoration: none; background: var(--purple-light); padding: 2px 8px; border-radius: 4px; flex-shrink: 0; }
     .reading-link:hover { background: #DDD6FE; }
-    .search-pill { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; background: var(--gray-light); padding: 2px 8px; border-radius: 4px; color: var(--text-muted); margin-bottom: 5px; font-family: monospace; }
+    .search-pill { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; background: var(--gray-light); padding: 2px 8px; border-radius: 4px; color: var(--text-muted); font-family: monospace; flex-shrink: 0; }
     .reading-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
-    .reading-note-wrap { margin-top: 7px; }
-    .reading-note-display { cursor: pointer; padding: 3px 0; border-bottom: 1px solid var(--border); min-height: 22px; transition: border-color 0.15s; }
-    .reading-note-display:hover { border-bottom-color: var(--purple); }
-    .reading-note-placeholder { font-size: 12px; color: var(--text-muted); opacity: 0.5; font-style: italic; }
-    .reading-note-rendered { font-size: 12px; color: var(--text-muted); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-    .reading-note-rendered p { margin: 0 0 3px; }
-    .reading-note-rendered ol, .reading-note-rendered ul { margin: 3px 0; padding-left: 18px; }
-    .reading-note-rendered li { margin-bottom: 2px; }
-    .reading-note-rendered strong, .reading-note-rendered b { font-weight: 600; color: var(--text); }
-    .reading-note-rendered em, .reading-note-rendered i { font-style: italic; }
+    .desc-more-btn { font-size: 11px; color: var(--purple); background: none; border: none; cursor: pointer; padding: 0 2px; font-family: inherit; opacity: 0.75; }
+    .desc-more-btn:hover { opacity: 1; text-decoration: underline; }
+    .reading-note-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; cursor: pointer; padding: 2px 7px; border-radius: 4px; border: none; font-family: inherit; transition: all 0.15s; flex-shrink: 0; white-space: nowrap; }
+    .reading-note-chip.has-note { background: var(--purple-light); color: var(--purple); }
+    .reading-note-chip.has-note:hover { background: #DDD6FE; }
+    .reading-note-chip.add-note { background: transparent; color: var(--text-muted); opacity: 0; pointer-events: none; }
+    .reading-item:hover .reading-note-chip.add-note { opacity: 0.55; pointer-events: auto; }
+    .reading-note-chip.add-note:hover { opacity: 1 !important; color: var(--purple); background: var(--purple-light); }
     .note-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 24px; animation: fadeIn 0.15s ease; }
     .note-modal-card { background: var(--note-modal-bg); border: 1px solid var(--border); border-radius: 18px; width: 100%; max-width: 580px; max-height: 85vh; box-shadow: 0 32px 80px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.08); overflow: hidden; display: flex; flex-direction: column; }
     .note-modal-header { padding: 18px 20px 14px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -514,6 +513,8 @@
     [data-theme="dark"] .reading-link { background: rgba(79,90,240,0.12); color: #A5B4FC; }
     [data-theme="dark"] .reading-link:hover { background: rgba(79,90,240,0.2); }
     [data-theme="dark"] .search-pill { background: rgba(255,255,255,0.06); color: var(--text-muted); }
+    [data-theme="dark"] .reading-note-chip.has-note { background: rgba(79,90,240,0.12); color: #A5B4FC; }
+    [data-theme="dark"] .reading-note-chip.has-note:hover { background: rgba(79,90,240,0.2); }
     [data-theme="dark"] .attach-resource-badge { background: rgba(217,119,6,0.2); color: #FCD34D; }
     [data-theme="dark"] .btn-danger { background: rgba(220,38,38,0.15); color: #FCA5A5; }
     [data-theme="dark"] .btn-danger:hover { background: rgba(220,38,38,0.25); }
@@ -640,7 +641,7 @@
     .expand-btn:hover { background: var(--gray-light); }
     .expand-btn.open { border-color: var(--purple); color: var(--purple); background: var(--purple-light); }
     /* Reading attachment pill in Learn mode */
-    .reading-attach-view { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; background: var(--purple-light); border-radius: 6px; font-size: 12px; font-weight: 500; color: var(--purple); cursor: pointer; border: none; font-family: inherit; margin-top: 4px; }
+    .reading-attach-view { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; background: var(--purple-light); border-radius: 6px; font-size: 12px; font-weight: 500; color: var(--purple); cursor: pointer; border: none; font-family: inherit; flex-shrink: 0; }
     .reading-attach-view:hover { background: rgba(79,90,240,0.12); }
     .reading-my-attach { background: var(--green-light); color: var(--green); }
     .reading-my-attach:hover { background: rgba(5,150,105,0.15); }
@@ -1877,17 +1878,28 @@ function renderDetail(mod) {
       const rejected = p.rejected?.readings?.[r.id] || false;
       const adminAttach = r.attachmentPath && r.attachmentName;
       const studentAttach = state.attachments[mod.id]?.readings?.[r.id];
+      const linkPill = r.type==='verified'&&r.url
+        ? `<a href="${r.url}" target="_blank" rel="noopener" class="reading-link">✅ Open link ↗</a>`
+        : r.searchTerm ? `<span class="search-pill">🔍 ${esc(r.searchTerm)}</span>` : '';
+      const pdfPill = adminAttach
+        ? `<button class="reading-attach-view" onclick="viewAttach('${r.attachmentPath}','${esc(r.attachmentName)}')" title="Resource PDF">📄 Open PDF</button>` : '';
+      const myPdfPill = studentAttach
+        ? `<button class="reading-attach-view reading-my-attach" onclick="viewAttach('${studentAttach.dbId}','${esc(studentAttach.name)}')" title="Your uploaded copy">📄 My copy</button>` : '';
+      const noteChip = (done&&!rejected) ? buildNoteChip(mod.id,r.id,p.readingNotes?.[r.id]||'') : '';
+      let descHtml = '';
+      if(r.description){
+        const hasMore = r.description.length > 100;
+        const short = hasMore ? r.description.substring(0,100) : r.description;
+        descHtml = `<div class="reading-desc" data-full="${esc(r.description)}"><span>${esc(short)}${hasMore?'…':''}</span>${hasMore?`<button class="desc-more-btn" onclick="toggleDesc(this)">more</button>`:''}</div>`;
+      }
       return `<div class="reading-item${rejected?' rejected':''}" data-rid="${r.id}">
         <input type="checkbox" class="check-input" ${done?'checked':''} ${rejected?'disabled':''} onchange="toggleReading('${mod.id}','${r.id}',this.checked)">
         <div class="reading-content">
-          <div class="reading-title ${done?'done':''}">${r.number}. ${esc(r.title)}</div>
-          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:4px">
-            ${r.type==='verified'&&r.url?`<a href="${r.url}" target="_blank" rel="noopener" class="reading-link">✅ Open link ↗</a>`:r.searchTerm?`<span class="search-pill">🔍 ${esc(r.searchTerm)}</span>`:''}
-            ${adminAttach?`<button class="reading-attach-view" onclick="viewAttach('${r.attachmentPath}','${esc(r.attachmentName)}')" title="Resource PDF">📄 Open PDF</button>`:''}
-            ${studentAttach?`<button class="reading-attach-view reading-my-attach" onclick="viewAttach('${studentAttach.dbId}','${esc(studentAttach.name)}')" title="Your uploaded copy">📄 My copy</button>`:''}
+          <div class="reading-title-row">
+            <span class="reading-title ${done?'done':''}">${r.number}. ${esc(r.title)}</span>
+            ${linkPill}${pdfPill}${myPdfPill}${noteChip}
           </div>
-          ${r.description?`<div class="reading-desc">${esc(r.description).substring(0,220)}${r.description.length>220?'…':''}</div>`:''}
-          ${(done&&!rejected)?`<div class="reading-note-wrap">${buildNoteDisplay(mod.id,r.id,p.readingNotes?.[r.id]||'')}</div>`:''}
+          ${descHtml}
         </div>
         <button class="skip-btn" onclick="toggleRejected('${mod.id}','readings','${r.id}')">${rejected?'↩ Restore':'✕ Skip'}</button>
       </div>`;
@@ -2975,15 +2987,13 @@ function toggleReading(modId,rId,val){
   if(!item) return;
   const content=item.querySelector('.reading-content');
   if(!content) return;
-  let wrap=content.querySelector('.reading-note-wrap');
-  if(val && !wrap){
-    wrap=document.createElement('div');
-    wrap.className='reading-note-wrap';
+  const titleRow=content.querySelector('.reading-title-row');
+  const existingChip=document.getElementById(`note-chip-${rId}`);
+  if(val && !existingChip && titleRow){
     const note=state.progress[modId].readingNotes?.[rId]||'';
-    wrap.innerHTML=buildNoteDisplay(modId,rId,note);
-    content.appendChild(wrap);
-  } else if(!val && wrap){
-    wrap.remove();
+    titleRow.insertAdjacentHTML('beforeend',buildNoteChip(modId,rId,note));
+  } else if(!val && existingChip){
+    existingChip.remove();
   }
 }
 function saveReadingNote(modId,rId,val){
@@ -2993,12 +3003,19 @@ function saveReadingNote(modId,rId,val){
   else delete state.progress[modId].readingNotes[rId];
   saveState();
 }
-function buildNoteDisplay(modId,rId,note){
+function buildNoteChip(modId,rId,note){
   const isEmpty=!note||note==='<br>'||note==='<div><br></div>';
-  const inner=isEmpty
-    ?`<span class="reading-note-placeholder">where did this take you? ↗</span>`
-    :`<div class="reading-note-rendered">${/<[a-z][\s\S]*>/i.test(note)?note:renderNoteMarkdown(note)}</div>`;
-  return `<div class="reading-note-display" onclick="openNoteModal('${modId}','${rId}')">${inner}</div>`;
+  if(isEmpty) return `<button id="note-chip-${rId}" class="reading-note-chip add-note" onclick="openNoteModal('${modId}','${rId}')">✏ note</button>`;
+  const plain=note.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+  const preview=plain.length>40?plain.substring(0,40)+'…':plain;
+  return `<button id="note-chip-${rId}" class="reading-note-chip has-note" onclick="openNoteModal('${modId}','${rId}')">💬 ${esc(preview)}</button>`;
+}
+function toggleDesc(btn){
+  const desc=btn.parentElement;
+  const span=desc.querySelector('span');
+  const full=desc.dataset.full;
+  if(btn.textContent==='more'){span.textContent=full;btn.textContent='less';}
+  else{span.textContent=full.substring(0,100)+'…';btn.textContent='more';}
 }
 function renderNoteMarkdown(text){
   if(!text) return '';
@@ -3072,8 +3089,8 @@ function closeNoteModal(){
   if(ed&&modId&&rId){
     const html=ed.innerHTML.replace(/(<br\s*\/?>|<div><br\s*\/?><\/div>|\s)+$/i,'').trim();
     saveReadingNote(modId,rId,html);
-    const wrap=document.querySelector(`.reading-item[data-rid="${rId}"] .reading-note-wrap`);
-    if(wrap) wrap.innerHTML=buildNoteDisplay(modId,rId,(state.progress[modId]?.readingNotes?.[rId]||''));
+    const chip=document.getElementById(`note-chip-${rId}`);
+    if(chip) chip.outerHTML=buildNoteChip(modId,rId,(state.progress[modId]?.readingNotes?.[rId]||''));
   }
   modal.remove();
 }
