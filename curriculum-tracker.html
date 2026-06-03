@@ -220,7 +220,7 @@
     .search-pill { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; background: var(--gray-light); padding: 2px 8px; border-radius: 4px; color: var(--text-muted); margin-bottom: 5px; font-family: monospace; }
     .reading-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
     .reading-note-wrap { margin-top: 7px; }
-    .reading-note-input { width: 100%; box-sizing: border-box; border: none; border-bottom: 1px solid var(--border); background: transparent; color: var(--text-muted); font-size: 12px; padding: 3px 0; outline: none; font-family: inherit; font-style: italic; transition: border-color 0.15s, color 0.15s; }
+    .reading-note-input { width: 100%; box-sizing: border-box; border: none; border-bottom: 1px solid var(--border); background: transparent; color: var(--text-muted); font-size: 12px; padding: 3px 0; outline: none; font-family: inherit; font-style: italic; transition: border-color 0.15s, color 0.15s; resize: none; overflow: hidden; min-height: 22px; line-height: 1.6; display: block; }
     .reading-note-input:focus { border-bottom-color: var(--purple); color: var(--text); font-style: normal; }
     .reading-note-input::placeholder { color: var(--text-muted); opacity: 0.5; }
 
@@ -1743,6 +1743,12 @@ function render() {
     document.getElementById('adminView').style.display='';
     renderAdmin();
   }
+  // Auto-size any pre-filled reading note textareas
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('.reading-note-input').forEach(t=>{
+      t.style.height='auto'; t.style.height=t.scrollHeight+'px';
+    });
+  });
 }
 
 function renderStudent() {
@@ -1860,7 +1866,7 @@ function renderDetail(mod) {
             ${studentAttach?`<button class="reading-attach-view reading-my-attach" onclick="viewAttach('${studentAttach.dbId}','${esc(studentAttach.name)}')" title="Your uploaded copy">📄 My copy</button>`:''}
           </div>
           ${r.description?`<div class="reading-desc">${esc(r.description).substring(0,220)}${r.description.length>220?'…':''}</div>`:''}
-          ${(done&&!rejected)?`<div class="reading-note-wrap"><input class="reading-note-input" type="text" placeholder="where did this take you?" value="${esc(p.readingNotes?.[r.id]||'')}" onblur="saveReadingNote('${mod.id}','${r.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()"/></div>`:''}
+          ${(done&&!rejected)?`<div class="reading-note-wrap"><textarea class="reading-note-input" rows="1" placeholder="where did this take you?" onblur="saveReadingNote('${mod.id}','${r.id}',this.value)" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'">${esc(p.readingNotes?.[r.id]||'')}</textarea></div>`:''}
         </div>
         <button class="skip-btn" onclick="toggleRejected('${mod.id}','readings','${r.id}')">${rejected?'↩ Restore':'✕ Skip'}</button>
       </div>`;
@@ -2952,12 +2958,12 @@ function toggleReading(modId,rId,val){
   if(val && !wrap){
     wrap=document.createElement('div');
     wrap.className='reading-note-wrap';
-    const inp=document.createElement('input');
-    inp.className='reading-note-input'; inp.type='text';
+    const inp=document.createElement('textarea');
+    inp.className='reading-note-input'; inp.rows=1;
     inp.placeholder='where did this take you?';
     inp.value=state.progress[modId].readingNotes?.[rId]||'';
     inp.addEventListener('blur',()=>saveReadingNote(modId,rId,inp.value));
-    inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur();});
+    inp.addEventListener('input',()=>{inp.style.height='auto';inp.style.height=inp.scrollHeight+'px';});
     wrap.appendChild(inp); content.appendChild(wrap);
     setTimeout(()=>inp.focus(),50);
   } else if(!val && wrap){
