@@ -24,6 +24,7 @@
       --shadow: 0 1px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
       --shadow-md: 0 4px 24px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
       --shadow-lg: 0 20px 60px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.06);
+      --note-modal-bg: rgba(255,255,255,0.97);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -220,9 +221,30 @@
     .search-pill { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; background: var(--gray-light); padding: 2px 8px; border-radius: 4px; color: var(--text-muted); margin-bottom: 5px; font-family: monospace; }
     .reading-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
     .reading-note-wrap { margin-top: 7px; }
-    .reading-note-input { width: 100%; box-sizing: border-box; border: none; border-bottom: 1px solid var(--border); background: transparent; color: var(--text-muted); font-size: 12px; padding: 3px 0; outline: none; font-family: inherit; font-style: italic; transition: border-color 0.15s, color 0.15s; resize: none; overflow: hidden; min-height: 22px; line-height: 1.6; display: block; }
-    .reading-note-input:focus { border-bottom-color: var(--purple); color: var(--text); font-style: normal; }
-    .reading-note-input::placeholder { color: var(--text-muted); opacity: 0.5; }
+    .reading-note-display { cursor: pointer; padding: 3px 0; border-bottom: 1px solid var(--border); min-height: 22px; transition: border-color 0.15s; }
+    .reading-note-display:hover { border-bottom-color: var(--purple); }
+    .reading-note-placeholder { font-size: 12px; color: var(--text-muted); opacity: 0.5; font-style: italic; }
+    .reading-note-rendered { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+    .reading-note-rendered p { margin: 0 0 3px; }
+    .reading-note-rendered ol, .reading-note-rendered ul { margin: 3px 0; padding-left: 18px; }
+    .reading-note-rendered li { margin-bottom: 2px; }
+    .reading-note-rendered strong { font-weight: 600; color: var(--text); }
+    .reading-note-rendered em { font-style: italic; }
+    .note-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 24px; animation: fadeIn 0.15s ease; }
+    .note-modal-card { background: var(--note-modal-bg); border: 1px solid var(--border); border-radius: 18px; width: 100%; max-width: 580px; box-shadow: 0 32px 80px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.08); overflow: hidden; display: flex; flex-direction: column; }
+    .note-modal-header { padding: 18px 20px 14px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); }
+    .note-modal-module-label { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--purple); margin-bottom: 5px; }
+    .note-modal-reading-title { font-size: 13px; color: var(--text-muted); font-style: italic; line-height: 1.45; max-width: 440px; }
+    .note-modal-close { background: none; border: none; font-size: 18px; color: var(--text-muted); cursor: pointer; padding: 0 0 0 12px; margin-top: 2px; line-height: 1; flex-shrink: 0; }
+    .note-modal-toolbar { padding: 7px 10px; border-bottom: 1px solid var(--border); display: flex; gap: 1px; align-items: center; }
+    .note-tb-btn { background: none; border: none; border-radius: 5px; padding: 5px 9px; cursor: pointer; font-size: 13px; color: var(--text); font-family: inherit; transition: background 0.1s; }
+    .note-tb-btn:hover { background: rgba(79,90,240,0.08); }
+    .note-tb-divider { width: 1px; height: 16px; background: var(--border); margin: 0 4px; flex-shrink: 0; }
+    .note-tb-saves { flex: 1; text-align: right; font-size: 10px; color: var(--text-muted); opacity: 0.55; padding-right: 2px; }
+    .note-modal-body { padding: 18px 20px; flex: 1; }
+    .note-modal-textarea { width: 100%; box-sizing: border-box; min-height: 220px; border: none; background: transparent; color: var(--text); font-size: 14px; line-height: 1.75; padding: 0; outline: none; font-family: inherit; resize: none; display: block; }
+    .note-modal-textarea::placeholder { color: var(--text-muted); opacity: 0.4; font-style: italic; }
+    .note-modal-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; }
 
     /* ── Watch Items ── */
     .watch-item { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); transition: opacity 0.2s; }
@@ -446,6 +468,7 @@
       --shadow: 0 1px 4px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.4);
       --shadow-md: 0 4px 24px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.3);
       --shadow-lg: 0 20px 60px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.4);
+      --note-modal-bg: rgba(18,18,32,0.97);
     }
     [data-theme="dark"] body { background-image: radial-gradient(ellipse at 10% 80%, rgba(139,92,246,0.12) 0%, transparent 50%), radial-gradient(ellipse at 88% 12%, rgba(79,90,240,0.1) 0%, transparent 50%); }
     [data-theme="dark"] .header { background: rgba(14,14,24,0.88); border-color: rgba(129,140,248,0.1); box-shadow: 0 1px 0 rgba(129,140,248,0.08); }
@@ -1743,12 +1766,6 @@ function render() {
     document.getElementById('adminView').style.display='';
     renderAdmin();
   }
-  // Auto-size any pre-filled reading note textareas
-  requestAnimationFrame(()=>{
-    document.querySelectorAll('.reading-note-input').forEach(t=>{
-      t.style.height='auto'; t.style.height=t.scrollHeight+'px';
-    });
-  });
 }
 
 function renderStudent() {
@@ -1866,7 +1883,7 @@ function renderDetail(mod) {
             ${studentAttach?`<button class="reading-attach-view reading-my-attach" onclick="viewAttach('${studentAttach.dbId}','${esc(studentAttach.name)}')" title="Your uploaded copy">📄 My copy</button>`:''}
           </div>
           ${r.description?`<div class="reading-desc">${esc(r.description).substring(0,220)}${r.description.length>220?'…':''}</div>`:''}
-          ${(done&&!rejected)?`<div class="reading-note-wrap"><textarea class="reading-note-input" rows="1" placeholder="where did this take you?" onblur="saveReadingNote('${mod.id}','${r.id}',this.value)" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'">${esc(p.readingNotes?.[r.id]||'')}</textarea></div>`:''}
+          ${(done&&!rejected)?`<div class="reading-note-wrap">${buildNoteDisplay(mod.id,r.id,p.readingNotes?.[r.id]||'')}</div>`:''}
         </div>
         <button class="skip-btn" onclick="toggleRejected('${mod.id}','readings','${r.id}')">${rejected?'↩ Restore':'✕ Skip'}</button>
       </div>`;
@@ -2958,14 +2975,9 @@ function toggleReading(modId,rId,val){
   if(val && !wrap){
     wrap=document.createElement('div');
     wrap.className='reading-note-wrap';
-    const inp=document.createElement('textarea');
-    inp.className='reading-note-input'; inp.rows=1;
-    inp.placeholder='where did this take you?';
-    inp.value=state.progress[modId].readingNotes?.[rId]||'';
-    inp.addEventListener('blur',()=>saveReadingNote(modId,rId,inp.value));
-    inp.addEventListener('input',()=>{inp.style.height='auto';inp.style.height=inp.scrollHeight+'px';});
-    wrap.appendChild(inp); content.appendChild(wrap);
-    setTimeout(()=>inp.focus(),50);
+    const note=state.progress[modId].readingNotes?.[rId]||'';
+    wrap.innerHTML=buildNoteDisplay(modId,rId,note);
+    content.appendChild(wrap);
   } else if(!val && wrap){
     wrap.remove();
   }
@@ -2976,6 +2988,107 @@ function saveReadingNote(modId,rId,val){
   if(val.trim()) state.progress[modId].readingNotes[rId]=val.trim();
   else delete state.progress[modId].readingNotes[rId];
   saveState();
+}
+function buildNoteDisplay(modId,rId,note){
+  const inner=note
+    ?`<div class="reading-note-rendered">${renderNoteMarkdown(note)}</div>`
+    :`<span class="reading-note-placeholder">where did this take you? ↗</span>`;
+  return `<div class="reading-note-display" onclick="openNoteModal('${modId}','${rId}')">${inner}</div>`;
+}
+function renderNoteMarkdown(text){
+  if(!text) return '';
+  const escH=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const fmt=s=>escH(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>');
+  const lines=text.split('\n');
+  let html='', inOl=false, inUl=false;
+  const closeL=()=>{ if(inOl){html+='</ol>';inOl=false;} if(inUl){html+='</ul>';inUl=false;} };
+  for(const line of lines){
+    if(/^\d+\.\s/.test(line)){
+      if(inUl){html+='</ul>';inUl=false;} if(!inOl){html+='<ol>';inOl=true;}
+      html+=`<li>${fmt(line.replace(/^\d+\.\s/,''))}</li>`;
+    } else if(/^[-•]\s/.test(line)){
+      if(inOl){html+='</ol>';inOl=false;} if(!inUl){html+='<ul>';inUl=true;}
+      html+=`<li>${fmt(line.replace(/^[-•]\s/,''))}</li>`;
+    } else {
+      closeL();
+      html+=line.trim()===''?'<br>':`<p>${fmt(line)}</p>`;
+    }
+  }
+  closeL();
+  return html;
+}
+function openNoteModal(modId,rId){
+  const mod=state.curriculum?.modules.find(m=>m.id===modId);
+  const reading=mod?.readings.find(r=>r.id===rId);
+  const title=reading?.title||'';
+  const modNum=mod?.number??'';
+  const rNum=reading?.number??'';
+  const existingNote=state.progress[modId]?.readingNotes?.[rId]||'';
+  const overlay=document.createElement('div');
+  overlay.id='reading-note-modal';
+  overlay.className='note-modal-overlay';
+  overlay.dataset.modId=modId; overlay.dataset.rId=rId;
+  overlay.onclick=e=>{if(e.target===overlay)closeNoteModal();};
+  overlay.innerHTML=`
+    <div class="note-modal-card">
+      <div class="note-modal-header">
+        <div>
+          <div class="note-modal-module-label">Module ${modNum} · Reading ${rNum}</div>
+          <div class="note-modal-reading-title">${esc(title)}</div>
+        </div>
+        <button class="note-modal-close" onclick="closeNoteModal()">✕</button>
+      </div>
+      <div class="note-modal-toolbar">
+        <button class="note-tb-btn" onclick="insertNoteFormat('bold')" title="Bold"><strong>B</strong></button>
+        <button class="note-tb-btn" onclick="insertNoteFormat('italic')" title="Italic"><em style="font-style:italic">I</em></button>
+        <div class="note-tb-divider"></div>
+        <button class="note-tb-btn" onclick="insertNoteFormat('ol')" title="Numbered list">1.</button>
+        <button class="note-tb-btn" onclick="insertNoteFormat('ul')" title="Bullet list">•—</button>
+        <span class="note-tb-saves">saves automatically</span>
+      </div>
+      <div class="note-modal-body">
+        <textarea id="note-modal-textarea" class="note-modal-textarea" placeholder="where did this take you?">${esc(existingNote)}</textarea>
+      </div>
+      <div class="note-modal-footer">
+        <button class="btn btn-primary" onclick="closeNoteModal()">Done</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  const ta=document.getElementById('note-modal-textarea');
+  ta.style.height='auto'; ta.style.height=Math.max(220,ta.scrollHeight)+'px';
+  ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=Math.max(220,ta.scrollHeight)+'px';});
+  setTimeout(()=>{ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);},50);
+}
+function closeNoteModal(){
+  const modal=document.getElementById('reading-note-modal'); if(!modal)return;
+  const ta=document.getElementById('note-modal-textarea');
+  const {modId,rId}=modal.dataset;
+  if(ta&&modId&&rId){
+    saveReadingNote(modId,rId,ta.value);
+    const wrap=document.querySelector(`.reading-item[data-rid="${rId}"] .reading-note-wrap`);
+    if(wrap) wrap.innerHTML=buildNoteDisplay(modId,rId,(state.progress[modId]?.readingNotes?.[rId]||''));
+  }
+  modal.remove();
+}
+function insertNoteFormat(type){
+  const ta=document.getElementById('note-modal-textarea'); if(!ta)return;
+  const s=ta.selectionStart, e=ta.selectionEnd, v=ta.value;
+  const sel=v.slice(s,e);
+  let nv, ns, ne;
+  if(type==='bold'){
+    if(sel){nv=v.slice(0,s)+`**${sel}**`+v.slice(e);ns=ne=e+4;}
+    else{nv=v.slice(0,s)+`****`+v.slice(e);ns=ne=s+2;}
+  } else if(type==='italic'){
+    if(sel){nv=v.slice(0,s)+`*${sel}*`+v.slice(e);ns=ne=e+2;}
+    else{nv=v.slice(0,s)+`**`+v.slice(e);ns=ne=s+1;}
+  } else if(type==='ol'){
+    const ls=v.lastIndexOf('\n',s-1)+1;
+    nv=v.slice(0,ls)+'1. '+v.slice(ls);ns=ne=s+3;
+  } else if(type==='ul'){
+    const ls=v.lastIndexOf('\n',s-1)+1;
+    nv=v.slice(0,ls)+'- '+v.slice(ls);ns=ne=s+2;
+  }
+  if(nv!==undefined){ta.value=nv;ta.setSelectionRange(ns,ne);ta.dispatchEvent(new Event('input'));ta.focus();}
 }
 function toggleWatching(modId,wId,val){ensureP(modId);state.progress[modId].watching[wId]=val;saveState();refreshPct(modId);}
 function toggleAssignment(modId,val){ensureP(modId);state.progress[modId].assignmentDone=val;saveState();refreshPct(modId);}
