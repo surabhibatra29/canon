@@ -93,11 +93,13 @@ Return a single JSON object. No markdown code fences. No comments. Valid JSON on
 
 1. **8–12 modules.** Number from 0. The final module must be a synthesis/portfolio module — not more content, but a document that pulls everything together into a career decision.
 2. **3–4 spine modules.** Choose based on the person's stated gaps. Mark with spine: true.
-3. **Every module: minimum 5 readings, minimum 3 watching items.**
-4. **No placeholder readings.** Every item must be a real, findable, high-quality resource. Practitioners, academics, primary sources only. No blog aggregators, no generic newsletter roundups.
+3. **Every module: minimum 5 readings, minimum 7 watching items.**
+4. **No placeholder readings or watching items.** Every item must be a real, findable, high-quality resource. Practitioners, academics, primary sources only. No blog aggregators, no generic newsletter roundups.
 5. **No vague search terms.** "AI strategy" is not acceptable. "Hamilton Helmer 7 Powers Invest Like the Best Patrick OShaughnessy" is acceptable.
 6. **At least 60% of readings must have verified URLs** (type: "verified", url field populated).
 7. **At least one watching item per module must have a direct URL** from TED.com, MIT OpenCourseWare, or an official institutional channel.
+8. **Every module must include at least one mock interview watching item** from a top PM interview channel (Exponent @tryexponent is the best). The mock interview should be topic-matched to the module — strategy questions for the strategy module, metrics questions for the metrics module, etc.
+9. **Prioritise these high-signal watching sources**: Lenny Rachitsky podcast (@lennyrachitsky on YouTube), Shreyas Doshi conference talks, Y Combinator lecture series (@ycombinator), Exponent mock interviews (@tryexponent), Julie Zhuo talks, Marty Cagan / SVPG, First Round Capital interviews, a16z AI Summit. These are the practitioners students most need to hear in their own voice, not just read.
 8. **Descriptions are written to the person, not about the resource.** First word should not be the resource name.
 9. **Rubric weak versions must name the specific shortcut this person is likely to take**, not a generic "not enough detail" critique.
 10. **Do not begin generating until all five context fields above are filled in.** If any are missing or vague, ask one clarifying question per missing field before proceeding.
