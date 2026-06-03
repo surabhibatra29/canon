@@ -214,6 +214,15 @@
     .skip-btn:hover { border-color: var(--red); color: var(--red); background: rgba(220,38,38,0.05); }
     .reading-item.rejected .skip-btn, .watch-item.rejected .skip-btn { border-color: var(--purple); color: var(--purple); background: rgba(79,90,240,0.06); }
     .reading-item.rejected .skip-btn:hover, .watch-item.rejected .skip-btn:hover { border-color: var(--green); color: var(--green); background: rgba(5,150,105,0.06); }
+    .skip-prompt { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; align-self: flex-start; margin-top: 2px; }
+    .skip-prompt-input { padding: 4px 8px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 12px; font-family: inherit; width: 150px; outline: none; color: var(--text); background: white; transition: border-color 0.15s; }
+    .skip-prompt-input:focus { border-color: var(--red); }
+    .skip-prompt-actions { display: flex; gap: 4px; }
+    .skip-prompt-confirm { padding: 3px 10px; border-radius: 6px; border: none; background: rgba(220,38,38,0.08); color: var(--red); font-size: 11px; font-weight: 500; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .skip-prompt-confirm:hover { background: rgba(220,38,38,0.16); }
+    .skip-prompt-cancel { padding: 3px 8px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); font-size: 11px; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .skip-prompt-cancel:hover { background: var(--gray-light); }
+    .skip-reason { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 3px; }
     .reading-title-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin-bottom: 4px; }
     .reading-title { font-weight: 600; font-size: 14px; line-height: 1.4; }
     .reading-title.done { text-decoration: line-through; color: var(--text-muted); }
@@ -515,6 +524,7 @@
     [data-theme="dark"] .search-pill { background: rgba(255,255,255,0.06); color: var(--text-muted); }
     [data-theme="dark"] .reading-note-chip.has-note { background: rgba(79,90,240,0.12); color: #A5B4FC; }
     [data-theme="dark"] .reading-note-chip.has-note:hover { background: rgba(79,90,240,0.2); }
+    [data-theme="dark"] .skip-prompt-input { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); color: var(--text); }
     [data-theme="dark"] .attach-resource-badge { background: rgba(217,119,6,0.2); color: #FCD34D; }
     [data-theme="dark"] .btn-danger { background: rgba(220,38,38,0.15); color: #FCA5A5; }
     [data-theme="dark"] .btn-danger:hover { background: rgba(220,38,38,0.25); }
@@ -1652,9 +1662,11 @@ function getModPct(mod) {
 }
 function toggleRejected(modId, type, id) {
   ensureP(modId);
-  if (!state.progress[modId].rejected) state.progress[modId].rejected = {readings:{},watching:{}};
-  if (!state.progress[modId].rejected[type]) state.progress[modId].rejected[type] = {};
-  state.progress[modId].rejected[type][id] = !state.progress[modId].rejected[type][id];
+  const p = state.progress[modId];
+  if (!p.rejected) p.rejected = {readings:{},watching:{}};
+  if (!p.rejected[type]) p.rejected[type] = {};
+  p.rejected[type][id] = !p.rejected[type][id];
+  if (!p.rejected[type][id] && p.skipReasons?.[type]?.[id]) delete p.skipReasons[type][id];
   saveState(); render();
 }
 function getOverall() {
@@ -1889,6 +1901,7 @@ function renderDetail(mod) {
       const myPdfPill = studentAttach
         ? `<button class="reading-attach-view reading-my-attach" onclick="viewAttach('${studentAttach.dbId}','${esc(studentAttach.name)}')" title="Your uploaded copy">📄 My copy</button>` : '';
       const noteChip = (done&&!rejected) ? buildNoteChip(mod.id,r.id,p.readingNotes?.[r.id]||'') : '';
+      const skipReason = rejected ? (p.skipReasons?.readings?.[r.id]||'') : '';
       let descHtml = '';
       if(r.description){
         const hasMore = r.description.length > 100;
@@ -1903,8 +1916,9 @@ function renderDetail(mod) {
             ${linkPill}${pdfPill}${myPdfPill}${noteChip}
           </div>
           ${descHtml}
+          ${skipReason?`<div class="skip-reason">↩ ${esc(skipReason)}</div>`:''}
         </div>
-        <button class="skip-btn" onclick="toggleRejected('${mod.id}','readings','${r.id}')">${rejected?'↩ Restore':'✕ Skip'}</button>
+        <button class="skip-btn" onclick="${rejected?`toggleRejected('${mod.id}','readings','${r.id}')`:`showSkipPrompt('${mod.id}','readings','${r.id}',this)`}">${rejected?'↩ Restore':'✕ Skip'}</button>
       </div>`;
     }).join('')||'<p style="color:var(--text-muted)">No readings in this module.</p>';
 
@@ -1920,14 +1934,16 @@ function renderDetail(mod) {
         : '';
       const ytUrl=`https://www.youtube.com/results?search_query=${encodeURIComponent(w.searchTerm)}`;
       const searchLink = w.searchTerm ? `<a href="${ytUrl}" target="_blank" rel="noopener" class="yt-btn">▶ Search YouTube</a>` : '';
+      const wSkipReason = rejected ? (p.skipReasons?.watching?.[w.id]||'') : '';
       return `<div class="watch-item${rejected?' rejected':''}">
         <input type="checkbox" class="check-input" ${done?'checked':''} ${rejected?'disabled':''} onchange="toggleWatching('${mod.id}','${w.id}',this.checked)">
         <div class="watch-content">
           <div class="watch-term ${done?'done':''}">${esc(w.title||w.searchTerm)}</div>
           <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:4px">${directLink}${searchLink}</div>
           ${w.description?`<div class="watch-desc">${esc(w.description)}</div>`:''}
+          ${wSkipReason?`<div class="skip-reason">↩ ${esc(wSkipReason)}</div>`:''}
         </div>
-        <button class="skip-btn" onclick="toggleRejected('${mod.id}','watching','${w.id}')">${rejected?'↩ Restore':'✕ Skip'}</button>
+        <button class="skip-btn" onclick="${rejected?`toggleRejected('${mod.id}','watching','${w.id}')`:`showSkipPrompt('${mod.id}','watching','${w.id}',this)`}">${rejected?'↩ Restore':'✕ Skip'}</button>
       </div>`;
     }).join('')||'<p style="color:var(--text-muted)">No watching items in this module.</p>';
 
@@ -3022,6 +3038,39 @@ function toggleDesc(btn){
   const full=desc.dataset.full;
   if(btn.textContent==='more'){span.textContent=full;btn.textContent='less';}
   else{span.textContent=full.substring(0,100)+'…';btn.textContent='more';}
+}
+function showSkipPrompt(modId,type,id,btn){
+  const prompt=document.createElement('div');
+  prompt.className='skip-prompt';
+  prompt.innerHTML=`<input type="text" class="skip-prompt-input" placeholder="Why skip? (optional)" maxlength="120"
+    onkeydown="if(event.key==='Enter')confirmSkip('${modId}','${type}','${id}');if(event.key==='Escape')cancelSkip('${modId}','${type}','${id}',this)">
+    <div class="skip-prompt-actions">
+      <button class="skip-prompt-confirm" onclick="confirmSkip('${modId}','${type}','${id}')">Skip</button>
+      <button class="skip-prompt-cancel" onclick="cancelSkip('${modId}','${type}','${id}',this)">Cancel</button>
+    </div>`;
+  btn.replaceWith(prompt);
+  prompt.querySelector('.skip-prompt-input').focus();
+}
+function confirmSkip(modId,type,id){
+  const prompt=document.querySelector('.skip-prompt');
+  const reason=(prompt?.querySelector('.skip-prompt-input')?.value||'').trim();
+  if(reason){
+    ensureP(modId);
+    const p=state.progress[modId];
+    if(!p.skipReasons)p.skipReasons={};
+    if(!p.skipReasons[type])p.skipReasons[type]={};
+    p.skipReasons[type][id]=reason;
+  }
+  toggleRejected(modId,type,id);
+}
+function cancelSkip(modId,type,id,el){
+  const prompt=el.closest('.skip-prompt');
+  if(!prompt)return;
+  const btn=document.createElement('button');
+  btn.className='skip-btn';
+  btn.textContent='✕ Skip';
+  btn.setAttribute('onclick',`showSkipPrompt('${modId}','${type}','${id}',this)`);
+  prompt.replaceWith(btn);
 }
 function renderNoteMarkdown(text){
   if(!text) return '';
