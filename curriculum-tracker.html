@@ -219,6 +219,10 @@
     .reading-link:hover { background: #DDD6FE; }
     .search-pill { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; background: var(--gray-light); padding: 2px 8px; border-radius: 4px; color: var(--text-muted); margin-bottom: 5px; font-family: monospace; }
     .reading-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .reading-note-wrap { margin-top: 7px; }
+    .reading-note-input { width: 100%; box-sizing: border-box; border: none; border-bottom: 1px solid var(--border); background: transparent; color: var(--text-muted); font-size: 12px; padding: 3px 0; outline: none; font-family: inherit; font-style: italic; transition: border-color 0.15s, color 0.15s; }
+    .reading-note-input:focus { border-bottom-color: var(--purple); color: var(--text); font-style: normal; }
+    .reading-note-input::placeholder { color: var(--text-muted); opacity: 0.5; }
 
     /* ── Watch Items ── */
     .watch-item { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); transition: opacity 0.2s; }
@@ -1856,6 +1860,7 @@ function renderDetail(mod) {
             ${studentAttach?`<button class="reading-attach-view reading-my-attach" onclick="viewAttach('${studentAttach.dbId}','${esc(studentAttach.name)}')" title="Your uploaded copy">📄 My copy</button>`:''}
           </div>
           ${r.description?`<div class="reading-desc">${esc(r.description).substring(0,220)}${r.description.length>220?'…':''}</div>`:''}
+          ${(done&&!rejected)?`<div class="reading-note-wrap"><input class="reading-note-input" type="text" placeholder="where did this take you?" value="${esc(p.readingNotes?.[r.id]||'')}" onblur="saveReadingNote('${mod.id}','${r.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()"/></div>`:''}
         </div>
         <button class="skip-btn" onclick="toggleRejected('${mod.id}','readings','${r.id}')">${rejected?'↩ Restore':'✕ Skip'}</button>
       </div>`;
@@ -2935,7 +2940,37 @@ function setMode(mode) {
 function selectMod(id) { state.selectedModule=id; state.activeTab='reading'; render(); }
 function setTab(tab) { state.activeTab=tab; render(); }
 
-function toggleReading(modId,rId,val){ensureP(modId);state.progress[modId].readings[rId]=val;saveState();refreshPct(modId);}
+function toggleReading(modId,rId,val){
+  ensureP(modId);
+  state.progress[modId].readings[rId]=val;
+  saveState(); refreshPct(modId);
+  const item=document.querySelector(`.reading-item[data-rid="${rId}"]`);
+  if(!item) return;
+  const content=item.querySelector('.reading-content');
+  if(!content) return;
+  let wrap=content.querySelector('.reading-note-wrap');
+  if(val && !wrap){
+    wrap=document.createElement('div');
+    wrap.className='reading-note-wrap';
+    const inp=document.createElement('input');
+    inp.className='reading-note-input'; inp.type='text';
+    inp.placeholder='where did this take you?';
+    inp.value=state.progress[modId].readingNotes?.[rId]||'';
+    inp.addEventListener('blur',()=>saveReadingNote(modId,rId,inp.value));
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur();});
+    wrap.appendChild(inp); content.appendChild(wrap);
+    setTimeout(()=>inp.focus(),50);
+  } else if(!val && wrap){
+    wrap.remove();
+  }
+}
+function saveReadingNote(modId,rId,val){
+  ensureP(modId);
+  if(!state.progress[modId].readingNotes) state.progress[modId].readingNotes={};
+  if(val.trim()) state.progress[modId].readingNotes[rId]=val.trim();
+  else delete state.progress[modId].readingNotes[rId];
+  saveState();
+}
 function toggleWatching(modId,wId,val){ensureP(modId);state.progress[modId].watching[wId]=val;saveState();refreshPct(modId);}
 function toggleAssignment(modId,val){ensureP(modId);state.progress[modId].assignmentDone=val;saveState();refreshPct(modId);}
 function toggleReflection(modId,val){ensureP(modId);state.progress[modId].reflectionDone=val;saveState();refreshPct(modId);}
@@ -3202,12 +3237,14 @@ function refreshPct(modId){
   const pct=getModPct(mod);
   const card=document.querySelector(`.module-card[onclick="selectMod('${modId}')"]`);
   if(card){
-    card.querySelector('.mini-bar-fill').style.width=pct+'%';
-    card.querySelector('.module-progress-mini span').textContent=pct+'%';
+    const fill=card.querySelector('.mini-bar-fill'); if(fill) fill.style.width=pct+'%';
+    const pctSpan=card.querySelector('.module-progress-mini span'); if(pctSpan) pctSpan.textContent=pct+'%';
     const badge=card.querySelector('.module-badge');
-    if(pct===100){badge.className='module-badge badge-complete';badge.textContent='Complete';}
-    else if(pct>0){badge.className='module-badge badge-progress';badge.textContent='In progress';}
-    else{badge.className='module-badge badge-notstarted';badge.textContent='';}
+    if(badge){
+      if(pct===100){badge.className='module-badge badge-complete';badge.textContent='Complete';}
+      else if(pct>0){badge.className='module-badge badge-progress';badge.textContent='In progress';}
+      else{badge.className='module-badge badge-notstarted';badge.textContent='';}
+    }
   }
   const ov=getOverall();
   const fill=document.querySelector('.progress-bar-fill'); if(fill)fill.style.width=ov.pct+'%';
