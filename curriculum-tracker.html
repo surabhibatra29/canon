@@ -224,27 +224,31 @@
     .reading-note-display { cursor: pointer; padding: 3px 0; border-bottom: 1px solid var(--border); min-height: 22px; transition: border-color 0.15s; }
     .reading-note-display:hover { border-bottom-color: var(--purple); }
     .reading-note-placeholder { font-size: 12px; color: var(--text-muted); opacity: 0.5; font-style: italic; }
-    .reading-note-rendered { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+    .reading-note-rendered { font-size: 12px; color: var(--text-muted); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
     .reading-note-rendered p { margin: 0 0 3px; }
     .reading-note-rendered ol, .reading-note-rendered ul { margin: 3px 0; padding-left: 18px; }
     .reading-note-rendered li { margin-bottom: 2px; }
-    .reading-note-rendered strong { font-weight: 600; color: var(--text); }
-    .reading-note-rendered em { font-style: italic; }
+    .reading-note-rendered strong, .reading-note-rendered b { font-weight: 600; color: var(--text); }
+    .reading-note-rendered em, .reading-note-rendered i { font-style: italic; }
     .note-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 24px; animation: fadeIn 0.15s ease; }
-    .note-modal-card { background: var(--note-modal-bg); border: 1px solid var(--border); border-radius: 18px; width: 100%; max-width: 580px; box-shadow: 0 32px 80px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.08); overflow: hidden; display: flex; flex-direction: column; }
-    .note-modal-header { padding: 18px 20px 14px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); }
+    .note-modal-card { background: var(--note-modal-bg); border: 1px solid var(--border); border-radius: 18px; width: 100%; max-width: 580px; max-height: 85vh; box-shadow: 0 32px 80px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.08); overflow: hidden; display: flex; flex-direction: column; }
+    .note-modal-header { padding: 18px 20px 14px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); flex-shrink: 0; }
     .note-modal-module-label { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--purple); margin-bottom: 5px; }
     .note-modal-reading-title { font-size: 13px; color: var(--text-muted); font-style: italic; line-height: 1.45; max-width: 440px; }
     .note-modal-close { background: none; border: none; font-size: 18px; color: var(--text-muted); cursor: pointer; padding: 0 0 0 12px; margin-top: 2px; line-height: 1; flex-shrink: 0; }
-    .note-modal-toolbar { padding: 7px 10px; border-bottom: 1px solid var(--border); display: flex; gap: 1px; align-items: center; }
+    .note-modal-toolbar { padding: 7px 10px; border-bottom: 1px solid var(--border); display: flex; gap: 1px; align-items: center; flex-shrink: 0; }
     .note-tb-btn { background: none; border: none; border-radius: 5px; padding: 5px 9px; cursor: pointer; font-size: 13px; color: var(--text); font-family: inherit; transition: background 0.1s; }
     .note-tb-btn:hover { background: rgba(79,90,240,0.08); }
     .note-tb-divider { width: 1px; height: 16px; background: var(--border); margin: 0 4px; flex-shrink: 0; }
     .note-tb-saves { flex: 1; text-align: right; font-size: 10px; color: var(--text-muted); opacity: 0.55; padding-right: 2px; }
-    .note-modal-body { padding: 18px 20px; flex: 1; }
-    .note-modal-textarea { width: 100%; box-sizing: border-box; min-height: 220px; border: none; background: transparent; color: var(--text); font-size: 14px; line-height: 1.75; padding: 0; outline: none; font-family: inherit; resize: none; display: block; }
-    .note-modal-textarea::placeholder { color: var(--text-muted); opacity: 0.4; font-style: italic; }
-    .note-modal-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; }
+    .note-modal-body { padding: 18px 20px; flex: 1; overflow-y: auto; min-height: 0; }
+    .note-modal-editor { width: 100%; min-height: 220px; border: none; background: transparent; color: var(--text); font-size: 14px; line-height: 1.75; outline: none; font-family: inherit; }
+    .note-modal-editor:empty::before { content: attr(data-placeholder); color: var(--text-muted); opacity: 0.4; font-style: italic; pointer-events: none; display: block; }
+    .note-modal-editor b, .note-modal-editor strong { font-weight: 600; }
+    .note-modal-editor i, .note-modal-editor em { font-style: italic; }
+    .note-modal-editor ol, .note-modal-editor ul { padding-left: 22px; margin: 4px 0; }
+    .note-modal-editor li { margin-bottom: 3px; }
+    .note-modal-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; flex-shrink: 0; }
 
     /* ── Watch Items ── */
     .watch-item { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); transition: opacity 0.2s; }
@@ -2990,43 +2994,32 @@ function saveReadingNote(modId,rId,val){
   saveState();
 }
 function buildNoteDisplay(modId,rId,note){
-  const inner=note
-    ?`<div class="reading-note-rendered">${renderNoteMarkdown(note)}</div>`
-    :`<span class="reading-note-placeholder">where did this take you? ↗</span>`;
+  const isEmpty=!note||note==='<br>'||note==='<div><br></div>';
+  const inner=isEmpty
+    ?`<span class="reading-note-placeholder">where did this take you? ↗</span>`
+    :`<div class="reading-note-rendered">${/<[a-z][\s\S]*>/i.test(note)?note:renderNoteMarkdown(note)}</div>`;
   return `<div class="reading-note-display" onclick="openNoteModal('${modId}','${rId}')">${inner}</div>`;
 }
 function renderNoteMarkdown(text){
   if(!text) return '';
   const escH=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const fmt=s=>escH(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>');
-  const lines=text.split('\n');
-  let html='', inOl=false, inUl=false;
-  const closeL=()=>{ if(inOl){html+='</ol>';inOl=false;} if(inUl){html+='</ul>';inUl=false;} };
+  const lines=text.split('\n'); let html='',inOl=false,inUl=false;
+  const closeL=()=>{if(inOl){html+='</ol>';inOl=false;}if(inUl){html+='</ul>';inUl=false;}};
   for(const line of lines){
-    if(/^\d+\.\s/.test(line)){
-      if(inUl){html+='</ul>';inUl=false;} if(!inOl){html+='<ol>';inOl=true;}
-      html+=`<li>${fmt(line.replace(/^\d+\.\s/,''))}</li>`;
-    } else if(/^[-•]\s/.test(line)){
-      if(inOl){html+='</ol>';inOl=false;} if(!inUl){html+='<ul>';inUl=true;}
-      html+=`<li>${fmt(line.replace(/^[-•]\s/,''))}</li>`;
-    } else {
-      closeL();
-      html+=line.trim()===''?'<br>':`<p>${fmt(line)}</p>`;
-    }
+    if(/^\d+\.\s/.test(line)){if(inUl){html+='</ul>';inUl=false;}if(!inOl){html+='<ol>';inOl=true;}html+=`<li>${fmt(line.replace(/^\d+\.\s/,''))}</li>`;}
+    else if(/^[-•]\s/.test(line)){if(inOl){html+='</ol>';inOl=false;}if(!inUl){html+='<ul>';inUl=true;}html+=`<li>${fmt(line.replace(/^[-•]\s/,''))}</li>`;}
+    else{closeL();html+=line.trim()===''?'<br>':`<p>${fmt(line)}</p>`;}
   }
-  closeL();
-  return html;
+  closeL(); return html;
 }
 function openNoteModal(modId,rId){
   const mod=state.curriculum?.modules.find(m=>m.id===modId);
   const reading=mod?.readings.find(r=>r.id===rId);
-  const title=reading?.title||'';
-  const modNum=mod?.number??'';
-  const rNum=reading?.number??'';
+  const title=reading?.title||''; const modNum=mod?.number??''; const rNum=reading?.number??'';
   const existingNote=state.progress[modId]?.readingNotes?.[rId]||'';
   const overlay=document.createElement('div');
-  overlay.id='reading-note-modal';
-  overlay.className='note-modal-overlay';
+  overlay.id='reading-note-modal'; overlay.className='note-modal-overlay';
   overlay.dataset.modId=modId; overlay.dataset.rId=rId;
   overlay.onclick=e=>{if(e.target===overlay)closeNoteModal();};
   overlay.innerHTML=`
@@ -3039,56 +3032,58 @@ function openNoteModal(modId,rId){
         <button class="note-modal-close" onclick="closeNoteModal()">✕</button>
       </div>
       <div class="note-modal-toolbar">
-        <button class="note-tb-btn" onclick="insertNoteFormat('bold')" title="Bold"><strong>B</strong></button>
-        <button class="note-tb-btn" onclick="insertNoteFormat('italic')" title="Italic"><em style="font-style:italic">I</em></button>
+        <button class="note-tb-btn" onclick="insertNoteFormat('bold')" title="Bold (Ctrl+B)"><strong>B</strong></button>
+        <button class="note-tb-btn" onclick="insertNoteFormat('italic')" title="Italic (Ctrl+I)"><em style="font-style:italic">I</em></button>
         <div class="note-tb-divider"></div>
         <button class="note-tb-btn" onclick="insertNoteFormat('ol')" title="Numbered list">1.</button>
         <button class="note-tb-btn" onclick="insertNoteFormat('ul')" title="Bullet list">•—</button>
         <span class="note-tb-saves">saves automatically</span>
       </div>
       <div class="note-modal-body">
-        <textarea id="note-modal-textarea" class="note-modal-textarea" placeholder="where did this take you?">${esc(existingNote)}</textarea>
+        <div id="note-modal-editor" class="note-modal-editor" contenteditable="true" data-placeholder="where did this take you?"></div>
       </div>
       <div class="note-modal-footer">
         <button class="btn btn-primary" onclick="closeNoteModal()">Done</button>
       </div>
     </div>`;
   document.body.appendChild(overlay);
-  const ta=document.getElementById('note-modal-textarea');
-  ta.style.height='auto'; ta.style.height=Math.max(220,ta.scrollHeight)+'px';
-  ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=Math.max(220,ta.scrollHeight)+'px';});
-  setTimeout(()=>{ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);},50);
+  const ed=document.getElementById('note-modal-editor');
+  // Set content — HTML notes render directly, plain text notes render via markdown
+  if(existingNote){
+    ed.innerHTML=/<[a-z][\s\S]*>/i.test(existingNote)?existingNote:renderNoteMarkdown(existingNote);
+    delete ed.dataset.empty;
+  }
+  // Clear stray <br> that makes :empty not match
+  ed.addEventListener('input',()=>{
+    if(ed.innerHTML==='<br>'||ed.innerHTML==='<div><br></div>'){ed.innerHTML='';ed.dataset.empty='';}
+    else delete ed.dataset.empty;
+  });
+  // Keyboard shortcuts
+  ed.addEventListener('keydown',e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key==='b'){e.preventDefault();document.execCommand('bold',false,null);}
+    if((e.ctrlKey||e.metaKey)&&e.key==='i'){e.preventDefault();document.execCommand('italic',false,null);}
+  });
+  setTimeout(()=>{ed.focus();const r=document.createRange(),s=window.getSelection();r.selectNodeContents(ed);r.collapse(false);s.removeAllRanges();s.addRange(r);},50);
 }
 function closeNoteModal(){
   const modal=document.getElementById('reading-note-modal'); if(!modal)return;
-  const ta=document.getElementById('note-modal-textarea');
+  const ed=document.getElementById('note-modal-editor');
   const {modId,rId}=modal.dataset;
-  if(ta&&modId&&rId){
-    saveReadingNote(modId,rId,ta.value);
+  if(ed&&modId&&rId){
+    const html=ed.innerHTML.replace(/(<br\s*\/?>|<div><br\s*\/?><\/div>|\s)+$/i,'').trim();
+    saveReadingNote(modId,rId,html);
     const wrap=document.querySelector(`.reading-item[data-rid="${rId}"] .reading-note-wrap`);
     if(wrap) wrap.innerHTML=buildNoteDisplay(modId,rId,(state.progress[modId]?.readingNotes?.[rId]||''));
   }
   modal.remove();
 }
 function insertNoteFormat(type){
-  const ta=document.getElementById('note-modal-textarea'); if(!ta)return;
-  const s=ta.selectionStart, e=ta.selectionEnd, v=ta.value;
-  const sel=v.slice(s,e);
-  let nv, ns, ne;
-  if(type==='bold'){
-    if(sel){nv=v.slice(0,s)+`**${sel}**`+v.slice(e);ns=ne=e+4;}
-    else{nv=v.slice(0,s)+`****`+v.slice(e);ns=ne=s+2;}
-  } else if(type==='italic'){
-    if(sel){nv=v.slice(0,s)+`*${sel}*`+v.slice(e);ns=ne=e+2;}
-    else{nv=v.slice(0,s)+`**`+v.slice(e);ns=ne=s+1;}
-  } else if(type==='ol'){
-    const ls=v.lastIndexOf('\n',s-1)+1;
-    nv=v.slice(0,ls)+'1. '+v.slice(ls);ns=ne=s+3;
-  } else if(type==='ul'){
-    const ls=v.lastIndexOf('\n',s-1)+1;
-    nv=v.slice(0,ls)+'- '+v.slice(ls);ns=ne=s+2;
-  }
-  if(nv!==undefined){ta.value=nv;ta.setSelectionRange(ns,ne);ta.dispatchEvent(new Event('input'));ta.focus();}
+  const ed=document.getElementById('note-modal-editor'); if(!ed)return;
+  ed.focus();
+  if(type==='bold') document.execCommand('bold',false,null);
+  else if(type==='italic') document.execCommand('italic',false,null);
+  else if(type==='ol') document.execCommand('insertOrderedList',false,null);
+  else if(type==='ul') document.execCommand('insertUnorderedList',false,null);
 }
 function toggleWatching(modId,wId,val){ensureP(modId);state.progress[modId].watching[wId]=val;saveState();refreshPct(modId);}
 function toggleAssignment(modId,val){ensureP(modId);state.progress[modId].assignmentDone=val;saveState();refreshPct(modId);}
