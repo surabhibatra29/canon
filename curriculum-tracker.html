@@ -3511,7 +3511,7 @@ function refreshPct(modId){
 // ====================================================================
 function loadDefault(){
   state.curriculum=JSON.parse(JSON.stringify(CANONICAL_CURRICULUM));
-  state.progress={}; state.selectedModule=null;
+  state.selectedModule=null;
   saveState(); showToast('✓ Canon loaded'); render();
 }
 async function clearAll(){
