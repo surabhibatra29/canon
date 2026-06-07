@@ -2775,10 +2775,12 @@ async function uploadFiles(modId, role, files) {
 
 let _pdfBlobUrl = null;
 let _pdfjsLoading = null;
-let _pdfDoc = null;       // current PDF.js document
-let _pdfZoom = 1.0;       // zoom multiplier on top of fit-to-width
-let _pdfHlKey = null;     // localStorage key for highlights
-let _pdfZoomTimer = null; // debounce timer
+let _pdfDoc = null;         // current PDF.js document
+let _pdfZoom = 1.0;         // zoom multiplier on top of fit-to-width
+let _pdfHlKey = null;       // localStorage key for highlights
+let _pdfPosKey = null;      // localStorage key for last-read page
+let _pdfZoomTimer = null;   // debounce timer for zoom re-render
+let _pdfScrollTimer = null; // debounce timer for page-position save
 
 // Lazy-load PDF.js from CDN (only when first PDF is opened)
 function loadPdfJs() {
@@ -2840,14 +2842,28 @@ function adjustPdfZoom(delta) {
   _pdfZoomTimer = setTimeout(() => _rerenderPdfPages(), 320);
 }
 
+function _getVisiblePage(vp) {
+  const wrappers = vp.querySelectorAll('.pdf-page-wrapper');
+  const vpMid = vp.scrollTop + vp.clientHeight / 2;
+  let bestPage = 1, bestDist = Infinity;
+  wrappers.forEach(w => {
+    const dist = Math.abs((w.offsetTop + w.offsetHeight / 2) - vpMid);
+    if (dist < bestDist) { bestDist = dist; bestPage = parseInt(w.dataset.page); }
+  });
+  return bestPage;
+}
+
 async function _rerenderPdfPages() {
   const vp = document.getElementById('pdfViewport');
   if (!vp || !_pdfDoc) return;
-  // Keep the info bar (first child), rebuild pages
+  const pageToRestore = _getVisiblePage(vp);
   const infoBar = vp.querySelector('.pdf-info-bar');
   vp.innerHTML = '';
   if (infoBar) vp.appendChild(infoBar);
   await _renderPdfPages(_pdfDoc, vp);
+  // Restore scroll to same page after re-render (offsetTop is reliable — heights set inline)
+  const target = vp.querySelector(`[data-page="${pageToRestore}"]`);
+  if (target) vp.scrollTop = target.offsetTop;
 }
 
 // Core render function — shared by initial load and zoom changes
@@ -2920,7 +2936,9 @@ async function viewAttach(dbId, name) {
   window._pdfHlMode = false;
   _pdfZoom = 1.0;
   _pdfDoc = null;
-  _pdfHlKey = `pdf_hl_${typeof dbId === 'string' ? dbId.replace(/\//g,'_') : dbId}`;
+  const _pdfIdKey = typeof dbId === 'string' ? dbId.replace(/\//g,'_') : dbId;
+  _pdfHlKey  = `pdf_hl_${_pdfIdKey}`;
+  _pdfPosKey = `pdf_pos_${_pdfIdKey}`;
 
   try {
     // Determine source: Supabase Storage (string path) vs IndexedDB (integer)
@@ -2985,6 +3003,22 @@ async function viewAttach(dbId, name) {
       vp.innerHTML = `<div class="pdf-info-bar" style="color:white;font-size:12px;opacity:0.5;margin-bottom:8px;align-self:flex-start">${pdf.numPages} page${pdf.numPages>1?'s':''} · Retina rendering${hlCount ? ` · ${hlCount} highlight${hlCount>1?'s':''}` : ''}</div>`;
 
       await _renderPdfPages(pdf, vp);
+
+      // Restore last-read page (clamped to actual page count)
+      const savedPage = Math.min(parseInt(localStorage.getItem(_pdfPosKey) || '1'), pdf.numPages);
+      if (savedPage > 1) {
+        const target = vp.querySelector(`[data-page="${savedPage}"]`);
+        if (target) vp.scrollTop = target.offsetTop;
+      }
+
+      // Save current page on scroll (debounced)
+      vp.addEventListener('scroll', () => {
+        clearTimeout(_pdfScrollTimer);
+        _pdfScrollTimer = setTimeout(() => {
+          const page = _getVisiblePage(vp);
+          localStorage.setItem(_pdfPosKey, page);
+        }, 400);
+      });
 
       // Capture text selections as highlights (normalized 0-1 coords)
       vp.addEventListener('mouseup', () => {
