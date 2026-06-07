@@ -208,6 +208,9 @@
     .reading-item.reading-highlight { background: rgba(79,90,240,0.08); padding-left: 8px; }
     .reading-item.rejected { opacity: 0.4; }
     .reading-item.rejected .reading-title { text-decoration: line-through; }
+    .reading-item.ghost { opacity: 0.35; border-style: dashed; }
+    .reading-item.ghost .reading-title { text-decoration: line-through; }
+    .ghost-label { font-size: 10px; color: var(--text-muted); font-style: italic; margin-top: 2px; }
     .check-input { flex-shrink: 0; width: 18px; height: 18px; margin-top: 3px; cursor: pointer; accent-color: var(--purple); }
     .reading-content { flex: 1; min-width: 0; }
     .skip-btn { flex-shrink: 0; background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 9px; font-size: 11px; font-weight: 500; color: var(--text-muted); cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap; align-self: flex-start; margin-top: 2px; }
@@ -1988,7 +1991,23 @@ function renderDetail(mod) {
         </div>
         <button class="skip-btn" onclick="${rejected?`toggleRejected('${mod.id}','readings','${r.id}')`:`showSkipPrompt('${mod.id}','readings','${r.id}',this)`}">${rejected?'↩ Restore':'✕ Skip'}</button>
       </div>`;
-    }).join('')||'<p style="color:var(--text-muted)">No readings in this module.</p>';
+    }).join('');
+    // Ghost items: completed readings that no longer exist in the curriculum
+    const currentRIds=new Set(mod.readings.map(r=>r.id));
+    const ghostReadings=Object.entries(p.readings||{}).filter(([rId,done])=>done&&!currentRIds.has(rId));
+    if(ghostReadings.length){
+      content+= ghostReadings.map(([rId])=>{
+        const title=p.readingTitles?.[rId]||rId;
+        return `<div class="reading-item ghost">
+          <input type="checkbox" class="check-input" checked disabled>
+          <div class="reading-content">
+            <div class="reading-title-row"><span class="reading-title done">${esc(title)}</span></div>
+            <div class="ghost-label">completed · removed from curriculum</div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+    if(!content) content='<p style="color:var(--text-muted)">No readings in this module.</p>';
 
   } else if (activeTab==='watching') {
     content=mod.watching.slice().sort((a,b)=>{
@@ -2013,7 +2032,23 @@ function renderDetail(mod) {
         </div>
         <button class="skip-btn" onclick="${rejected?`toggleRejected('${mod.id}','watching','${w.id}')`:`showSkipPrompt('${mod.id}','watching','${w.id}',this)`}">${rejected?'↩ Restore':'✕ Skip'}</button>
       </div>`;
-    }).join('')||'<p style="color:var(--text-muted)">No watching items in this module.</p>';
+    }).join('');
+    // Ghost items: completed watching items no longer in curriculum
+    const currentWIds=new Set(mod.watching.map(w=>w.id));
+    const ghostWatching=Object.entries(p.watching||{}).filter(([wId,done])=>done&&!currentWIds.has(wId));
+    if(ghostWatching.length){
+      content+= ghostWatching.map(([wId])=>{
+        const title=p.watchingTitles?.[wId]||wId;
+        return `<div class="watch-item ghost reading-item">
+          <input type="checkbox" class="check-input" checked disabled>
+          <div class="watch-content">
+            <div class="watch-term done">${esc(title)}</div>
+            <div class="ghost-label">completed · removed from curriculum</div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+    if(!content) content='<p style="color:var(--text-muted)">No watching items in this module.</p>';
 
   } else if (activeTab==='assignment') {
     const sections = p.assignmentSections || [];
@@ -3072,6 +3107,11 @@ function setTab(tab) { state.activeTab=tab; render(); }
 function toggleReading(modId,rId,val){
   ensureP(modId);
   state.progress[modId].readings[rId]=val;
+  if(val){
+    const mod=state.curriculum?.modules.find(m=>m.id===modId);
+    const r=mod?.readings.find(r=>r.id===rId);
+    if(r){if(!state.progress[modId].readingTitles)state.progress[modId].readingTitles={};state.progress[modId].readingTitles[rId]=r.title;}
+  }
   saveState(); refreshPct(modId);
   const item=document.querySelector(`.reading-item[data-rid="${rId}"]`);
   if(!item) return;
@@ -3225,7 +3265,16 @@ function insertNoteFormat(type){
   else if(type==='ol') document.execCommand('insertOrderedList',false,null);
   else if(type==='ul') document.execCommand('insertUnorderedList',false,null);
 }
-function toggleWatching(modId,wId,val){ensureP(modId);state.progress[modId].watching[wId]=val;saveState();refreshPct(modId);}
+function toggleWatching(modId,wId,val){
+  ensureP(modId);
+  state.progress[modId].watching[wId]=val;
+  if(val){
+    const mod=state.curriculum?.modules.find(m=>m.id===modId);
+    const w=mod?.watching.find(w=>w.id===wId);
+    if(w){if(!state.progress[modId].watchingTitles)state.progress[modId].watchingTitles={};state.progress[modId].watchingTitles[wId]=w.title||w.searchTerm;}
+  }
+  saveState();refreshPct(modId);
+}
 function toggleAssignment(modId,val){ensureP(modId);state.progress[modId].assignmentDone=val;saveState();refreshPct(modId);}
 function toggleReflection(modId,val){ensureP(modId);state.progress[modId].reflectionDone=val;saveState();refreshPct(modId);}
 function toggleComplete(modId){ensureP(modId);state.progress[modId].complete=!state.progress[modId].complete;saveState();render();}
@@ -3579,7 +3628,7 @@ function handleMdFile(input){
     try{
       const c=parseMarkdown(e.target.result);
       if(!c.modules.length){if(msgEl)msgEl.textContent='⚠️ No modules found. Modules must start with "# MODULE N: Title".';return;}
-      state.curriculum=c;state.progress={};state.attachments={};state.selectedModule=null;
+      state.curriculum=c;state.attachments={};state.selectedModule=null;
       saveState();closeModal();showToast(`✓ Loaded: ${c.title} (${c.modules.length} modules)`);render();
     }catch(err){if(msgEl)msgEl.textContent='✕ Error: '+err.message;}
   };
