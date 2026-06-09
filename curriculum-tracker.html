@@ -1348,6 +1348,7 @@ async function idbDeleteMany(ids) {
 // STATE
 // ====================================================================
 const LS_KEY = 'pm_curriculum_v2';
+const VALID_TABS = new Set(['reading','watching','assignment','reflection','evaluate','attachments','notes']);
 
 let state = {
   mode: 'student',
@@ -1497,7 +1498,6 @@ async function initAuth() {
   if (!_sb) {
     // Supabase SDK didn't load (offline / CDN failure) — run in local mode
     _hideAuthScreen();
-    render();
     return;
   }
 
@@ -1550,7 +1550,7 @@ function _hideAuthScreen() {
   const s = document.getElementById('authScreen');
   if (s) s.style.display = 'none';
   _updateUserBadge();
-  render();
+  _restoreFromHash();
 }
 
 function _applyStateAfterSync() {
@@ -1757,6 +1757,7 @@ function getAttachments(modId) {
 // ====================================================================
 function goHome() {
   state.selectedModule = null;
+  history.pushState(null, '', location.pathname);
   if (state.mode !== 'student') setMode('student');
   else render();
 }
@@ -3136,8 +3137,8 @@ function setMode(mode) {
   document.getElementById('adminModeBtn').classList.toggle('active', mode==='admin');
   render();
 }
-function selectMod(id) { state.selectedModule=id; state.activeTab='reading'; render(); }
-function setTab(tab) { state.activeTab=tab; render(); }
+function selectMod(id) { state.selectedModule=id; state.activeTab='reading'; history.pushState(null,'','#'+id); render(); }
+function setTab(tab) { state.activeTab=tab; if(state.selectedModule) history.replaceState(null,'','#'+state.selectedModule+'/'+tab); render(); }
 
 function toggleReading(modId,rId,val){
   ensureP(modId);
@@ -3871,6 +3872,7 @@ document.addEventListener('keydown', function(e) {
   // Escape — deselect module
   if (e.key === 'Escape' && state.selectedModule) {
     state.selectedModule = null;
+    history.pushState(null, '', location.pathname);
     render();
   }
   // Cmd+Shift+A — reveal/hide admin mode toggle
@@ -3907,12 +3909,43 @@ document.addEventListener('mousedown', function(e) {
   }
 });
 
+// ── Hash-based navigation: restore module + tab on refresh / back ──
+function _restoreFromHash() {
+  const hash = location.hash.slice(1); // e.g. "m1" or "m1/watching"
+  if (!hash) { render(); return; }
+  const [modId, tab] = hash.split('/');
+  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  if (!mod) { history.replaceState(null, '', location.pathname); render(); return; }
+  state.selectedModule = modId;
+  state.activeTab = (tab && VALID_TABS.has(tab)) ? tab : 'reading';
+  render();
+}
+
+// Back / forward button: re-parse hash and re-render
+window.addEventListener('popstate', () => {
+  const hash = location.hash.slice(1);
+  if (!hash) {
+    state.selectedModule = null;
+    state.activeTab = 'reading';
+  } else {
+    const [modId, tab] = hash.split('/');
+    const mod = state.curriculum?.modules.find(m => m.id === modId);
+    if (mod) {
+      state.selectedModule = modId;
+      state.activeTab = (tab && VALID_TABS.has(tab)) ? tab : 'reading';
+    } else {
+      state.selectedModule = null;
+    }
+  }
+  render();
+});
+
 // 4. Boot: check Supabase auth, then reveal app or show sign-in screen
 initAuth().catch(err => {
   // If auth init fails entirely (CDN down, network error), show app with local state
   console.warn('Auth init error — running in local mode:', err);
   document.getElementById('authScreen').style.display = 'none';
-  render();
+  _restoreFromHash();
 });
 </script>
 </body>
