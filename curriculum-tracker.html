@@ -1660,6 +1660,19 @@ function _hideAuthScreen() {
 }
 
 function _applyStateAfterSync() {
+  // Safety net: if sync left us with no usable curriculum, re-seed from CANONICAL
+  if (!activeCurriculum()?.modules?.length) {
+    console.warn('[Canon] No active curriculum after sync — re-seeding from CANONICAL');
+    const seed = JSON.parse(JSON.stringify(CANONICAL_CURRICULUM));
+    seed.id = 'canon-pm-2026'; seed.source = 'canon';
+    const idx = (state.curricula||[]).findIndex(c => c.id === 'canon-pm-2026');
+    if (idx >= 0) state.curricula[idx] = seed; else { state.curricula = [seed]; }
+    state.activeCurriculumId = 'canon-pm-2026';
+    if (!state.progress['canon-pm-2026']) state.progress['canon-pm-2026'] = {};
+    if (!state.attachments['canon-pm-2026']) state.attachments['canon-pm-2026'] = {};
+    _needsCloudMigration = true;
+  }
+
   // Re-run module + progress migrations in case cloud data is from an older version
   const cur = activeCurriculum();
   const cid = state.activeCurriculumId;
