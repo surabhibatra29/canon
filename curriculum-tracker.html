@@ -40,6 +40,16 @@
     /* Logo */
     .header-logo { display: flex; align-items: center; gap: 9px; cursor: pointer; user-select: none; }
     .header-logo:hover .header-logo-name { color: var(--purple); }
+    /* ── About overlay ── */
+    .about-overlay { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #eef0ff 0%, #f5f0ff 50%, #fff0f8 100%); animation: fadeIn 0.2s ease; cursor: pointer; }
+    .about-overlay.hidden { display: none; }
+    .about-inner { display: flex; align-items: center; gap: 64px; pointer-events: none; }
+    .about-icon { width: 140px; height: 140px; background: linear-gradient(135deg, #4f5af0, #7c3aed); border-radius: 36px; display: flex; align-items: center; justify-content: center; font-size: 68px; font-weight: 800; color: white; letter-spacing: -2px; flex-shrink: 0; box-shadow: 0 16px 48px rgba(79,90,240,0.25); }
+    .about-text { text-align: left; }
+    .about-wordmark { font-size: 88px; font-weight: 800; color: #1a1a2e; letter-spacing: -4px; line-height: 1; margin-bottom: 12px; }
+    .about-tagline { font-size: 13px; color: #8080a8; letter-spacing: 0.12em; text-transform: uppercase; }
+    .about-byline { font-size: 12px; color: #b0b0cc; margin-top: 6px; }
+    .about-dismiss { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); font-size: 12px; color: rgba(0,0,0,0.2); letter-spacing: 0.1em; pointer-events: none; }
     .header-logo-name { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.4px; transition: color 0.15s; }
     .header-logo-brand { font-size: 10px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.3px; }
     /* Curriculum center */
@@ -793,7 +803,7 @@
 
     <!-- Left: Logo -->
     <div class="header-left">
-      <div class="header-logo" onclick="goHome()" title="Back to modules">
+      <div class="header-logo" onclick="showAbout()" title="About Canon">
         <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
           <rect width="28" height="28" rx="7" fill="url(#logoGrad)"/>
           <path d="M16.5 9.5C15.3 8.6 13.9 8 12.3 8C8.8 8 6 10.9 6 14.5C6 18.1 8.8 21 12.3 21C13.9 21 15.3 20.4 16.5 19.5" stroke="white" stroke-width="1.9" stroke-linecap="round" fill="none"/>
@@ -4335,6 +4345,18 @@ function saveMod(editId){
 // ====================================================================
 // MODAL
 // ====================================================================
+function showAbout() {
+  const o = document.getElementById('aboutOverlay');
+  if (o) o.classList.remove('hidden');
+  document.addEventListener('keydown', _aboutKeyClose);
+}
+function closeAbout() {
+  const o = document.getElementById('aboutOverlay');
+  if (o) o.classList.add('hidden');
+  document.removeEventListener('keydown', _aboutKeyClose);
+}
+function _aboutKeyClose(e) { if (e.key === 'Escape') closeAbout(); }
+
 function showModal(html){
   const ov=document.getElementById('modalOverlay');
   ov.style.display='flex';
@@ -4557,5 +4579,17 @@ initAuth().catch(err => {
   _restoreFromHash();
 });
 </script>
+<!-- About overlay -->
+<div class="about-overlay hidden" id="aboutOverlay" onclick="closeAbout()">
+  <div class="about-inner">
+    <div class="about-icon">C</div>
+    <div class="about-text">
+      <div class="about-wordmark">Canon</div>
+      <div class="about-tagline">AI-era PM curriculum</div>
+      <div class="about-byline">by Surabhi Batra</div>
+    </div>
+  </div>
+  <div class="about-dismiss">click anywhere to close</div>
+</div>
 </body>
 </html>
