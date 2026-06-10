@@ -460,6 +460,26 @@
     .add-curric-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
     .add-curric-pill { font-size: 11px; font-weight: 600; color: var(--purple); background: rgba(79,90,240,0.08); padding: 3px 8px; border-radius: 20px; flex-shrink: 0; }
 
+    /* ── AI Recommendations Teaser ── */
+    .ai-rec-teaser { display: flex; align-items: center; gap: 14px; padding: 13px 18px; background: linear-gradient(135deg, rgba(79,90,240,0.05) 0%, rgba(139,92,246,0.07) 100%); border: 1px solid rgba(79,90,240,0.14); border-radius: 12px; cursor: pointer; margin-bottom: 24px; transition: all 0.2s; }
+    .ai-rec-teaser:hover { background: linear-gradient(135deg, rgba(79,90,240,0.09) 0%, rgba(139,92,246,0.11) 100%); border-color: rgba(79,90,240,0.25); }
+    .ai-rec-teaser-icon { font-size: 20px; flex-shrink: 0; }
+    .ai-rec-teaser-body { flex: 1; }
+    .ai-rec-teaser-title { font-size: 13.5px; font-weight: 600; color: var(--purple); }
+    .ai-rec-teaser-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .ai-rec-teaser-pill { font-size: 11px; font-weight: 600; color: var(--purple); background: rgba(79,90,240,0.1); padding: 3px 9px; border-radius: 20px; flex-shrink: 0; white-space: nowrap; }
+    .rec-signal-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .rec-signal-row:last-child { border-bottom: none; }
+    .rec-signal-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+    .rec-signal-label { font-size: 13px; font-weight: 600; color: var(--text); }
+    .rec-signal-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .rec-card-preview { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
+    .rec-card-preview-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .rec-card-preview-why { font-size: 12px; color: var(--purple); margin-top: 4px; font-style: italic; }
+    .rec-card-preview-actions { display: flex; gap: 8px; margin-top: 10px; }
+    .rec-card-preview-btn { font-size: 11.5px; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: default; font-family: inherit; }
+    [data-theme="dark"] .ai-rec-teaser { background: linear-gradient(135deg, rgba(79,90,240,0.08) 0%, rgba(139,92,246,0.1) 100%); border-color: rgba(129,140,248,0.18); }
+
     /* ── Generate Form ── */
     .generate-field { margin-bottom: 14px; }
     .generate-label { display: block; font-size: 12.5px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
@@ -1997,6 +2017,64 @@ function handleAddCurrMdDrop(e) {
   handleAddCurrMdFile({ files: [file] });
 }
 
+// ── AI Recommendations (upcoming) ─────────────────────────────────────────────
+
+function showAiRecommendationsPreview() {
+  showModal(`
+    <div class="modal-header">
+      <div>
+        <span class="modal-title">✦ AI Recommendations</span>
+        <span style="font-size:11px;font-weight:600;color:var(--purple);background:rgba(79,90,240,0.08);padding:3px 8px;border-radius:20px;margin-left:8px;vertical-align:middle">Coming soon</span>
+      </div>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" style="overflow-y:auto;padding:16px 20px 20px">
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px;line-height:1.6">Every time you write a reflection, skip a reading, add a note, or mark something done, Canon builds a picture of where you are and where you're stuck. Recommendations reads that signal and surfaces four direction cards — tailored to you, not just your topic.</p>
+
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:10px">How it reads you</div>
+      <div style="margin-bottom:20px">
+        <div class="rec-signal-row">
+          <div class="rec-signal-icon">📝</div>
+          <div><div class="rec-signal-label">Reflection &amp; evaluation notes</div><div class="rec-signal-desc">Highest signal — your own words about what landed and what didn't</div></div>
+        </div>
+        <div class="rec-signal-row">
+          <div class="rec-signal-icon">✕</div>
+          <div><div class="rec-signal-label">Skip reasons</div><div class="rec-signal-desc">What you chose not to engage with, and why — reveals blindspots</div></div>
+        </div>
+        <div class="rec-signal-row">
+          <div class="rec-signal-icon">💬</div>
+          <div><div class="rec-signal-label">Reading &amp; assignment notes</div><div class="rec-signal-desc">Annotations you made while working — shows what you found worth capturing</div></div>
+        </div>
+        <div class="rec-signal-row">
+          <div class="rec-signal-icon">✓</div>
+          <div><div class="rec-signal-label">Completions &amp; module progress</div><div class="rec-signal-desc">What you've finished, what's in progress, what you haven't started</div></div>
+        </div>
+      </div>
+
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:10px">What you get — 4 direction cards</div>
+      <div style="margin-bottom:20px">
+        <div class="rec-card-preview">
+          <div class="rec-card-preview-title">The other side of AI strategy: what incumbents actually do</div>
+          <div class="rec-card-preview-why">Your reflection on Module 7 flagged that you're thinking about AI from the builder's side. This fills the gap from the buyer and defender perspective.</div>
+          <div class="rec-card-preview-actions">
+            <button class="rec-card-preview-btn">+ Add to reading list</button>
+            <button class="rec-card-preview-btn">Not for me</button>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);text-align:center;padding:4px 0">+ 3 more cards, refreshed each time you generate</div>
+      </div>
+
+      <div style="background:rgba(79,90,240,0.05);border:1px solid rgba(79,90,240,0.12);border-radius:10px;padding:13px 15px">
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">What you'll need</div>
+        <div style="font-size:12.5px;color:var(--text-muted);line-height:1.6">An Anthropic API key — the same one used for Generate with AI. Add it via the avatar menu → API key. The more notes and reflections you've written, the better the recommendations.</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Close</button>
+      <button class="btn btn-primary" onclick="closeModal();showApiKeyModal()">${getAnthropicKey() ? '✓ API key set — ready when built' : 'Add API key now'}</button>
+    </div>`);
+}
+
 // ── Generate with AI ──────────────────────────────────────────────────────────
 
 function getAnthropicKey() { return localStorage.getItem('_canon_anthropic_key') || ''; }
@@ -2356,6 +2434,15 @@ function renderStudent() {
         <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${ov.pct}%"></div></div>
       </div>
     </div>`;
+
+  html += `<div class="ai-rec-teaser" onclick="showAiRecommendationsPreview()">
+    <div class="ai-rec-teaser-icon">✦</div>
+    <div class="ai-rec-teaser-body">
+      <div class="ai-rec-teaser-title">AI Recommendations</div>
+      <div class="ai-rec-teaser-desc">Personalised next steps built from your reflections, skips, and notes</div>
+    </div>
+    <div class="ai-rec-teaser-pill">Coming soon</div>
+  </div>`;
 
   let cardsHtml='';
   for (const mod of cur.modules) {
