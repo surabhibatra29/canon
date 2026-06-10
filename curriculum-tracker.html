@@ -1352,33 +1352,64 @@ const VALID_TABS = new Set(['reading','watching','assignment','reflection','eval
 
 let state = {
   mode: 'student',
-  curriculum: null,
-  progress: {},
-  attachments: {}, // { [modId]: { admin: [{dbId,name,size,addedAt}], student: [...] } }
+  curricula: [],          // [{ id, source, ...curriculumShape }]
+  activeCurriculumId: null,
+  progress: {},           // { [curriculumId]: { [modId]: { ... } } }
+  attachments: {},        // { [curriculumId]: { [modId]: { admin: [], student: [] } } }
   selectedModule: null,
   activeTab: 'reading'
 };
 
+// ── Active-curriculum accessors (always use these instead of state.curriculum) ──
+function activeCurriculum() {
+  return state.curricula?.find(c => c.id === state.activeCurriculumId) || null;
+}
+function activeProgress() {
+  // Returns the progress map for the active curriculum (by reference — mutations persist)
+  return state.progress[state.activeCurriculumId] || {};
+}
+function activeAttachments() {
+  // Returns the attachments map for the active curriculum (by reference)
+  return state.attachments[state.activeCurriculumId] || {};
+}
+
 function loadState() {
   try {
     const raw = localStorage.getItem(LS_KEY);
-    if (raw) {
-      const d = JSON.parse(raw);
-      state.curriculum  = d.curriculum  || null;
-      state.progress    = d.progress    || {};
-      state.attachments = d.attachments || {};
-      state.darkMode    = d.darkMode    || false;
+    if (!raw) return;
+    const d = JSON.parse(raw);
+
+    // ── One-time migration: single-curriculum → multi-curriculum shape ──
+    if (d.curriculum && !d.curricula) {
+      // Safety backup before migrating (written once, never touched again)
+      try { localStorage.setItem(LS_KEY + '_backup', raw); } catch(_) {}
+      const legacyId = 'canon-pm-2026';
+      const seed = { id: legacyId, source: 'canon', ...d.curriculum };
+      d.curricula          = [seed];
+      d.activeCurriculumId = legacyId;
+      d.progress           = { [legacyId]: d.progress    || {} };
+      d.attachments        = { [legacyId]: d.attachments || {} };
+      delete d.curriculum;
+      // Write migrated shape immediately so this never runs again
+      try { localStorage.setItem(LS_KEY, JSON.stringify(d)); } catch(_) {}
     }
+
+    state.curricula          = d.curricula          || [];
+    state.activeCurriculumId = d.activeCurriculumId || null;
+    state.progress           = d.progress           || {};
+    state.attachments        = d.attachments        || {};
+    state.darkMode           = d.darkMode           || false;
   } catch(e) {}
 }
 
 function _writeLocalStorage() {
   try {
     localStorage.setItem(LS_KEY, JSON.stringify({
-      curriculum:  state.curriculum,
-      progress:    state.progress,
-      attachments: state.attachments,
-      darkMode:    state.darkMode
+      curricula:          state.curricula,
+      activeCurriculumId: state.activeCurriculumId,
+      progress:           state.progress,
+      attachments:        state.attachments,
+      darkMode:           state.darkMode
     }));
   } catch(e) { console.warn('localStorage save failed', e); }
 }
@@ -1405,25 +1436,23 @@ async function _pushToCloud() {
   try {
     const { error } = await _sb.from('user_state').upsert({
       user_id:          _currentUser.id,
-      curriculum:       state.curriculum,
-      progress:         state.progress,
-      attachments_meta: state.attachments
+      // Wrap curricula in a versioned envelope so _syncFromCloud can detect old vs new shape
+      curriculum:       { v: 2, curricula: state.curricula, activeCurriculumId: state.activeCurriculumId },
+      progress:         state.progress,           // { [curriculumId]: { [modId]: {...} } }
+      attachments_meta: state.attachments         // { [curriculumId]: { [modId]: {...} } }
     }, { onConflict: 'user_id' });
     if (error) throw error;
     _setSyncDot('synced');
-    // Fade the dot after 2s
     setTimeout(() => _setSyncDot(''), 2000);
   } catch(e) {
     console.warn('Cloud push failed', e);
-    _setSyncDot(''); // hide on error (no noise)
+    _setSyncDot('');
   }
 }
 
 async function _syncFromCloud() {
   if (!_sb || !_currentUser) return;
   try {
-    // Always fetch canonical curriculum (published by admin)
-    // Admin gets their own saved curriculum; everyone else gets the canonical one
     const [userRes, canonRes] = await Promise.all([
       _sb.from('user_state')
         .select('curriculum, progress, attachments_meta')
@@ -1435,28 +1464,44 @@ async function _syncFromCloud() {
         .maybeSingle()
     ]);
 
-    const userData   = userRes.data;
-    const canonical  = canonRes.data?.curriculum || null;
+    const userData  = userRes.data;
+    const canonical = canonRes.data?.curriculum || null;
 
     if (!userData) {
-      // First login — seed cloud with local state, apply canonical curriculum
-      if (canonical) state.curriculum = canonical;
+      // First login — apply canonical curriculum and seed cloud
+      if (canonical) {
+        canonical.id = 'canon-pm-2026'; canonical.source = 'canon';
+        const idx = state.curricula.findIndex(c => c.id === 'canon-pm-2026');
+        if (idx >= 0) state.curricula[idx] = canonical; else state.curricula.push(canonical);
+        if (!state.activeCurriculumId) state.activeCurriculumId = 'canon-pm-2026';
+      }
       await _pushToCloud();
       return;
     }
 
-    // Restore progress + attachments from user's own row (always private)
-    if (userData.progress)         state.progress    = userData.progress;
-    if (userData.attachments_meta) state.attachments = userData.attachments_meta;
+    // ── Detect and migrate old vs new cloud shape ──
+    const raw = userData.curriculum;
+    if (raw?.v === 2) {
+      // New multi-curriculum format
+      state.curricula          = raw.curricula          || state.curricula;
+      state.activeCurriculumId = raw.activeCurriculumId || state.activeCurriculumId;
+      if (userData.progress)         state.progress    = userData.progress;
+      if (userData.attachments_meta) state.attachments = userData.attachments_meta;
+    } else if (raw) {
+      // Old single-curriculum format — migrate
+      const legacyId = 'canon-pm-2026';
+      state.curricula          = [{ id: legacyId, source: 'canon', ...raw }];
+      state.activeCurriculumId = legacyId;
+      state.progress    = { [legacyId]: userData.progress         || {} };
+      state.attachments = { [legacyId]: userData.attachments_meta || {} };
+    }
 
-    // Curriculum source depends on role:
-    // Admin → uses their own saved curriculum (what they're actively editing)
-    // Everyone else → canonical published curriculum
-    if (_isAdmin()) {
-      if (userData.curriculum) state.curriculum = userData.curriculum;
-    } else {
-      if (canonical)           state.curriculum = canonical;
-      else if (userData.curriculum) state.curriculum = userData.curriculum; // fallback
+    // ── Apply canonical curriculum for non-admin users ──
+    if (!_isAdmin() && canonical) {
+      canonical.id = 'canon-pm-2026'; canonical.source = 'canon';
+      const idx = state.curricula.findIndex(c => c.id === 'canon-pm-2026');
+      if (idx >= 0) state.curricula[idx] = canonical; else state.curricula.push(canonical);
+      if (!state.activeCurriculumId) state.activeCurriculumId = 'canon-pm-2026';
     }
 
     _writeLocalStorage();
@@ -1467,14 +1512,15 @@ async function _syncFromCloud() {
 
 async function publishCurriculum() {
   if (!_isAdmin()) return;
-  if (!state.curriculum) { showToast('No curriculum to publish'); return; }
-  if (!confirm(`Publish "${state.curriculum.title}" to all users?\n\nAll signed-in users will receive this curriculum on their next login.`)) return;
+  const cur = activeCurriculum();
+  if (!cur) { showToast('No curriculum to publish'); return; }
+  if (!confirm(`Publish "${cur.title}" to all users?\n\nAll signed-in users will receive this curriculum on their next login.`)) return;
 
   try {
     _setSyncDot('syncing');
     const { error } = await _sb.from('canonical_curriculum').upsert({
       id: 1,
-      curriculum:   state.curriculum,
+      curriculum:   cur,
       published_at: new Date().toISOString(),
       published_by: _currentUser.id
     }, { onConflict: 'id' });
@@ -1554,18 +1600,22 @@ function _hideAuthScreen() {
 }
 
 function _applyStateAfterSync() {
-  // Re-run migrations in case cloud data is from an older version
-  if (state.curriculum && !state.curriculum.modules.find(m => m.id === 'm10')) {
+  // Re-run module + progress migrations in case cloud data is from an older version
+  const cur = activeCurriculum();
+  const cid = state.activeCurriculumId;
+  if (cur && !cur.modules.find(m => m.id === 'm10')) {
     const pubMod = CANONICAL_CURRICULUM.modules.find(m => m.id === 'm10');
-    if (pubMod) { state.curriculum.modules.push(JSON.parse(JSON.stringify(pubMod))); }
+    if (pubMod) cur.modules.push(JSON.parse(JSON.stringify(pubMod)));
   }
-  if (!state.progress) state.progress = {};
-  if (!state.progress.m10) state.progress.m10 = { readings: {}, watching: {} };
-  if (!state.progress.m10.assignmentSections?.length) {
-    state.progress.m10.assignmentSections = PUBLISHING_DEFAULT_SECTIONS.map((s, i) => ({
-      id: 'sec_pub_' + i + '_' + Math.random().toString(36).slice(2, 7),
-      title: s.title, content: s.content, collapsed: true
-    }));
+  if (cid) {
+    if (!state.progress[cid]) state.progress[cid] = {};
+    if (!state.progress[cid].m10) state.progress[cid].m10 = { readings: {}, watching: {} };
+    if (!state.progress[cid].m10.assignmentSections?.length) {
+      state.progress[cid].m10.assignmentSections = PUBLISHING_DEFAULT_SECTIONS.map((s, i) => ({
+        id: 'sec_pub_' + i + '_' + Math.random().toString(36).slice(2, 7),
+        title: s.title, content: s.content, collapsed: true
+      }));
+    }
   }
   applyDarkMode();
   _writeLocalStorage();
@@ -1716,7 +1766,7 @@ function parseWatchingSection(text) {
 // PROGRESS HELPERS
 // ====================================================================
 function getProgress(modId) {
-  return { complete:false, readings:{}, watching:{}, assignmentDone:false, reflectionDone:false, notes:'', assignmentNotes:'', reflectionNotes:'', rejected:{readings:{},watching:{}}, ...(state.progress[modId]||{}) };
+  return { complete:false, readings:{}, watching:{}, assignmentDone:false, reflectionDone:false, notes:'', assignmentNotes:'', reflectionNotes:'', rejected:{readings:{},watching:{}}, ...(activeProgress()[modId]||{}) };
 }
 function getModPct(mod) {
   const p = getProgress(mod.id);
@@ -1734,7 +1784,7 @@ function getModPct(mod) {
 }
 function toggleRejected(modId, type, id) {
   ensureP(modId);
-  const p = state.progress[modId];
+  const p = activeProgress()[modId];
   if (!p.rejected) p.rejected = {readings:{},watching:{}};
   if (!p.rejected[type]) p.rejected[type] = {};
   p.rejected[type][id] = !p.rejected[type][id];
@@ -1742,14 +1792,22 @@ function toggleRejected(modId, type, id) {
   saveState(); render();
 }
 function getOverall() {
-  if (!state.curriculum) return {complete:0,inProgress:0,total:0,pct:0};
+  const cur = activeCurriculum();
+  if (!cur) return {complete:0,inProgress:0,total:0,pct:0};
   let complete=0,inProgress=0;
-  for (const m of state.curriculum.modules) { const pct=getModPct(m); if(pct===100)complete++; else if(pct>0)inProgress++; }
-  const total=state.curriculum.modules.length;
+  for (const m of cur.modules) { const pct=getModPct(m); if(pct===100)complete++; else if(pct>0)inProgress++; }
+  const total=cur.modules.length;
   return {complete,inProgress,total,pct:total?Math.round((complete/total)*100):0};
 }
 function getAttachments(modId) {
-  return { admin:[], student:[], ...(state.attachments[modId]||{}) };
+  return { admin:[], student:[], ...(activeAttachments()[modId]||{}) };
+}
+function ensureP(id){
+  const cid = state.activeCurriculumId;
+  if(!state.progress[cid]) state.progress[cid]={};
+  if(!state.progress[cid][id]) state.progress[cid][id]={readings:{},watching:{}};
+  if(!state.progress[cid][id].readings) state.progress[cid][id].readings={};
+  if(!state.progress[cid][id].watching) state.progress[cid][id].watching={};
 }
 
 // ====================================================================
@@ -1802,8 +1860,9 @@ function newCurriculum() {
 }
 
 function saveCurriculumField(field, value) {
-  if (!state.curriculum) return;
-  state.curriculum[field] = value;
+  const cur = activeCurriculum();
+  if (!cur) return;
+  cur[field] = value;
   saveState();
   if (field === 'title') {
     const n = document.getElementById('headerCurriculumName');
@@ -1814,7 +1873,7 @@ function saveCurriculumField(field, value) {
 }
 
 function _updateHeaderCurriculum() {
-  const title = state.curriculum?.title || '';
+  const title = activeCurriculum()?.title || '';
   const center = document.getElementById('headerCurriculumCenter');
   const nameEl = document.getElementById('headerCurriculumName');
   const dropNameEl = document.getElementById('curriculumDropdownItemName');
@@ -1860,21 +1919,22 @@ function render() {
 
 function renderStudent() {
   const el = document.getElementById('studentView');
-  if (!state.curriculum?.modules?.length) {
+  const cur = activeCurriculum();
+  if (!cur?.modules?.length) {
     el.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No curriculum loaded</div><div class="empty-text">Switch to Design mode to upload your own curriculum or start from a template.</div><br><button class="btn btn-primary" style="margin:0 auto;display:block" onclick="loadDefault()">Start from Canon template</button></div>`;
     return;
   }
   const ov=getOverall();
   let html='';
   // Curriculum hero — title + subtitle
-  if (state.curriculum?.title) {
+  if (cur.title) {
     html += `<div class="curriculum-hero">
-      <div class="curriculum-hero-title">${esc(state.curriculum.title)}</div>
-      ${state.curriculum.subtitle ? `<div class="curriculum-hero-subtitle">${esc(state.curriculum.subtitle)}</div>` : ''}
+      <div class="curriculum-hero-title">${esc(cur.title)}</div>
+      ${cur.subtitle ? `<div class="curriculum-hero-subtitle">${esc(cur.subtitle)}</div>` : ''}
     </div>`;
   }
-  if (state.curriculum?.paceNote) {
-    html += `<div class="pace-banner"><span class="pace-banner-icon">🗓</span><span>${esc(state.curriculum.paceNote)}</span></div>`;
+  if (cur.paceNote) {
+    html += `<div class="pace-banner"><span class="pace-banner-icon">🗓</span><span>${esc(cur.paceNote)}</span></div>`;
   }
   html += `
     <div class="progress-banner">
@@ -1891,7 +1951,7 @@ function renderStudent() {
     </div>`;
 
   let cardsHtml='';
-  for (const mod of state.curriculum.modules) {
+  for (const mod of cur.modules) {
     const pct=getModPct(mod);
     const att=getAttachments(mod.id);
     const attCount=att.admin.length+att.student.length;
@@ -1924,7 +1984,7 @@ function renderStudent() {
   }
 
   if (state.selectedModule) {
-    const mod=state.curriculum.modules.find(m=>m.id===state.selectedModule);
+    const mod=cur.modules.find(m=>m.id===state.selectedModule);
     if (mod) {
       html+=`<div class="student-split"><div class="modules-column">${cardsHtml}</div><div class="detail-column">${renderDetail(mod)}</div></div>`;
     } else {
@@ -1965,7 +2025,7 @@ function renderDetail(mod) {
       const done = p.readings[r.id];
       const rejected = p.rejected?.readings?.[r.id] || false;
       const adminAttach = r.attachmentPath && r.attachmentName;
-      const studentAttach = state.attachments[mod.id]?.readings?.[r.id];
+      const studentAttach = activeAttachments()[mod.id]?.readings?.[r.id];
       const linkPill = r.type==='verified'&&r.url
         ? `<a href="${r.url}" target="_blank" rel="noopener" class="reading-link">✅ Open link ↗</a>`
         : r.searchTerm ? `<span class="search-pill">🔍 ${esc(r.searchTerm)}</span>` : '';
@@ -2273,11 +2333,12 @@ function selectDesignMod(modId) {
 }
 
 function saveModField(modId, field, value) {
-  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  const cur = activeCurriculum();
+  const mod = cur?.modules.find(m => m.id === modId);
   if (!mod) return;
   if (field === 'number') mod.number = parseInt(value) || mod.number;
   else mod[field] = value;
-  if (field === 'number') state.curriculum.modules.sort((a,b) => a.number - b.number);
+  if (field === 'number') cur.modules.sort((a,b) => a.number - b.number);
   saveState();
   if (field === 'title' || field === 'number') {
     // Refresh the module list item title without full re-render
@@ -2290,8 +2351,9 @@ function saveModField(modId, field, value) {
 }
 
 function addBlankModule() {
-  if (!state.curriculum) state.curriculum = { title: 'My Curriculum', subtitle: '', modules: [] };
-  const nextNum = (state.curriculum.modules.length || 0) + 1;
+  if (!activeCurriculum()) { const nc={id:'user-'+Date.now(),title:'My Curriculum',subtitle:'',modules:[],source:'user'};state.curricula.push(nc);state.activeCurriculumId=nc.id; }
+  const _c = activeCurriculum();
+  const nextNum = (_c.modules.length || 0) + 1;
   const mod = {
     id: `m${nextNum}_${Math.random().toString(36).substr(2,6)}`,
     number: nextNum,
@@ -2304,7 +2366,7 @@ function addBlankModule() {
     assignment: '',
     reflection: ''
   };
-  state.curriculum.modules.push(mod);
+  _c.modules.push(mod);
   _designModId = mod.id;
   saveState();
   renderAdmin();
@@ -2440,20 +2502,21 @@ function renderAdmin() {
   const el = document.getElementById('adminView');
 
   // Curriculum meta + toolbar
+  const cur = activeCurriculum();
   let html = '';
-  if (state.curriculum) {
+  if (cur) {
     html += `<div class="design-curriculum-meta">
       <div class="design-curriculum-meta-label">Curriculum</div>
       <div class="design-field-group" style="margin-bottom:10px">
         <label class="design-field-label">Title</label>
-        <input class="design-field-input" value="${esc(state.curriculum.title||'')}"
+        <input class="design-field-input" value="${esc(cur.title||'')}"
                placeholder="e.g. AI-Era PM Relaunch"
                onblur="saveCurriculumField('title',this.value)"
                onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
       </div>
       <div class="design-field-group" style="margin-bottom:0">
         <label class="design-field-label">Subtitle</label>
-        <input class="design-field-input" value="${esc(state.curriculum.subtitle||'')}"
+        <input class="design-field-input" value="${esc(cur.subtitle||'')}"
                placeholder="One line describing this learning journey"
                onblur="saveCurriculumField('subtitle',this.value)"
                onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
@@ -2465,9 +2528,9 @@ function renderAdmin() {
       <button class="btn btn-primary" onclick="showUpload()">⬆ Upload .md</button>
       <button class="btn btn-outline" onclick="addBlankModule()">+ Add Module</button>
       <button class="btn btn-outline" onclick="loadDefault()">↺ Reset to Canon</button>
-      ${state.curriculum ? `<button class="btn btn-danger" onclick="clearAll()">✕ Clear All</button>` : ''}
+      ${cur ? `<button class="btn btn-danger" onclick="clearAll()">✕ Clear All</button>` : ''}
     </div>
-    ${_isAdmin() && state.curriculum ? `
+    ${_isAdmin() && cur ? `
     <div style="background:rgba(79,90,240,0.06);border:1px solid rgba(79,90,240,0.15);border-radius:12px;padding:12px 18px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
       <div>
         <div style="font-size:13px;font-weight:600;color:var(--purple);margin-bottom:2px">Publish to all users</div>
@@ -2476,20 +2539,20 @@ function renderAdmin() {
       <button class="btn btn-primary" onclick="publishCurriculum()" style="white-space:nowrap;flex-shrink:0">⬆ Publish</button>
     </div>` : ''}`;
 
-  if (!state.curriculum?.modules?.length) {
+  if (!cur?.modules?.length) {
     html += `<div class="empty-state"><div class="empty-icon">📁</div><div class="empty-title">No curriculum yet</div><div class="empty-text">Upload a .md file, add modules manually, or start from the Canon template.</div><br><button class="btn btn-primary" style="margin:0 auto;display:block" onclick="loadDefault()">Start from Canon template</button></div>`;
     el.innerHTML = html;
     return;
   }
 
   // Auto-select first module if none selected (or selection was deleted)
-  if (!_designModId || !state.curriculum.modules.find(m => m.id === _designModId)) {
-    _designModId = state.curriculum.modules[0].id;
+  if (!_designModId || !cur.modules.find(m => m.id === _designModId)) {
+    _designModId = cur.modules[0].id;
   }
-  const selectedMod = state.curriculum.modules.find(m => m.id === _designModId);
+  const selectedMod = cur.modules.find(m => m.id === _designModId);
 
   // Module list (left column)
-  const moduleListHtml = state.curriculum.modules.map(mod => `
+  const moduleListHtml = cur.modules.map(mod => `
     <div class="design-mod-item ${mod.id === _designModId ? 'selected' : ''}" data-mid="${mod.id}"
          onclick="selectDesignMod('${mod.id}')"
          draggable="true"
@@ -2571,7 +2634,7 @@ function renderInlineReadingEditor(mod) {
 }
 
 function saveReadingField(modId, readingId, field, value) {
-  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  const mod = activeCurriculum()?.modules.find(m => m.id === modId);
   if (!mod) return;
   const r = mod.readings.find(r => r.id === readingId);
   if (!r) return;
@@ -2586,7 +2649,7 @@ function saveReadingField(modId, readingId, field, value) {
 }
 
 function saveWatchingField(modId, watchingId, field, value) {
-  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  const mod = activeCurriculum()?.modules.find(m => m.id === modId);
   if (!mod) return;
   const w = mod.watching.find(w => w.id === watchingId);
   if (!w) return;
@@ -2595,7 +2658,7 @@ function saveWatchingField(modId, watchingId, field, value) {
 }
 
 function deleteReading(modId, readingId) {
-  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  const mod = activeCurriculum()?.modules.find(m => m.id === modId);
   if (!mod) return;
   mod.readings = mod.readings.filter(r => r.id !== readingId);
   mod.readings.forEach((r, i) => { r.number = String(i + 1); });
@@ -2604,7 +2667,7 @@ function deleteReading(modId, readingId) {
 }
 
 function deleteWatching(modId, watchingId) {
-  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  const mod = activeCurriculum()?.modules.find(m => m.id === modId);
   if (!mod) return;
   mod.watching = mod.watching.filter(w => w.id !== watchingId);
   saveState();
@@ -2612,7 +2675,7 @@ function deleteWatching(modId, watchingId) {
 }
 
 function addReading(modId) {
-  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  const mod = activeCurriculum()?.modules.find(m => m.id === modId);
   if (!mod) return;
   const newR = { id: 'r_' + Math.random().toString(36).substr(2,8), number: String(mod.readings.length+1), title: '', url: '', searchTerm: '', type: 'search', description: '' };
   mod.readings.push(newR);
@@ -2622,7 +2685,7 @@ function addReading(modId) {
 }
 
 function addWatching(modId) {
-  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  const mod = activeCurriculum()?.modules.find(m => m.id === modId);
   if (!mod) return;
   const newW = { id: 'w_' + Math.random().toString(36).substr(2,8), searchTerm: '', description: '' };
   mod.watching.push(newW);
@@ -2642,7 +2705,7 @@ async function handleReadingAttachFile(input) {
   if (!_readingAttachTarget || !input.files.length) return;
   const { modId, readingId } = _readingAttachTarget;
   const file = input.files[0];
-  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  const mod = activeCurriculum()?.modules.find(m => m.id === modId);
   if (!mod) return;
   const r = mod.readings.find(r => r.id === readingId);
   if (!r) return;
@@ -2686,7 +2749,7 @@ async function handleReadingAttachFile(input) {
 
 async function removeReadingAttach(modId, readingId) {
   if (!confirm('Remove this attachment?')) return;
-  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  const mod = activeCurriculum()?.modules.find(m => m.id === modId);
   if (!mod) return;
   const r = mod.readings.find(r => r.id === readingId);
   if (!r || !r.attachmentPath) return;
@@ -2730,12 +2793,14 @@ function handleAttachDrop(e, modId, role) {
 }
 
 async function uploadFiles(modId, role, files) {
-  if (!state.attachments[modId]) state.attachments[modId] = { admin: [], student: [] };
-  if (!state.attachments[modId][role]) state.attachments[modId][role] = [];
+  const cid = state.activeCurriculumId;
+  if (!state.attachments[cid]) state.attachments[cid] = {};
+  if (!state.attachments[cid][modId]) state.attachments[cid][modId] = { admin: [], student: [] };
+  if (!state.attachments[cid][modId][role]) state.attachments[cid][modId][role] = [];
 
   // Add placeholder items to show uploading state
   const placeholders = files.map(f => ({ dbId: null, name: f.name, size: f.size, addedAt: Date.now(), uploading: true }));
-  state.attachments[modId][role].push(...placeholders);
+  state.attachments[cid][modId][role].push(...placeholders);
   render();
 
   let successCount = 0;
@@ -2758,12 +2823,12 @@ async function uploadFiles(modId, role, files) {
         const blob = new Blob([await file.arrayBuffer()], { type: 'application/pdf' });
         dbId = await idbPut(blob, { modId, role, name: file.name });
       }
-      const list = state.attachments[modId][role];
+      const list = state.attachments[cid][modId][role];
       const idx  = list.indexOf(placeholder);
       if (idx >= 0) list[idx] = { dbId, name: file.name, size: file.size, addedAt: Date.now() };
       successCount++;
     } catch(err) {
-      const list = state.attachments[modId][role];
+      const list = state.attachments[cid][modId][role];
       const idx  = list.indexOf(placeholder);
       if (idx >= 0) list.splice(idx, 1);
       console.error('Upload failed', err);
@@ -3093,15 +3158,16 @@ async function removeAttach(modId, role, dbId) {
       await idbDelete(dbId);
     }
   } catch(e) { console.warn('Delete error', e); }
-  if (state.attachments[modId]?.[role]) {
-    state.attachments[modId][role] = state.attachments[modId][role].filter(f => f.dbId !== dbId);
+  const cid = state.activeCurriculumId;
+  if (state.attachments[cid]?.[modId]?.[role]) {
+    state.attachments[cid][modId][role] = state.attachments[cid][modId][role].filter(f => f.dbId !== dbId);
   }
   saveState(); render();
   showToast('Attachment removed');
 }
 
 function showAdminAttachModal(modId) {
-  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  const mod = activeCurriculum()?.modules.find(m => m.id === modId);
   if (!mod) return;
 
   const renderModalBody = () => renderAttachmentsTab(modId, 'admin');
@@ -3142,11 +3208,11 @@ function setTab(tab) { state.activeTab=tab; if(state.selectedModule) history.rep
 
 function toggleReading(modId,rId,val){
   ensureP(modId);
-  state.progress[modId].readings[rId]=val;
+  activeProgress()[modId].readings[rId]=val;
   if(val){
-    const mod=state.curriculum?.modules.find(m=>m.id===modId);
+    const mod=activeCurriculum()?.modules.find(m=>m.id===modId);
     const r=mod?.readings.find(r=>r.id===rId);
-    if(r){if(!state.progress[modId].readingTitles)state.progress[modId].readingTitles={};state.progress[modId].readingTitles[rId]=r.title;}
+    if(r){if(!activeProgress()[modId].readingTitles)activeProgress()[modId].readingTitles={};activeProgress()[modId].readingTitles[rId]=r.title;}
   }
   saveState(); refreshPct(modId);
   const item=document.querySelector(`.reading-item[data-rid="${rId}"]`);
@@ -3156,7 +3222,7 @@ function toggleReading(modId,rId,val){
   const titleRow=content.querySelector('.reading-title-row');
   const existingChip=document.getElementById(`note-chip-${rId}`);
   if(val && !existingChip && titleRow){
-    const note=state.progress[modId].readingNotes?.[rId]||'';
+    const note=activeProgress()[modId].readingNotes?.[rId]||'';
     titleRow.insertAdjacentHTML('beforeend',buildNoteChip(modId,rId,note));
   } else if(!val && existingChip){
     existingChip.remove();
@@ -3164,9 +3230,9 @@ function toggleReading(modId,rId,val){
 }
 function saveReadingNote(modId,rId,val){
   ensureP(modId);
-  if(!state.progress[modId].readingNotes) state.progress[modId].readingNotes={};
-  if(val.trim()) state.progress[modId].readingNotes[rId]=val.trim();
-  else delete state.progress[modId].readingNotes[rId];
+  if(!activeProgress()[modId].readingNotes) activeProgress()[modId].readingNotes={};
+  if(val.trim()) activeProgress()[modId].readingNotes[rId]=val.trim();
+  else delete activeProgress()[modId].readingNotes[rId];
   saveState();
 }
 function buildNoteChip(modId,rId,note){
@@ -3200,7 +3266,7 @@ function confirmSkip(modId,type,id){
   const reason=(prompt?.querySelector('.skip-prompt-input')?.value||'').trim();
   if(reason){
     ensureP(modId);
-    const p=state.progress[modId];
+    const p=activeProgress()[modId];
     if(!p.skipReasons)p.skipReasons={};
     if(!p.skipReasons[type])p.skipReasons[type]={};
     p.skipReasons[type][id]=reason;
@@ -3230,10 +3296,10 @@ function renderNoteMarkdown(text){
   closeL(); return html;
 }
 function openNoteModal(modId,rId){
-  const mod=state.curriculum?.modules.find(m=>m.id===modId);
+  const mod=activeCurriculum()?.modules.find(m=>m.id===modId);
   const reading=mod?.readings.find(r=>r.id===rId);
   const title=reading?.title||''; const modNum=mod?.number??''; const rNum=reading?.number??'';
-  const existingNote=state.progress[modId]?.readingNotes?.[rId]||'';
+  const existingNote=activeProgress()[modId]?.readingNotes?.[rId]||'';
   const overlay=document.createElement('div');
   overlay.id='reading-note-modal'; overlay.className='note-modal-overlay';
   overlay.dataset.modId=modId; overlay.dataset.rId=rId;
@@ -3289,7 +3355,7 @@ function closeNoteModal(){
     const html=ed.innerHTML.replace(/(<br\s*\/?>|<div><br\s*\/?><\/div>|\s)+$/i,'').trim();
     saveReadingNote(modId,rId,html);
     const chip=document.getElementById(`note-chip-${rId}`);
-    if(chip) chip.outerHTML=buildNoteChip(modId,rId,(state.progress[modId]?.readingNotes?.[rId]||''));
+    if(chip) chip.outerHTML=buildNoteChip(modId,rId,(activeProgress()[modId]?.readingNotes?.[rId]||''));
   }
   modal.remove();
 }
@@ -3303,18 +3369,18 @@ function insertNoteFormat(type){
 }
 function toggleWatching(modId,wId,val){
   ensureP(modId);
-  state.progress[modId].watching[wId]=val;
+  activeProgress()[modId].watching[wId]=val;
   if(val){
-    const mod=state.curriculum?.modules.find(m=>m.id===modId);
+    const mod=activeCurriculum()?.modules.find(m=>m.id===modId);
     const w=mod?.watching.find(w=>w.id===wId);
-    if(w){if(!state.progress[modId].watchingTitles)state.progress[modId].watchingTitles={};state.progress[modId].watchingTitles[wId]=w.title||w.searchTerm;}
+    if(w){if(!activeProgress()[modId].watchingTitles)activeProgress()[modId].watchingTitles={};activeProgress()[modId].watchingTitles[wId]=w.title||w.searchTerm;}
   }
   saveState();refreshPct(modId);
 }
-function toggleAssignment(modId,val){ensureP(modId);state.progress[modId].assignmentDone=val;saveState();refreshPct(modId);}
-function toggleReflection(modId,val){ensureP(modId);state.progress[modId].reflectionDone=val;saveState();refreshPct(modId);}
-function toggleComplete(modId){ensureP(modId);state.progress[modId].complete=!state.progress[modId].complete;saveState();render();}
-function ensureP(id){if(!state.progress[id])state.progress[id]={readings:{},watching:{}};if(!state.progress[id].readings)state.progress[id].readings={};if(!state.progress[id].watching)state.progress[id].watching={};}
+function toggleAssignment(modId,val){ensureP(modId);activeProgress()[modId].assignmentDone=val;saveState();refreshPct(modId);}
+function toggleReflection(modId,val){ensureP(modId);activeProgress()[modId].reflectionDone=val;saveState();refreshPct(modId);}
+function toggleComplete(modId){ensureP(modId);activeProgress()[modId].complete=!activeProgress()[modId].complete;saveState();render();}
+// ensureP is defined in the progress helpers section above
 
 const _noteTimers={};
 function autoSave(modId,field){
@@ -3323,7 +3389,7 @@ function autoSave(modId,field){
   _noteTimers[key]=setTimeout(()=>{
     const elMap={notes:'moduleNotes',assignmentNotes:'assignmentNotes',reflectionNotes:'reflectionNotes',evaluationNotes:'evaluationNotes'};
     const el=document.getElementById(elMap[field]);
-    if(el){ensureP(modId);state.progress[modId][field]=el.value;saveState();}
+    if(el){ensureP(modId);activeProgress()[modId][field]=el.value;saveState();}
   },600);
 }
 
@@ -3352,7 +3418,7 @@ function autoSaveRte(el) {
   clearTimeout(_noteTimers[key]);
   _noteTimers[key] = setTimeout(() => {
     ensureP(modId);
-    state.progress[modId][field] = el.innerHTML;
+    activeProgress()[modId][field] = el.innerHTML;
     saveState();
   }, 600);
 }
@@ -3360,14 +3426,14 @@ function autoSaveRte(el) {
 function initRteFields() {
   // Legacy single-field editors (notes, reflection, etc.)
   document.querySelectorAll('.rte-editor[data-field]').forEach(el => {
-    const saved = state.progress[el.dataset.modid]?.[el.dataset.field] || '';
+    const saved = activeProgress()[el.dataset.modid]?.[el.dataset.field] || '';
     el.innerHTML = saved;
   });
   // Section editors
   document.querySelectorAll('.rte-editor[data-secid]').forEach(el => {
     const modId = el.dataset.modid;
     const secId = el.dataset.secid;
-    const sec = (state.progress[modId]?.assignmentSections || []).find(s => s.id === secId);
+    const sec = (activeProgress()[modId]?.assignmentSections || []).find(s => s.id === secId);
     el.innerHTML = sec?.content || '';
   });
 }
@@ -3377,13 +3443,13 @@ function _secId() { return 'sec_' + Date.now() + '_' + Math.random().toString(36
 
 function ensureSections(modId) {
   ensureP(modId);
-  if (!state.progress[modId].assignmentSections) state.progress[modId].assignmentSections = [];
+  if (!activeProgress()[modId].assignmentSections) activeProgress()[modId].assignmentSections = [];
 }
 
 function addSection(modId) {
   ensureSections(modId);
   const sec = { id: _secId(), title: '', content: '', collapsed: false };
-  state.progress[modId].assignmentSections.push(sec);
+  activeProgress()[modId].assignmentSections.push(sec);
   saveState();
   render();
   // Focus the new section title
@@ -3395,14 +3461,14 @@ function addSection(modId) {
 
 function deleteSection(modId, secId) {
   ensureSections(modId);
-  state.progress[modId].assignmentSections = state.progress[modId].assignmentSections.filter(s => s.id !== secId);
+  activeProgress()[modId].assignmentSections = activeProgress()[modId].assignmentSections.filter(s => s.id !== secId);
   saveState();
   render();
 }
 
 function toggleSecCollapse(modId, secId, btn) {
   ensureSections(modId);
-  const sec = state.progress[modId].assignmentSections.find(s => s.id === secId);
+  const sec = activeProgress()[modId].assignmentSections.find(s => s.id === secId);
   if (!sec) return;
   sec.collapsed = !sec.collapsed;
   saveState();
@@ -3421,7 +3487,7 @@ function saveSecTitle(el) {
   clearTimeout(_noteTimers[key]);
   _noteTimers[key] = setTimeout(() => {
     ensureSections(modId);
-    const sec = state.progress[modId].assignmentSections.find(s => s.id === secId);
+    const sec = activeProgress()[modId].assignmentSections.find(s => s.id === secId);
     if (sec) { sec.title = el.textContent.trim(); saveState(); }
   }, 600);
 }
@@ -3433,7 +3499,7 @@ function autoSaveSec(el) {
   clearTimeout(_noteTimers[key]);
   _noteTimers[key] = setTimeout(() => {
     ensureSections(modId);
-    const sec = state.progress[modId].assignmentSections.find(s => s.id === secId);
+    const sec = activeProgress()[modId].assignmentSections.find(s => s.id === secId);
     if (sec) { sec.content = el.innerHTML; saveState(); }
   }, 600);
 }
@@ -3466,7 +3532,7 @@ function openSrcPicker(modId, secId, btn) {
   _srcPickerModId = modId;
   _srcPickerSecId = secId;
 
-  const mod = state.curriculum.modules.find(m => m.id === modId);
+  const mod = activeCurriculum()?.modules.find(m => m.id === modId);
   const readings = mod?.readings || [];
 
   let picker = document.getElementById('srcPicker');
@@ -3561,7 +3627,7 @@ function secDrop(e, modId, targetSecId) {
   secDragEnd();
   if (!fromId || fromId === targetSecId) return;
   ensureSections(modId);
-  const secs = state.progress[modId].assignmentSections;
+  const secs = activeProgress()[modId].assignmentSections;
   const fromIdx = secs.findIndex(s => s.id === fromId);
   const toIdx = secs.findIndex(s => s.id === targetSecId);
   if (fromIdx < 0 || toIdx < 0) return;
@@ -3572,7 +3638,7 @@ function secDrop(e, modId, targetSecId) {
 }
 
 function refreshPct(modId){
-  const mod=state.curriculum?.modules.find(m=>m.id===modId); if(!mod)return;
+  const mod=activeCurriculum()?.modules.find(m=>m.id===modId); if(!mod)return;
   const pct=getModPct(mod);
   const card=document.querySelector(`.module-card[onclick="selectMod('${modId}')"]`);
   if(card){
@@ -3595,7 +3661,11 @@ function refreshPct(modId){
 // ADMIN ACTIONS
 // ====================================================================
 function loadDefault(){
-  state.curriculum=JSON.parse(JSON.stringify(CANONICAL_CURRICULUM));
+  const seed = JSON.parse(JSON.stringify(CANONICAL_CURRICULUM));
+  seed.id = 'canon-pm-2026'; seed.source = 'canon';
+  const idx = state.curricula.findIndex(c => c.id === 'canon-pm-2026');
+  if (idx >= 0) state.curricula[idx] = seed;
+  else { state.curricula.push(seed); state.activeCurriculumId = 'canon-pm-2026'; }
   state.selectedModule=null;
   saveState(); showToast('✓ Canon loaded'); render();
 }
@@ -3619,7 +3689,7 @@ async function clearAll(){
       await _sb.from('user_state').delete().eq('user_id', _currentUser.id);
     } catch(e) { console.warn('Cloud clear failed', e); }
   }
-  state.curriculum=null;state.progress={};state.attachments={};state.selectedModule=null;
+  state.curricula=[];state.activeCurriculumId=null;state.progress={};state.attachments={};state.selectedModule=null;
   saveState();render();
 }
 function deleteMod(id){
@@ -3627,9 +3697,12 @@ function deleteMod(id){
   const att=getAttachments(id);
   const allIds=[...att.admin,...att.student].map(f=>f.dbId).filter(Boolean);
   idbDeleteMany(allIds).catch(()=>{});
-  state.curriculum.modules=state.curriculum.modules.filter(m=>m.id!==id);
-  delete state.progress[id]; delete state.attachments[id];
-  if(_designModId===id) _designModId=null; // will auto-select next on re-render
+  const cur = activeCurriculum();
+  if (cur) cur.modules = cur.modules.filter(m=>m.id!==id);
+  const cid = state.activeCurriculumId;
+  if (state.progress[cid]) delete state.progress[cid][id];
+  if (state.attachments[cid]) delete state.attachments[cid][id];
+  if(_designModId===id) _designModId=null;
   saveState();showToast('Module deleted');render();
 }
 
@@ -3664,7 +3737,11 @@ function handleMdFile(input){
     try{
       const c=parseMarkdown(e.target.result);
       if(!c.modules.length){if(msgEl)msgEl.textContent='⚠️ No modules found. Modules must start with "# MODULE N: Title".';return;}
-      state.curriculum=c;state.attachments={};state.selectedModule=null;
+      c.id = state.activeCurriculumId || ('user-' + Date.now()); c.source = 'upload';
+      const _idx = state.curricula.findIndex(cur => cur.id === c.id);
+      if (_idx >= 0) state.curricula[_idx] = c; else { state.curricula.push(c); state.activeCurriculumId = c.id; }
+      if (!state.attachments[c.id]) state.attachments[c.id] = {};
+      state.selectedModule=null;
       saveState();closeModal();showToast(`✓ Loaded: ${c.title} (${c.modules.length} modules)`);render();
     }catch(err){if(msgEl)msgEl.textContent='✕ Error: '+err.message;}
   };
@@ -3679,8 +3756,8 @@ function handleMdDrop(e){
 }
 
 function showModuleForm(editId){
-  const mod=editId?state.curriculum?.modules.find(m=>m.id===editId):null;
-  const nextNum=(state.curriculum?.modules.length||0)+1;
+  const mod=editId?activeCurriculum()?.modules.find(m=>m.id===editId):null;
+  const nextNum=(activeCurriculum()?.modules.length||0)+1;
   const readingsVal=mod?mod.readings.map(r=>`${r.title} | ${r.url||('search:'+r.searchTerm)} | ${r.description||''}`).join('\n'):'';
   const watchingVal=mod?mod.watching.map(w=>`${w.searchTerm}${w.description?' — '+w.description:''}`).join('\n'):'';
   showModal(`
@@ -3727,11 +3804,12 @@ function saveMod(editId){
     const dash=line.indexOf(' — ');
     return{id:`w_${Math.random().toString(36).substr(2,8)}`,searchTerm:dash>0?line.slice(0,dash).trim():line.trim(),description:dash>0?line.slice(dash+3).trim():''};
   });
-  if(!state.curriculum)state.curriculum={title:'My Curriculum',subtitle:'',modules:[]};
+  if(!activeCurriculum()){const nc={id:'user-'+Date.now(),title:'My Curriculum',subtitle:'',modules:[],source:'user'};state.curricula.push(nc);state.activeCurriculumId=nc.id;}
+  const _cur=activeCurriculum();
   const mod={id:editId||`m${number}_${Math.random().toString(36).substr(2,4)}`,number,title,subtitle:document.getElementById('fSub').value.trim(),whyItMatters:document.getElementById('fWhy').value.trim(),readings,watching,assignment:document.getElementById('fAssign').value.trim(),reflection:document.getElementById('fReflect').value.trim()};
-  if(editId){const idx=state.curriculum.modules.findIndex(m=>m.id===editId);if(idx>=0)state.curriculum.modules[idx]=mod;}
-  else{state.curriculum.modules.push(mod);}
-  state.curriculum.modules.sort((a,b)=>a.number-b.number);
+  if(editId){const idx=_cur.modules.findIndex(m=>m.id===editId);if(idx>=0)_cur.modules[idx]=mod;}
+  else{_cur.modules.push(mod);}
+  _cur.modules.sort((a,b)=>a.number-b.number);
   saveState();closeModal();showToast(editId?'✓ Module updated':'✓ Module added');render();
 }
 
@@ -3812,7 +3890,7 @@ function adminDrop(e, targetModId) {
   const fromId = _dragModId;
   adminDragEnd();
   if (!fromId || fromId === targetModId) return;
-  const mods = state.curriculum.modules;
+  const mods = activeCurriculum()?.modules || [];
   const fromIdx = mods.findIndex(m => m.id === fromId);
   const toIdx = mods.findIndex(m => m.id === targetModId);
   if (fromIdx < 0 || toIdx < 0) return;
@@ -3828,24 +3906,36 @@ function adminDrop(e, targetModId) {
 // INIT
 // ====================================================================
 
-// 1. Load state from localStorage first (instant, no network)
+// 1. Load state from localStorage (handles migration from old single-curriculum shape)
 loadState();
 
-// 2. Seed defaults if nothing in localStorage
-if (!state.curriculum) {
-  state.curriculum = JSON.parse(JSON.stringify(CANONICAL_CURRICULUM));
+// 2. Seed defaults if no curricula yet
+if (!state.curricula?.length) {
+  const seed = JSON.parse(JSON.stringify(CANONICAL_CURRICULUM));
+  seed.id = 'canon-pm-2026'; seed.source = 'canon';
+  state.curricula = [seed];
+  state.activeCurriculumId = 'canon-pm-2026';
   _writeLocalStorage();
 }
 
-// 3. Migrations (local copy — cloud will be patched after sync via _applyStateAfterSync)
-if (state.curriculum && !state.curriculum.modules.find(m => m.id === 'm10')) {
-  const pubMod = CANONICAL_CURRICULUM.modules.find(m => m.id === 'm10');
-  if (pubMod) { state.curriculum.modules.push(JSON.parse(JSON.stringify(pubMod))); _writeLocalStorage(); }
+// 3. Ensure activeCurriculumId points to a real curriculum
+if (!state.curricula.find(c => c.id === state.activeCurriculumId)) {
+  state.activeCurriculumId = state.curricula[0].id;
 }
-if (!state.progress) state.progress = {};
-if (!state.progress.m10) state.progress.m10 = { readings: {}, watching: {} };
-if (!state.progress.m10.assignmentSections || state.progress.m10.assignmentSections.length === 0) {
-  state.progress.m10.assignmentSections = PUBLISHING_DEFAULT_SECTIONS.map((s, i) => ({
+
+// 4. Module migrations (m10) — local copy; cloud patched after sync via _applyStateAfterSync
+const _cur = activeCurriculum();
+if (_cur && !_cur.modules.find(m => m.id === 'm10')) {
+  const pubMod = CANONICAL_CURRICULUM.modules.find(m => m.id === 'm10');
+  if (pubMod) { _cur.modules.push(JSON.parse(JSON.stringify(pubMod))); _writeLocalStorage(); }
+}
+
+// 5. Progress migrations (m10)
+const _cid = state.activeCurriculumId;
+if (!state.progress[_cid]) state.progress[_cid] = {};
+if (!state.progress[_cid].m10) state.progress[_cid].m10 = { readings: {}, watching: {} };
+if (!state.progress[_cid].m10.assignmentSections?.length) {
+  state.progress[_cid].m10.assignmentSections = PUBLISHING_DEFAULT_SECTIONS.map((s, i) => ({
     id: 'sec_pub_' + i + '_' + Math.random().toString(36).slice(2, 7),
     title: s.title, content: s.content, collapsed: true
   }));
@@ -3860,7 +3950,7 @@ document.addEventListener('keydown', function(e) {
   if ((e.key === 'j' || e.key === 'k') && !e.metaKey && !e.ctrlKey && !e.altKey) {
     const active = document.activeElement;
     if (active && (active.isContentEditable || ['INPUT','TEXTAREA','SELECT'].includes(active.tagName))) return;
-    const mods = state.curriculum?.modules || [];
+    const mods = activeCurriculum()?.modules || [];
     if (!mods.length) return;
     const idx = mods.findIndex(m => m.id === state.selectedModule);
     let next = e.key === 'j' ? idx + 1 : idx - 1;
@@ -3914,7 +4004,7 @@ function _restoreFromHash() {
   const hash = location.hash.slice(1); // e.g. "m1" or "m1/watching"
   if (!hash) { render(); return; }
   const [modId, tab] = hash.split('/');
-  const mod = state.curriculum?.modules.find(m => m.id === modId);
+  const mod = activeCurriculum()?.modules.find(m => m.id === modId);
   if (!mod) { history.replaceState(null, '', location.pathname); render(); return; }
   state.selectedModule = modId;
   state.activeTab = (tab && VALID_TABS.has(tab)) ? tab : 'reading';
@@ -3929,7 +4019,7 @@ window.addEventListener('popstate', () => {
     state.activeTab = 'reading';
   } else {
     const [modId, tab] = hash.split('/');
-    const mod = state.curriculum?.modules.find(m => m.id === modId);
+    const mod = activeCurriculum()?.modules.find(m => m.id === modId);
     if (mod) {
       state.selectedModule = modId;
       state.activeTab = (tab && VALID_TABS.has(tab)) ? tab : 'reading';
