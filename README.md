@@ -1,43 +1,54 @@
-# Canon — Personal PM Curriculum Tracker
+# Canon — AI-Era PM Curriculum Execution Workspace
 
 > *Design your curriculum with AI. Execute it with intention. Walk out with proof.*
 
-A self-contained curriculum tracker built during a PM career break, to actually execute a structured, self-designed AI-era PM curriculum, not just collect it in a Notion doc.
+A self-contained tool built to close the gap between structured learning and structured output — co-designed with AI, built with AI, and used daily as the primary learner.
 
 **[→ Live demo](https://surabhibatra29.github.io/canon/curriculum-tracker.html)**
 
 ---
 
+## The design problem
+
+Most learning tools are instruction products: they solve the content problem. Canon is an **execution product**: it solves the proof problem — the distance between reading something and producing work that demonstrates you understood it.
+
+The curriculum inside Canon was itself designed with AI: a structured discovery process to surface gaps, define what rigorous PM learning at this level should cover, and sequence it into 14 modules with named deliverables. The tool executes that curriculum. Both layers — what to learn and how to track it — were built with AI as a collaborator.
+
+Reflections are private proof for yourself. Assignments are portfolio-ready proof for anyone else. The artifacts of working through this curriculum aren't always tidy Google Docs — they're a live product, a structured PRD, and real decisions made under real constraints. That's the point.
+
+---
+
 ## What it does
 
-- Tracks progress across 11 PM modules: readings, videos, assignments, reflections
-- Every module has a named **output artifact**: a specific deliverable, not just content consumed
-- **Evaluate tab** — every module has a rubric with weak/strong artifact criteria and "ask yourself" prompts, plus a self-evaluation workspace
-- **Skip / Restore** — dismiss any reading or watching item you don't want; it's struck out and excluded from your progress, restorable any time
-- **Spine + pace structure** — core modules marked, pace note on the dashboard ("one module every 10 days")
-- Rich-text assignment workspace with collapsible sections and source citations
-- PDF attachment support (admin resources + personal uploads)
-- Module 10: a private build log for drafting writing as you go
-- Cloud sync via Supabase, works across desktop and mobile browser
-- Full dark mode, keyboard navigation (j/k), Design mode for curriculum editing
-- All resources curated to verified links — direct TED, MIT OCW, HBR, practitioner sites; no dead-end search terms
+- Tracks progress across **14 PM modules**: readings, watching, assignments, and reflections
+- Every module produces a named **artifact** — a specific deliverable, not a completion checkbox
+- **Evaluate tab** — rubric with weak/strong/ask yourself criteria per module; self-evaluation workspace separate from the reflection tab
+- **Skip / Restore** — dismiss any reading or watching item with an optional reason, excluded from progress. The skip reason respects that you may already know the material — it's not just a UX shortcut, it's a design philosophy: the tool should meet you where you are
+- **Per-reading notes** — WYSIWYG note modal per reading; compact note chip shows on the row once written
+- **Spine + pace structure** — four load-bearing Core modules marked; dashboard pace note tells you what to prioritise if time is short
+- Rich-text assignment workspace — draggable, collapsible sections; cite specific readings inside your writing
+- PDF viewer — remembers your last-read page and preserves highlights across zoom levels
+- **Refresh / back button navigation** — URL hash preserves your current module and tab across sessions
+- Cloud sync via Supabase; admin can publish curriculum updates to all users
+- Dark mode, keyboard navigation (j/k), Design mode for curriculum editing
 
-## The design philosophy
-
-Most learning tools are instruction products: they tell you what to do. Canon is an **execution product**: it holds your work.
-
-The curriculum is a template. The artifact you produce at the end of each module is the proof. Reflections are private proof for yourself. Assignments are public-ready proof for anyone else. Both count.
-
-## Why I built this
-
-I kept losing progress context across Notion, Google Docs, and browser tabs. I wanted one workspace that matched how I actually study, with notes, sources, assignments, and reflections in one place. So I built it.
+---
 
 ## What it demonstrates
 
-- **Product thinking**: scoped an MVP that solved my actual problem, made deliberate tradeoffs (single file, no framework, offline-first)
-- **AI-assisted development**: used Claude as a technical collaborator. I owned the product decisions, architecture tradeoffs, and UX direction
-- **Local-first architecture**: localStorage for instant writes, Supabase for cross-device sync and file storage
-- **Iterative delivery**: built and shipped incrementally, adding features as real usage revealed gaps
+- **Product thinking with a living PRD**: every significant feature decision is documented — problem framing, tradeoffs considered, what was deliberately not built
+- **AI-assisted development at every stage**: used AI to define the curriculum, design the architecture, review UX decisions, and build the product. The discipline: clear problem framing first, AI-accelerated execution second. Getting that order wrong always meant redoing it
+- **Dogfooding as evaluation method**: I'm the primary user. Success isn't a metric dashboard — it's whether the work I'm producing is portfolio-ready and whether the reflections I'm writing are honest enough to be embarrassing if read aloud
+- **Local-first architecture**: localStorage for instant writes, Supabase for cross-device sync and file storage, IndexedDB for PDF blobs
+- **Iterative delivery**: built and shipped in public, features driven by real usage
+
+---
+
+## Why I built this
+
+There's no tool that holds your work through a structured curriculum. Note apps capture but don't demand output. Course platforms deliver content but don't require proof. Notion does everything, which means it does nothing well. Canon does one thing: makes it harder to pretend you've finished something you haven't.
+
+---
 
 ## Tech
 
@@ -51,6 +62,8 @@ Single HTML file, no build step, no dependencies to install, runs directly in a 
 | PDF rendering | PDF.js (lazy-loaded from CDN) |
 | Font | Inter via Google Fonts |
 | Hosting | GitHub Pages |
+
+---
 
 ## Curriculum modules
 
