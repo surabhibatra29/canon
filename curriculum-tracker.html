@@ -1329,6 +1329,7 @@ function _isAdmin() {
 let _sb = null;            // Supabase client instance
 let _currentUser = null;   // Currently signed-in user (or null)
 let _syncTimer   = null;   // Debounce handle for cloud saves
+let _needsCloudMigration = false; // Set true when old Supabase format is migrated — triggers immediate push
 let _authMode    = 'signin'; // 'signin' | 'signup'
 
 function _initSupabase() {
@@ -1540,12 +1541,17 @@ async function _syncFromCloud() {
       if (userData.progress)         state.progress    = userData.progress;
       if (userData.attachments_meta) state.attachments = userData.attachments_meta;
     } else if (raw) {
-      // Old single-curriculum format — migrate
+      // Old single-curriculum format — migrate to multi-curriculum shape
       const legacyId = 'canon-pm-2026';
       state.curricula          = [{ id: legacyId, source: 'canon', ...raw }];
       state.activeCurriculumId = legacyId;
-      state.progress    = { [legacyId]: userData.progress         || {} };
-      state.attachments = { [legacyId]: userData.attachments_meta || {} };
+      // Guard against double-nesting: if progress already looks like { [curriculumId]: {...} } use it directly
+      const prog = userData.progress || {};
+      state.progress    = prog[legacyId] ? prog : { [legacyId]: prog };
+      const att  = userData.attachments_meta || {};
+      state.attachments = att[legacyId]  ? att  : { [legacyId]: att  };
+      // Push migrated state back to Supabase so we never re-migrate on next login
+      _needsCloudMigration = true;
     }
 
     // ── Apply canonical curriculum for non-admin users ──
@@ -1557,6 +1563,8 @@ async function _syncFromCloud() {
     }
 
     _writeLocalStorage();
+    // Push migrated state to cloud so Supabase is in new format for next login
+    if (_needsCloudMigration) { _needsCloudMigration = false; await _pushToCloud(); }
   } catch(e) {
     console.warn('Sync from cloud failed', e);
   }
