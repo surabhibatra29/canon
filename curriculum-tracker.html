@@ -76,7 +76,7 @@
     .sync-dot.syncing { background: var(--amber); opacity: 1; }
     .sync-dot.synced { opacity: 1; }
     /* Curriculum hero (Learn mode page header) */
-    .curriculum-hero { padding: 28px 0 4px; }
+    .curriculum-hero { padding: 20px 0 8px; }
     .curriculum-hero-title { font-size: 26px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; margin-bottom: 4px; }
     .curriculum-hero-subtitle { font-size: 14px; color: var(--text-muted); line-height: 1.5; }
     .curric-context-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; background: rgba(79,90,240,0.07); border: 1px solid rgba(79,90,240,0.15); border-radius: 20px; font-size: 12px; font-weight: 500; color: var(--purple); cursor: pointer; margin-bottom: 12px; transition: all 0.15s; user-select: none; }
@@ -90,16 +90,16 @@
     .main { max-width: 1200px; margin: 0 auto; padding: 24px 24px 64px; }
 
     /* ── Progress Banner ── */
-    .progress-banner { background: rgba(255,255,255,0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.85); border-radius: var(--radius); padding: 16px 24px; margin-bottom: 24px; box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 20px; }
+    .progress-banner { background: transparent; border: none; border-radius: 0; padding: 0 0 14px 0; margin-bottom: 0; box-shadow: none; display: flex; align-items: center; gap: 20px; }
     .progress-stats { display: none; }
     .stat { text-align: center; }
     .stat-num { font-size: 28px; font-weight: 700; color: var(--purple); line-height: 1; }
     .stat-label { font-size: 11px; color: var(--text-muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
     .progress-bar-section { flex: 1; }
-    .progress-banner-text { font-size: 13px; font-weight: 500; color: var(--text-muted); white-space: nowrap; }
+    .progress-banner-text { font-size: 12.5px; font-weight: 500; color: var(--text-muted); white-space: nowrap; }
     .progress-banner-text strong { color: var(--text); font-weight: 600; }
     .progress-bar-label { display: none; }
-    .progress-bar-track { height: 2px; background: var(--border); border-radius: 999px; overflow: hidden; }
+    .progress-bar-track { height: 4px; background: rgba(0,0,0,0.08); border-radius: 999px; overflow: hidden; }
     .progress-bar-fill { height: 100%; background: var(--purple); border-radius: 999px; transition: width 0.5s; opacity: 0.6; }
 
     /* ── Module Grid ── */
@@ -173,9 +173,9 @@
     .spine-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; background: rgba(79,90,240,0.1); color: var(--purple); border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; margin-left: 6px; vertical-align: middle; }
     [data-theme="dark"] .spine-pill { background: rgba(129,140,248,0.15); color: #A5B4FC; }
     /* ── Pace banner (dashboard) ── */
-    .pace-banner { display: flex; align-items: flex-start; gap: 10px; padding: 12px 16px; background: rgba(79,90,240,0.05); border: 1px solid rgba(79,90,240,0.12); border-radius: 10px; margin-bottom: 20px; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
-    .pace-banner-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
-    [data-theme="dark"] .pace-banner { background: rgba(79,90,240,0.07); border-color: rgba(79,90,240,0.15); }
+    .pace-banner { display: flex; align-items: flex-start; gap: 10px; padding: 2px 12px; background: transparent; border: none; border-left: 2px solid rgba(79,90,240,0.28); border-radius: 0; margin-bottom: 10px; font-size: 12.5px; color: var(--text-muted); line-height: 1.55; }
+    .pace-banner-icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+    [data-theme="dark"] .pace-banner { border-left-color: rgba(129,140,248,0.35); }
     /* ── Evaluate tab ── */
     .rubric-section { margin-bottom: 20px; }
     .rubric-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
@@ -462,7 +462,8 @@
     .add-curric-pill { font-size: 11px; font-weight: 600; color: var(--purple); background: rgba(79,90,240,0.08); padding: 3px 8px; border-radius: 20px; flex-shrink: 0; }
 
     /* ── AI Recommendations Teaser ── */
-    .ai-rec-teaser { display: flex; align-items: center; gap: 14px; padding: 13px 18px; background: linear-gradient(135deg, rgba(79,90,240,0.05) 0%, rgba(139,92,246,0.07) 100%); border: 1px solid rgba(79,90,240,0.14); border-radius: 12px; cursor: pointer; margin-bottom: 24px; transition: all 0.2s; }
+    .ai-rec-teaser { display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: white; border: none; border-left: 4px solid #4f5af0; border-radius: 0 10px 10px 0; cursor: pointer; margin-bottom: 24px; transition: all 0.2s; box-shadow: 0 2px 12px rgba(79,90,240,0.13); }
+    .ai-rec-teaser:hover { box-shadow: 0 4px 18px rgba(79,90,240,0.2); transform: translateX(2px); }
     .ai-rec-teaser:hover { background: linear-gradient(135deg, rgba(79,90,240,0.09) 0%, rgba(139,92,246,0.11) 100%); border-color: rgba(79,90,240,0.25); }
     .ai-rec-teaser-icon { font-size: 20px; flex-shrink: 0; }
     .ai-rec-teaser-body { flex: 1; }
@@ -479,7 +480,9 @@
     .rec-card-preview-why { font-size: 12px; color: var(--purple); margin-top: 4px; font-style: italic; }
     .rec-card-preview-actions { display: flex; gap: 8px; margin-top: 10px; }
     .rec-card-preview-btn { font-size: 11.5px; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: default; font-family: inherit; }
-    [data-theme="dark"] .ai-rec-teaser { background: linear-gradient(135deg, rgba(79,90,240,0.08) 0%, rgba(139,92,246,0.1) 100%); border-color: rgba(129,140,248,0.18); }
+    [data-theme="dark"] .ai-rec-teaser { background: rgba(30,27,75,0.6); border-left-color: #818cf8; box-shadow: 0 2px 12px rgba(79,90,240,0.2); }
+    .ai-rec-teaser-title { color: #3730a3; }
+    [data-theme="dark"] .ai-rec-teaser-title { color: #a5b4fc; }
 
     /* ── Generate Form ── */
     .generate-field { margin-bottom: 14px; }
@@ -548,7 +551,7 @@
     [data-theme="dark"] .avatar-dropdown-btn:hover { background: rgba(220,38,38,0.12); }
     [data-theme="dark"] .sync-dot { border-color: #111; }
     [data-theme="dark"] .design-curriculum-meta { background: rgba(255,255,255,0.04); }
-    [data-theme="dark"] .progress-banner { background: rgba(28,25,23,0.6); border-color: rgba(255,255,255,0.06); }
+    [data-theme="dark"] .progress-bar-track { background: rgba(255,255,255,0.1); }
     [data-theme="dark"] .module-card { background: rgba(28,25,23,0.55); border-color: rgba(255,255,255,0.07); }
     [data-theme="dark"] .module-card-footer { background: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.05); }
     [data-theme="dark"] .detail-panel { background: rgba(17,17,16,0.8); border-color: rgba(255,255,255,0.07); }
