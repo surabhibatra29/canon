@@ -812,7 +812,7 @@
 
     <!-- Center: Curriculum name (hidden until curriculum loaded) -->
     <div class="header-center" id="headerCurriculumCenter" style="display:none">
-      <div class="header-curriculum" onclick="toggleCurriculumDropdown()">
+      <div class="header-curriculum" onclick="event.stopPropagation(); toggleCurriculumDropdown()">
         <span class="header-curriculum-name" id="headerCurriculumName"></span>
         <svg class="header-curriculum-caret" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,4 6,8 10,4"/></svg>
       </div>
@@ -2438,7 +2438,7 @@ function renderStudent() {
     </div>`;
   }
   if (state.curricula.length > 1) {
-    html += `<div class="curric-context-badge" onclick="toggleCurriculumDropdown()">${esc(cur.title)}<svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,4 6,8 10,4"/></svg></div>`;
+    html += `<div class="curric-context-badge" onclick="event.stopPropagation(); toggleCurriculumDropdown()">${esc(cur.title)}<svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,4 6,8 10,4"/></svg></div>`;
   }
   if (cur.paceNote) {
     html += `<div class="pace-banner"><span class="pace-banner-icon">🗓</span><span>${esc(cur.paceNote)}</span></div>`;
