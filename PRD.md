@@ -296,6 +296,218 @@ When `CANONICAL_CURRICULUM` JS changes:
 
 ---
 
+## 13. Feature Design: Multi-Curriculum Platform
+
+**Status:** Design approved — not built yet
+**Last updated:** 2026-06-10
+
+---
+
+### 13.1 The Strategic Shift
+
+Canon is changing from a personal tool with one baked-in curriculum to a platform where any structured curriculum can be executed. The curriculum becomes content that runs on top of Canon's execution infrastructure. The PM curriculum is no longer the product — it's the flagship template that proves the platform works.
+
+**The core bet:** curricula are a commodity. The execution layer — reflections, rubrics, assignments, skip logic, PDF viewer, progress tracking — is the moat. Any curriculum plugged in gets all of it.
+
+---
+
+### 13.2 Permissions Model
+
+Two tiers. Simple. Binary.
+
+| User type | What they can do |
+|---|---|
+| **Any signed-in user** | Execute any curriculum they have access to. Upload a private curriculum (.md or JSON). Generate a private curriculum with AI. See the public library and add a featured curriculum to their collection. |
+| **Admin** (`batra.surabhi@gmail.com`) | Everything above, plus: publish a curriculum to the public library, making it available to all users. |
+
+**Privacy is absolute:** no user can see another user's curriculum (if private) or their progress. Ever.
+
+---
+
+### 13.3 Three Ways to Get a Curriculum into Canon
+
+#### 1. Featured Library (Canon-curated, admin-published)
+A small set of high-quality curricula published by Canon's admin. Currently one: **AI-Era PM Relaunch**. Visible to all signed-in users. Browsable, previewable, addable to personal collection with one click. Canon's quality bar — these are the showcase.
+
+#### 2. Upload Your Own
+Any signed-in user uploads a `.md` file or a `.json` file matching the curriculum schema. The parser validates it, gives it a generated ID, and adds it to the user's private collection. Nobody else can see it. The `.md` parser already exists (`parseMarkdown`). JSON import is new.
+
+#### 3. Generate with AI
+An in-app guided form (5–7 questions: domain, level, goals, learning style, time horizon). Calls Claude API. Returns a structured curriculum JSON matching the Canon schema. User reviews the full structure before activating it. Private. The master prompt already exists at `prompts/curriculum-generator.md`.
+
+---
+
+### 13.4 Curriculum Identity
+
+Every curriculum needs a stable ID. Currently there is none. Proposed:
+
+| Source | ID format | Example |
+|---|---|---|
+| Canon-curated | `canon-{slug}` | `canon-pm-2026` |
+| User upload | `user-{timestamp}` | `user-1749234567890` |
+| AI-generated | `gen-{timestamp}` | `gen-1749234567890` |
+
+The title "AI-Era PM Relaunch" maps to `canon-pm-2026`.
+
+---
+
+### 13.5 State Shape Changes
+
+This is the most significant technical change. Current state assumes one curriculum. New state supports many.
+
+**Current shape:**
+```js
+{
+  curriculum: { title, modules: [...] },
+  progress: { [modId]: { ... } },
+  attachments: { [modId]: { ... } }
+}
+```
+
+**New shape:**
+```js
+{
+  curricula: [
+    { id, title, subtitle, paceNote, source, isPublic, modules: [...] }
+  ],
+  activeCurriculumId: 'canon-pm-2026',
+  progress: {
+    'canon-pm-2026':  { [modId]: { ... } },
+    'user-123456789': { [modId]: { ... } }
+  },
+  attachments: {
+    'canon-pm-2026':  { [modId]: { admin: [], student: [] } },
+    'user-123456789': { [modId]: { admin: [], student: [] } }
+  },
+  darkMode: bool
+}
+```
+
+All existing functions that reference `state.curriculum` and `state.progress[modId]` need to resolve via `activeCurriculumId`. The active curriculum is a derived pointer, not a separate data copy.
+
+---
+
+### 13.6 Migration Strategy
+
+Existing users have state in the old single-curriculum shape. On load, detect old shape and migrate automatically:
+
+```js
+// On loadState() — detect and migrate
+if (state.curriculum && !state.curricula) {
+  const legacyId = 'canon-pm-2026';
+  state.curricula = [{ id: legacyId, ...state.curriculum }];
+  state.activeCurriculumId = legacyId;
+  state.progress    = { [legacyId]: state.progress    || {} };
+  state.attachments = { [legacyId]: state.attachments || {} };
+  delete state.curriculum;
+  saveState(); // write migrated shape immediately
+}
+```
+
+This is a one-time migration. Existing progress is preserved under `canon-pm-2026`. No data loss.
+
+---
+
+### 13.7 UI Touchpoints
+
+#### A. Header — Curriculum Switcher
+The dropdown stub already exists. Make it real.
+
+- Shows active curriculum name + caret (current behaviour)
+- Dropdown: list of user's curricula (active one checked)
+- Bottom of list: **"+ Add a curriculum →"** CTA
+- Clicking a curriculum switches `activeCurriculumId` and re-renders dashboard
+
+#### B. "Add a Curriculum" Flow
+Three-option screen (modal or inline panel):
+
+```
+┌─────────────────────────────────────────────────┐
+│  Add a curriculum                               │
+│                                                 │
+│  ✦ Browse featured        Canon-curated, free   │
+│  ↑ Upload your own        .md or .json file     │
+│  ✱ Generate with AI       Answer 5 questions    │
+└─────────────────────────────────────────────────┘
+```
+
+#### C. Featured Library
+A simple browsable list of Canon-curated curricula. Each card: title, subtitle, module count, who it's for. "Add to my curricula" button. No progress shown (that's personal). Preview shows module list only.
+
+Currently one item: **AI-Era PM Relaunch** — 14 modules, artifact-first, for PM career returners.
+
+#### D. Dashboard — Active Curriculum Context
+Small curriculum name badge above the pace note banner, so the user always knows which curriculum they're executing. Clicking it opens the switcher.
+
+#### E. Design Mode — Admin Publishing
+Admin-only: a "Publish to Library" button that takes the current active curriculum and writes it to Supabase as a public featured curriculum. Replaces the current single "Publish" flow. Admin can manage multiple published curricula.
+
+---
+
+### 13.8 Supabase Changes
+
+| Current | New |
+|---|---|
+| `canonical_curriculum` — single row | `featured_curricula` — one row per published curriculum, with `id`, `title`, `data` (JSON), `published_at` |
+| `user_state` — one row per user, with `curriculum` + `progress` | `user_state` — one row per user, with `curricula` (array) + `progress` (keyed by curriculum ID) + `activeCurriculumId` |
+
+The `featured_curricula` table replaces `canonical_curriculum`. A migration script converts the existing single row to the new format on first deploy.
+
+---
+
+### 13.9 The Generate Flow (in-app curriculum builder)
+
+Uses the Claude API (same API key as recommendations feature — set in Settings). Guided form, not open-ended:
+
+1. **Domain** — what subject / skill area?
+2. **Level** — beginner, intermediate, advanced, re-entry?
+3. **Goal** — what should the learner be able to do at the end?
+4. **Time horizon** — how many weeks? How many hours per week?
+5. **Preferred format** — more reading, more watching, more doing?
+6. **Prior knowledge** — what can we skip?
+7. **One constraint** — what must be in this curriculum no matter what?
+
+Outputs: full curriculum JSON in Canon schema. User sees the module list before activating. Can regenerate if not satisfied. On activation, added to private collection and set as active.
+
+---
+
+### 13.10 What's Out of Scope for v1
+
+- ❌ Sharing a private curriculum with another user (makes privacy harder)
+- ❌ Public user-generated curriculum directory (quality control problem)
+- ❌ Collaborative curriculum editing (multiple admins on one curriculum)
+- ❌ Curriculum versioning / update propagation for user-uploaded curricula
+- ❌ Paid/gated featured curricula (business model question, not yet)
+- ❌ Curriculum ratings or social proof
+
+---
+
+### 13.11 Open Questions
+
+1. **What happens to progress when a user re-imports a newer version of a curriculum they already have?** Module IDs may have changed. Progress could orphan. Proposal: keep old progress as-is, treat the new import as a separate curriculum ID with a version suffix.
+
+2. **Can a user have the same featured curriculum in their collection more than once?** No — check by curriculum ID before adding.
+
+3. **Does the generate flow need the API key to already be set?** Yes — prompt the user to add their Anthropic API key in Settings before opening the generate flow. Same gating as recommendations.
+
+4. **What is the maximum number of curricula a user can have?** No hard limit for now. Practically bounded by localStorage size. Worth watching.
+
+---
+
+### 13.12 Build Order
+
+1. **State shape migration** — `loadState()` detects old shape and migrates. All functions updated to resolve via `activeCurriculumId`. No UI change yet. Foundational.
+2. **Curriculum ID assignment** — assign `canon-pm-2026` to the existing CANONICAL_CURRICULUM. All module IDs stay the same.
+3. **Header switcher** — make the dropdown stub real. Switch curricula, re-render.
+4. **"Add a curriculum" modal** — three-option entry point.
+5. **Upload flow** — .md and .json import, available to all users (not just admin).
+6. **Featured library** — Supabase `featured_curricula` table, browse + add flow.
+7. **Dashboard curriculum badge** — small active curriculum label above pace note.
+8. **Admin: publish to library** — updated publish flow for multi-curriculum.
+9. **Generate flow** — last, because it depends on API key settings (shared with recommendations).
+
+---
+
 ## 12. Feature Design: AI Recommendations
 
 **Status:** Design phase — not built yet  
