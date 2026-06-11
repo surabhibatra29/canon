@@ -1,8 +1,8 @@
 # Canon — AI-Era PM Curriculum Execution Workspace
 
-> *Design your curriculum with AI. Execute it with intention. Walk out with proof.*
+> *Generate your curriculum with AI. Execute it deliberately. Walk out with proof.*
 
-A self-contained tool built to close the gap between structured learning and structured output — co-designed with AI, built with AI, and used daily as the primary learner.
+A self-contained tool built to close the gap between structured learning and structured output. Co-designed with AI, built with AI, and used daily as the primary learner.
 
 **[→ Live demo](https://surabhibatra29.github.io/canon/curriculum-tracker.html)** · **[→ Intro video (2 min)](https://www.loom.com/share/02c93c7ead8e4b37a517bffa76144359)**
 
@@ -10,25 +10,25 @@ A self-contained tool built to close the gap between structured learning and str
 
 ## The design problem
 
-Most learning tools are instruction products: they solve the content problem. Canon is an **execution product**: it solves the proof problem — the distance between reading something and producing work that demonstrates you understood it.
+Most learning tools are instruction products: they solve the content problem. Canon is an **execution product**: it solves the proof problem, the distance between reading something and producing work that demonstrates you understood it.
 
-The curriculum inside Canon was itself designed with AI: a structured discovery process to surface gaps, define what rigorous PM learning at this level should cover, and sequence it into 14 modules with named deliverables. The tool executes that curriculum. Both layers — what to learn and how to track it — were built with AI as a collaborator.
+The curriculum inside Canon was itself designed with AI: a structured discovery process to surface gaps, define what rigorous PM learning at this level should cover, and sequence it into 14 modules with named deliverables. The tool executes that curriculum. Both layers, what to learn and how to track it, were built with AI as a collaborator.
 
-Reflections are private proof for yourself. Assignments are portfolio-ready proof for anyone else. The artifacts of working through this curriculum aren't always tidy Google Docs — they're a live product, a structured PRD, and real decisions made under real constraints. That's the point.
+Reflections are private proof for yourself. Assignments are portfolio-ready proof for anyone else. The artifacts of working through this curriculum aren't always tidy Google Docs. They're a live product, a structured PRD, and real decisions made under real constraints. That's the point.
 
 ---
 
 ## What it does
 
 - Tracks progress across **14 PM modules**: readings, watching, assignments, and reflections
-- Every module produces a named **artifact** — a specific deliverable, not a completion checkbox
-- **Evaluate tab** — rubric with weak/strong/ask yourself criteria per module; self-evaluation workspace separate from the reflection tab
-- **Skip / Restore** — dismiss any reading or watching item with an optional reason, excluded from progress. The skip reason respects that you may already know the material — it's not just a UX shortcut, it's a design philosophy: the tool should meet you where you are
-- **Per-reading notes** — WYSIWYG note modal per reading; compact note chip shows on the row once written
-- **Spine + pace structure** — four load-bearing Core modules marked; dashboard pace note tells you what to prioritise if time is short
-- Rich-text assignment workspace — draggable, collapsible sections; cite specific readings inside your writing
-- PDF viewer — remembers your last-read page and preserves highlights across zoom levels
-- **Refresh / back button navigation** — URL hash preserves your current module and tab across sessions
+- Every module produces a named **artifact**, a specific deliverable rather than a completion checkbox
+- **Evaluate tab**: rubric with weak / strong / ask yourself criteria per module; self-evaluation workspace separate from the reflection tab
+- **Skip / Restore**: dismiss any reading or watching item with an optional reason, excluded from progress. The skip reason respects that you may already know the material. It's not just a UX shortcut, it's a design philosophy: the tool should meet you where you are
+- **Per-reading notes**: WYSIWYG note modal per reading; compact note chip shows on the row once written
+- **Spine + pace structure**: four load-bearing Core modules marked; dashboard pace note tells you what to prioritise if time is short
+- Rich-text assignment workspace with draggable, collapsible sections; cite specific readings inside your writing
+- PDF viewer that remembers your last-read page and preserves highlights across zoom levels
+- **Refresh / back button navigation**: URL hash preserves your current module and tab across sessions
 - Cloud sync via Supabase; admin can publish curriculum updates to all users
 - Dark mode, keyboard navigation (j/k), Design mode for curriculum editing
 
@@ -36,9 +36,9 @@ Reflections are private proof for yourself. Assignments are portfolio-ready proo
 
 ## What it demonstrates
 
-- **Product thinking with a living PRD**: every significant feature decision is documented — problem framing, tradeoffs considered, what was deliberately not built
+- **Product thinking with a living PRD**: every significant feature decision is documented, with problem framing, tradeoffs considered, and what was deliberately not built
 - **AI-assisted development at every stage**: used AI to define the curriculum, design the architecture, review UX decisions, and build the product. The discipline: clear problem framing first, AI-accelerated execution second. Getting that order wrong always meant redoing it
-- **Dogfooding as evaluation method**: I'm the primary user. Success isn't a metric dashboard — it's whether the work I'm producing is portfolio-ready and whether the reflections I'm writing are honest enough to be embarrassing if read aloud
+- **Dogfooding as evaluation method**: I'm the primary user. Success isn't a metric dashboard. It's whether the work I'm producing is portfolio-ready and whether the reflections I'm writing are honest enough to be embarrassing if read aloud
 - **Local-first architecture**: localStorage for instant writes, Supabase for cross-device sync and file storage, IndexedDB for PDF blobs
 - **Iterative delivery**: built and shipped in public, features driven by real usage
 
@@ -47,6 +47,13 @@ Reflections are private proof for yourself. Assignments are portfolio-ready proo
 ## Why I built this
 
 There's no tool that holds your work through a structured curriculum. Note apps capture but don't demand output. Course platforms deliver content but don't require proof. Notion does everything, which means it does nothing well. Canon does one thing: makes it harder to pretend you've finished something you haven't.
+
+---
+
+## What's next
+
+- **AI recommendations** personalised to your reflection notes and skip reasons, because generic suggestions aren't personalised learning
+- **Multi-curriculum support**: the execution layer works for any domain, not just PM
 
 ---
 
