@@ -46,9 +46,10 @@
     .about-inner { display: flex; align-items: center; gap: 64px; pointer-events: none; }
     .about-icon { width: 140px; height: 140px; background: linear-gradient(135deg, #4f5af0, #7c3aed); border-radius: 36px; display: flex; align-items: center; justify-content: center; font-size: 68px; font-weight: 800; color: white; letter-spacing: -2px; flex-shrink: 0; box-shadow: 0 16px 48px rgba(79,90,240,0.25); }
     .about-text { text-align: left; }
-    .about-wordmark { font-size: 88px; font-weight: 800; color: #1a1a2e; letter-spacing: -4px; line-height: 1; margin-bottom: 12px; }
-    .about-tagline { font-size: 13px; color: #8080a8; letter-spacing: 0.12em; text-transform: uppercase; }
-    .about-byline { font-size: 12px; color: #b0b0cc; margin-top: 6px; }
+    .about-wordmark { font-size: 88px; font-weight: 800; color: #1a1a2e; letter-spacing: -4px; line-height: 1; margin-bottom: 16px; }
+    .about-tagline { font-size: 15px; color: #5a5a80; line-height: 1.7; font-weight: 400; }
+    .about-tagline span { display: block; }
+    .about-byline { font-size: 12px; color: #b0b0cc; margin-top: 14px; letter-spacing: 0.08em; }
     .about-dismiss { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); font-size: 12px; color: rgba(0,0,0,0.2); letter-spacing: 0.1em; pointer-events: none; }
     .header-logo-name { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.4px; transition: color 0.15s; }
     .header-logo-brand { font-size: 10px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.3px; }
@@ -4582,10 +4583,27 @@ initAuth().catch(err => {
 <!-- About overlay -->
 <div class="about-overlay hidden" id="aboutOverlay" onclick="closeAbout()">
   <div class="about-inner">
-    <div class="about-icon">C</div>
+    <div class="about-icon">
+      <svg width="140" height="140" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="140" height="140" rx="36" fill="url(#aboutLogoGrad)"/>
+        <path d="M82.5 47.5C76.5 43 69.5 40 62 40C43.8 40 29 55.2 29 72.5C29 89.8 43.8 105 62 105C69.5 105 76.5 102 82.5 97.5" stroke="white" stroke-width="9.5" stroke-linecap="round" fill="none"/>
+        <circle cx="102.5" cy="55" r="6.5" fill="white"/>
+        <circle cx="102.5" cy="87.5" r="6.5" fill="white"/>
+        <defs>
+          <linearGradient id="aboutLogoGrad" x1="0" y1="0" x2="140" y2="140">
+            <stop offset="0%" stop-color="#4F5AF0"/>
+            <stop offset="100%" stop-color="#7C3AED"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
     <div class="about-text">
       <div class="about-wordmark">Canon</div>
-      <div class="about-tagline">AI-era PM curriculum</div>
+      <div class="about-tagline">
+        <span>Generate your curriculum with AI.</span>
+        <span>Execute it deliberately.</span>
+        <span>Walk out with proof.</span>
+      </div>
       <div class="about-byline">by Surabhi Batra</div>
     </div>
   </div>
