@@ -4,7 +4,7 @@
 
 A self-contained tool built to close the gap between structured learning and structured output — co-designed with AI, built with AI, and used daily as the primary learner.
 
-**[→ Live demo](https://surabhibatra29.github.io/canon/curriculum-tracker.html)**
+**[→ Live demo](https://surabhibatra29.github.io/canon/curriculum-tracker.html)** · **[→ Intro video (2 min)](https://www.loom.com/share/02c93c7ead8e4b37a517bffa76144359)**
 
 ---
 
