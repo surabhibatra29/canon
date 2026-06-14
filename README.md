@@ -1,61 +1,48 @@
-# Canon — AI-Era PM Curriculum Execution Workspace
+# Canon
 
-> *Generate your curriculum with AI. Execute it deliberately. Walk out with proof.*
+> Execute a curriculum deliberately. Walk out with proof.
 
-A self-contained tool built to close the gap between structured learning and structured output. Co-designed with AI, built with AI, and used daily as the primary learner.
+Canon is a personal learning workspace. You take a curriculum, work through it module by module, and produce a real artifact at the end of each one. I built it solo, with AI-assisted development, during a career break.
 
-**[→ Live demo](https://surabhibatra29.github.io/canon/curriculum-tracker.html)** · **[→ Intro video (2 min)](https://www.loom.com/share/02c93c7ead8e4b37a517bffa76144359)**
+**[Live](https://surabhibatra29.github.io/canon/curriculum-tracker.html)** · **[Intro video (2 min)](https://www.loom.com/share/02c93c7ead8e4b37a517bffa76144359)** · **[PRD](PRD.md)**
 
----
-
-## The design problem
-
-Most learning tools are instruction products: they solve the content problem. Canon is an **execution product**: it solves the proof problem, the distance between reading something and producing work that demonstrates you understood it.
-
-The curriculum inside Canon was itself designed with AI: a structured discovery process to surface gaps, define what rigorous PM learning at this level should cover, and sequence it into 14 modules with named deliverables. The tool executes that curriculum. Both layers, what to learn and how to track it, were built with AI as a collaborator.
-
-Reflections are private proof for yourself. Assignments are portfolio-ready proof for anyone else. The artifacts of working through this curriculum aren't always tidy Google Docs. They're a live product, a structured PRD, and real decisions made under real constraints. That's the point.
+![Canon dashboard, the module gallery](assets/canon-dashboard.png)
 
 ---
+
+## Why I built it
+
+I took a career break to upskill. I knew roughly where my gaps were, but working through them was another matter. I tried cohort courses and a big stack of self-directed reading. What I had to show for it was forty open tabs, a lot of half-read articles, and not much else.
+
+So Canon started as a question more than a product. Could a tool actually change the way I learn, not just store what I read? I am the test subject. The curriculum, the structure, the small nudges, all of it is built to change as I move through it. When something does not fit the way I actually study, I rework it.
+
+## How it works
+
+A module holds readings, things to watch, an assignment with a real deliverable at the end, a space to reflect, and a rubric to grade myself against.
+
+The behaviour I am testing is simple. A module only counts as finished once I have produced the thing it asks for. I have not hit that bar consistently, and watching where I fall short is the point. Canon is an experiment in how a learning tool could shape behaviour, not just track it. Where I cut corners tells me what to build next.
+
+The curriculum inside it is mine. I worked through a structured discovery process with AI to find my gaps, then generated a PM curriculum sized to my goals. How many modules and how deep they go is a choice, not a fixed number.
 
 ## What it does
 
-- Tracks progress across **14 PM modules**: readings, watching, assignments, and reflections
-- Every module produces a named **artifact**, a specific deliverable rather than a completion checkbox
-- **Evaluate tab**: rubric with weak / strong / ask yourself criteria per module; self-evaluation workspace separate from the reflection tab
-- **Skip / Restore**: dismiss any reading or watching item with an optional reason, excluded from progress. The skip reason respects that you may already know the material. It's not just a UX shortcut, it's a design philosophy: the tool should meet you where you are
-- **Per-reading notes**: WYSIWYG note modal per reading; compact note chip shows on the row once written
-- **Spine + pace structure**: four load-bearing Core modules marked; dashboard pace note tells you what to prioritise if time is short
-- Rich-text assignment workspace with draggable, collapsible sections; cite specific readings inside your writing
-- PDF viewer that remembers your last-read page and preserves highlights across zoom levels
-- **Refresh / back button navigation**: URL hash preserves your current module and tab across sessions
-- Cloud sync via Supabase; admin can publish curriculum updates to all users
-- Dark mode, keyboard navigation (j/k), Design mode for curriculum editing
+You start on a gallery of modules and open one. Inside, you work through a curated set of readings and videos, checking things off as you go. If you already know something, you skip it and note why, so the list reflects where you actually are.
 
----
+You can take notes on anything as you read, and they stay attached to the item. Then comes the real work: each module has an assignment with a named artifact, written in a workspace where you can cite the exact readings you are drawing from. When you finish, you reflect on what landed and grade yourself against the module rubric.
 
-## What it demonstrates
+Underneath, it syncs to the cloud, remembers the page you left off on in a PDF, survives a refresh or the back button, and has a dark mode.
 
-- **Product thinking with a living PRD**: every significant feature decision is documented, with problem framing, tradeoffs considered, and what was deliberately not built
-- **AI-assisted development at every stage**: used AI to define the curriculum, design the architecture, review UX decisions, and build the product. The discipline: clear problem framing first, AI-accelerated execution second. Getting that order wrong always meant redoing it
-- **Dogfooding as evaluation method**: I'm the primary user. Success isn't a metric dashboard. It's whether the work I'm producing is portfolio-ready and whether the reflections I'm writing are honest enough to be embarrassing if read aloud
-- **Local-first architecture**: localStorage for instant writes, Supabase for cross-device sync and file storage, IndexedDB for PDF blobs
-- **Iterative delivery**: built and shipped in public, features driven by real usage
+## What building it taught me
 
----
+- Clear problem framing first, AI-accelerated execution second. Every time I got that order wrong, I redid the work.
+- I leaned on AI three ways: as a sparring partner for positioning, for technical options with tradeoffs before I committed, and for specced UX work rather than "make it look nice."
+- I keep a living PRD: problem framing, feature decisions, and what I deliberately left out.
+- Local-first architecture: localStorage for instant writes, Supabase for sync, IndexedDB for PDF blobs.
 
-## Why I built this
+## Next up (in progress)
 
-There's no tool that holds your work through a structured curriculum. Note apps capture but don't demand output. Course platforms deliver content but don't require proof. Notion does everything, which means it does nothing well. Canon does one thing: makes it harder to pretend you've finished something you haven't.
-
----
-
-## What's next
-
-- **AI recommendations** personalised to your reflection notes and skip reasons, because generic suggestions aren't personalised learning
-- **Multi-curriculum support**: the execution layer works for any domain, not just PM
-
----
+- **Generate a curriculum with AI, in the app.** Right now the curriculum is generated with a prompt outside Canon. The plan is to bring it inside: answer a few questions, get a structured curriculum back.
+- **Multiple curricula.** The execution layer is not specific to PM. The same readings, reflections, rubrics, and tracking work for any subject.
 
 ## Tech
 
@@ -70,9 +57,9 @@ Single HTML file, no build step, no dependencies to install, runs directly in a 
 | Font | Inter via Google Fonts |
 | Hosting | GitHub Pages |
 
----
+## The curriculum I am running now
 
-## Curriculum modules
+PM, Sharpened, a curriculum I generated for myself. Each module ends in a named artifact.
 
 | # | Module | Artifact |
 |---|--------|----------|

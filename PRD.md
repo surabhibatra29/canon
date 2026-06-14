@@ -327,7 +327,7 @@ Two tiers. Simple. Binary.
 ### 13.3 Three Ways to Get a Curriculum into Canon
 
 #### 1. Featured Library (Canon-curated, admin-published)
-A small set of high-quality curricula published by Canon's admin. Currently one: **AI-Era PM Relaunch**. Visible to all signed-in users. Browsable, previewable, addable to personal collection with one click. Canon's quality bar — these are the showcase.
+A small set of high-quality curricula published by Canon's admin. Currently one: **PM, Sharpened**. Visible to all signed-in users. Browsable, previewable, addable to personal collection with one click. Canon's quality bar — these are the showcase.
 
 #### 2. Upload Your Own
 Any signed-in user uploads a `.md` file or a `.json` file matching the curriculum schema. The parser validates it, gives it a generated ID, and adds it to the user's private collection. Nobody else can see it. The `.md` parser already exists (`parseMarkdown`). JSON import is new.
@@ -347,7 +347,7 @@ Every curriculum needs a stable ID. Currently there is none. Proposed:
 | User upload | `user-{timestamp}` | `user-1749234567890` |
 | AI-generated | `gen-{timestamp}` | `gen-1749234567890` |
 
-The title "AI-Era PM Relaunch" maps to `canon-pm-2026`.
+The title "PM, Sharpened" maps to `canon-pm-2026`.
 
 ---
 
@@ -434,7 +434,7 @@ Three-option screen (modal or inline panel):
 #### C. Featured Library
 A simple browsable list of Canon-curated curricula. Each card: title, subtitle, module count, who it's for. "Add to my curricula" button. No progress shown (that's personal). Preview shows module list only.
 
-Currently one item: **AI-Era PM Relaunch** — 14 modules, artifact-first, for PM career returners.
+Currently one item: **PM, Sharpened** — 14 modules, artifact-first, for PM career returners.
 
 #### D. Dashboard — Active Curriculum Context
 Small curriculum name badge above the pace note banner, so the user always knows which curriculum they're executing. Clicking it opens the switcher.
