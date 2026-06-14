@@ -16,6 +16,62 @@ In progress: multiple curricula (§13) and generating a curriculum with AI in th
 
 ---
 
+<details>
+<summary><b>Contents</b></summary>
+
+- [Status](#status)
+- [1. What this is](#1-what-this-is)
+- [2. Who it is for](#2-who-it-is-for)
+- [3. Architecture](#3-architecture)
+- [4. Curriculum Structure](#4-curriculum-structure)
+- [5. Feature Inventory](#5-feature-inventory)
+  - [5.1 Authentication](#51-authentication)
+  - [5.2 Dashboard (Learn mode)](#52-dashboard-learn-mode)
+  - [5.3 Module Detail Panel (7 tabs)](#53-module-detail-panel-7-tabs)
+  - [5.4 Reading Note Modal](#54-reading-note-modal)
+  - [5.5 PDF Viewer](#55-pdf-viewer)
+  - [5.6 Header](#56-header)
+  - [5.7 Progress Calculation](#57-progress-calculation)
+  - [5.8 Design (Admin) Mode](#58-design-admin-mode)
+  - [5.9 Cloud Sync](#59-cloud-sync)
+  - [5.10 Dark Mode](#510-dark-mode)
+- [6. Key Functions Reference](#6-key-functions-reference)
+- [7. Data Storage](#7-data-storage)
+- [8. Known Issues & Gotchas](#8-known-issues--gotchas)
+- [9. Admin Publish Workflow](#9-admin-publish-workflow)
+- [10. What Could Be Built Next](#10-what-could-be-built-next)
+- [11. Changelog (recent)](#11-changelog-recent)
+- [12. Feature Design: AI Recommendations](#12-feature-design-ai-recommendations)
+  - [12.1 Problem](#121-problem)
+  - [12.2 Goal](#122-goal)
+  - [12.3 What "Personalised" Actually Means](#123-what-personalised-actually-means)
+  - [12.4 The Rating Question](#124-the-rating-question)
+  - [12.5 Discovery as a Design Principle](#125-discovery-as-a-design-principle)
+  - [12.6 Trusted Sources](#126-trusted-sources)
+  - [12.7 Technical Architecture](#127-technical-architecture)
+  - [12.8 The Prompt Design](#128-the-prompt-design)
+  - [12.9 Output UI (Deferred, Design Only)](#129-output-ui-deferred-design-only)
+  - [12.10 What NOT to Build in v1](#1210-what-not-to-build-in-v1)
+  - [12.11 Open Questions](#1211-open-questions)
+  - [12.12 Build Order (when ready)](#1212-build-order-when-ready)
+- [13. Feature Design: Multi-Curriculum Platform](#13-feature-design-multi-curriculum-platform)
+  - [13.1 Why](#131-why)
+  - [13.2 Permissions Model](#132-permissions-model)
+  - [13.3 Three Ways to Get a Curriculum into Canon](#133-three-ways-to-get-a-curriculum-into-canon)
+  - [13.4 Curriculum Identity](#134-curriculum-identity)
+  - [13.5 State Shape Changes](#135-state-shape-changes)
+  - [13.6 Migration Strategy](#136-migration-strategy)
+  - [13.7 UI Touchpoints](#137-ui-touchpoints)
+  - [13.8 Supabase Changes](#138-supabase-changes)
+  - [13.9 The Generate Flow (in-app curriculum builder)](#139-the-generate-flow-in-app-curriculum-builder)
+  - [13.10 What's Out of Scope for v1](#1310-whats-out-of-scope-for-v1)
+  - [13.11 Open Questions](#1311-open-questions)
+  - [13.12 Build Order](#1312-build-order)
+
+</details>
+
+---
+
 ## 1. What this is
 
 Canon is a workspace I built for myself to work through a curriculum and produce proof that I understood it. Most learning tools help you take in content. Canon is about the output. Every module ends in a named artifact, and the reflection layer is mine alone.
