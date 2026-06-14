@@ -1,7 +1,7 @@
 # Canon — PM Curriculum Tracker
 
 ## What this is
-A single-file HTML/CSS/JS curriculum tracker app. Pre-loaded with an 11-module AI-era PM curriculum. Users sign in via Supabase to sync progress across devices. Admin account (`batra.surabhi@gmail.com`) can publish a canonical curriculum that all users receive on next login.
+A single-file HTML/CSS/JS curriculum tracker app. Pre-loaded with a 14-module PM curriculum ("PM, Sharpened"). Users sign in via Supabase to sync progress across devices. Admin account (`batra.surabhi@gmail.com`) can publish a canonical curriculum that all users receive on next login.
 
 ## File location
 ```
@@ -124,7 +124,7 @@ A `.claude/launch.json` is already configured for the preview panel.
 | `publishCurriculum()` | Admin: writes curriculum to `canonical_curriculum` table |
 
 ## Embedded curriculum
-`CANONICAL_CURRICULUM` const at the top of the script contains all 11 modules pre-parsed. Loaded into state on first visit (or when localStorage is cleared). Admin can push a new version to Supabase via the Publish button; non-admin users receive it on next login.
+`CANONICAL_CURRICULUM` const at the top of the script contains all 14 modules pre-parsed. Loaded into state on first visit (or when localStorage is cleared). Admin can push a new version to Supabase via the Publish button; non-admin users receive it on next login.
 
 ## Modules
 0. Mindset & Meta-cognition
