@@ -4,7 +4,7 @@
 
 Canon is a personal learning workspace. Curate a curriculum, execute it module by module, track progress, and write as you go. Built solo during a career break using Claude Code.
 
-**[Live](https://surabhibatra29.github.io/canon/curriculum-tracker.html)** · **[Intro video (2 min)](https://www.loom.com/share/02c93c7ead8e4b37a517bffa76144359)** · **[PRD](PRD.md)**
+**[Live](https://surabhibatra29.github.io/canon/curriculum-tracker.html)** · **[Intro video (2 min)](https://www.loom.com/share/02c93c7ead8e4b37a517bffa76144359)** · **[PRD](PRD.md)** · **[Architecture](docs/ARCHITECTURE.md)**
 
 ![Canon dashboard, the module gallery](assets/canon-dashboard.png)
 
