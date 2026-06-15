@@ -10,7 +10,7 @@
 
 ## TL;DR
 
-Canon is a personal learning workspace. You bring your own curriculum, decide what to skip, and track progress by what you consume and what you produce. Every module ends in a named artifact. Built on cognitive science. Used by one person. The execution layer is curriculum-agnostic.
+Canon is a personal learning workspace, built by and for one person and grounded in cognitive science. You curate the curriculum yourself, decide what to skip, and track progress by what you consume and what you produce. Every module ends in a named artifact. The execution layer is curriculum-agnostic.
 
 **Live:** full execution loop: modules, readings, assignments, reflection, rubric, PDF viewer, cloud sync.  
 **In progress:** AI Recommendations (§12), Multiple Curricula (§13).  
