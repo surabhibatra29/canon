@@ -4,7 +4,7 @@
 
 **Name:** Canon  
 **Byline:** by Sur:B  
-**Tagline:** Generate your curriculum with AI. Execute it deliberately. Walk out with proof.
+**Tagline:** Curate your curriculum. Execute it. Track it. Write about it.
 
 **Logo gradient:** `135deg, #4F5AF0 → #7C3AED`  
 Used on: logo icon, avatar, primary CTAs

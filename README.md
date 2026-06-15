@@ -1,8 +1,8 @@
 # Canon
 
-> Execute a curriculum deliberately. Walk out with proof.
+> Curate your curriculum. Execute it. Track it. Write about it.
 
-Canon is a personal learning workspace. You take a curriculum, work through it module by module, and produce a real artifact at the end of each one. I built it solo, with AI-assisted development, during a career break.
+Canon is a personal learning workspace. Curate a curriculum, execute it module by module, track progress, and write as you go. Built solo during a career break using Claude Code.
 
 **[Live](https://surabhibatra29.github.io/canon/curriculum-tracker.html)** · **[Intro video (2 min)](https://www.loom.com/share/02c93c7ead8e4b37a517bffa76144359)** · **[PRD](PRD.md)**
 
@@ -12,41 +12,74 @@ Canon is a personal learning workspace. You take a curriculum, work through it m
 
 ## Why I built it
 
-I took a career break to upskill. I knew roughly where my gaps were, but working through them was another matter. I tried cohort courses and a big stack of self-directed reading. What I had to show for it was forty open tabs, a lot of half-read articles, and not much else.
+Two things at once, driven by a personal problem:
 
-So Canon started as a question more than a product. Could a tool actually change the way I learn, not just store what I read? I am the test subject. The curriculum, the structure, the small nudges, all of it is built to change as I move through it. When something does not fit the way I actually study, I rework it.
+1. **No good way to execute a curriculum.** Forty open tabs, plenty started, almost nothing finished. I needed something that forced output, not just intake.
+2. **Experiment: how does learning actually work?** For myself and broadly. Canon is the test environment.
+3. **Get hands dirty with AI-assisted development.** Built entirely with Claude Code. Wanted to see how far AI-assisted dev could go in my own hands.
+
+Canon is two experiments in one: a tool meant to change how I learn, and proof of what I can ship with AI.
+
+---
 
 ## How it works
 
-A module holds readings, things to watch, an assignment with a real deliverable at the end, a space to reflect, and a rubric to grade myself against.
+### The module
+Each module contains: readings, videos, an assignment with a named artifact, a reflection prompt, and a rubric to grade yourself against.
 
-The behaviour I am testing is simple. A module only counts as finished once I have produced the thing it asks for. I have not hit that bar consistently, and watching where I fall short is the point. Canon is an experiment in how a learning tool could shape behaviour, not just track it. Where I cut corners tells me what to build next.
+### The constraint
+A module counts as done only when the artifact is produced. Not when the reading is finished. That constraint is what Canon is built around.
 
-The curriculum inside it is mine. I worked through a structured discovery process with AI to find my gaps, then generated a PM curriculum sized to my goals. How many modules and how deep they go is a choice, not a fixed number.
+### The curriculum
+Curated with AI from a structured discovery process. 14 modules, each ending in a named deliverable. Scope is a choice, not a fixed number.
+
+### The compounding
+What you skip, note, and reflect on feeds the next round. The longer you run, the sharper the curriculum gets.
+
+---
 
 ## What it does
 
-You start on a gallery of modules and open one. Inside, you work through a curated set of readings and videos, checking things off as you go. If you already know something, you skip it and note why, so the list reflects where you actually are.
+### Module gallery
+A grid of modules, each showing status, progress, and Core flag. Click any card to open it.
 
-You can take notes on anything as you read, and they stay attached to the item. Then comes the real work: each module has an assignment with a named artifact, written in a workspace where you can cite the exact readings you are drawing from. When you finish, you reflect on what landed and grade yourself against the module rubric.
+### Inside a module — 7 tabs
 
-Underneath, it syncs to the cloud, remembers the page you left off on in a PDF, survives a refresh or the back button, and has a dark mode.
+| Tab | What happens |
+|-----|-------------|
+| **Reading** | Curated readings. Check off, skip with a reason, attach notes. |
+| **Watching** | Videos. Same skip/restore flow. |
+| **Assignment** | Named artifact workspace. Write in sections, cite readings directly. |
+| **Reflection** | Open prompt, free-text, auto-saves. |
+| **Evaluate** | Rubric: Weak / Strong / Ask Yourself. Self-grade. |
+| **Attachments** | Admin PDFs and personal file uploads. |
+| **Notes** | General scratchpad per module. |
+
+### Under the hood
+Cloud sync (Supabase), PDF page memory, URL hash navigation (survives refresh and back button), dark mode.
+
+---
 
 ## What building it taught me
 
-- Clear problem framing first, AI-accelerated execution second. Every time I got that order wrong, I redid the work.
-- I leaned on AI three ways: as a sparring partner for positioning, for technical options with tradeoffs before I committed, and for specced UX work rather than "make it look nice."
-- I keep a living PRD: problem framing, feature decisions, and what I deliberately left out.
-- Local-first architecture: localStorage for instant writes, Supabase for sync, IndexedDB for PDF blobs.
+- **Problem framing before AI execution.** Every time I got that order wrong, I redid the work.
+- **Three uses of AI:** sparring partner for positioning, technical options with tradeoffs, specced UX work rather than "make it look nice."
+- **Living PRD:** problem framing, feature decisions, what I deliberately left out. [Read it here](PRD.md).
+- **Local-first architecture:** localStorage for instant writes, Supabase for sync, IndexedDB for PDF blobs.
 
-## Next up (in progress)
+---
 
-- **Generate a curriculum with AI, in the app.** Right now the curriculum is generated with a prompt outside Canon. The plan is to bring it inside: answer a few questions, get a structured curriculum back.
-- **Multiple curricula.** The execution layer is not specific to PM. The same readings, reflections, rubrics, and tracking work for any subject.
+## Next up
+
+- **AI Recommendations** *(in progress).* On-demand reading suggestions personalised to what you have reflected on, skipped, and noted. Uses your own words as the signal, not generic content similarity.
+- **AI curriculum generator in-app.** Currently generated outside Canon via a prompt. Plan: 5 questions → structured curriculum, built inside the tool.
+- **Multiple curricula.** The execution layer is domain-agnostic. PM is just the first curriculum running.
+
+---
 
 ## Tech
 
-Single HTML file, no build step, no dependencies to install, runs directly in a browser.
+Single HTML file. No build step. No dependencies. Runs directly in a browser.
 
 | Layer | Choice |
 |-------|--------|
@@ -56,6 +89,8 @@ Single HTML file, no build step, no dependencies to install, runs directly in a 
 | PDF rendering | PDF.js (lazy-loaded from CDN) |
 | Font | Inter via Google Fonts |
 | Hosting | GitHub Pages |
+
+---
 
 ## The curriculum I am running now
 

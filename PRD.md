@@ -21,6 +21,8 @@ In progress: multiple curricula (§13) and generating a curriculum with AI in th
 
 - [Status](#status)
 - [1. What this is](#1-what-this-is)
+  - [The loop](#the-loop)
+  - [What Canon is not](#what-canon-is-not)
 - [2. Who it is for](#2-who-it-is-for)
 - [3. Architecture](#3-architecture)
 - [4. Curriculum Structure](#4-curriculum-structure)
@@ -74,17 +76,60 @@ In progress: multiple curricula (§13) and generating a curriculum with AI in th
 
 ## 1. What this is
 
-Canon is a workspace I built for myself to work through a curriculum and produce proof that I understood it. Most learning tools help you take in content. Canon is about the output. Every module ends in a named artifact, and the reflection layer is mine alone.
+Canon is a workspace where you curate what you take in, decide what to skip, and measure progress by what you produce. Not what you consumed.
 
-The PM curriculum is the one I am running now. The execution layer underneath it is not specific to PM, which is what makes running more than one curriculum a natural next step.
+Built on cognitive science. Whether this implementation achieves these effects in practice: still being tested.
+
+- **Generation effect.** Producing information encodes it far more deeply than consuming it. Writing a bad strategic position map beats reading ten articles about strategy. Every module ends in a named artifact because of this.
+- **Elaborative interrogation.** Asking "why does this work?" encodes deeper than summarising what you read. That is what the Reflection tab is for.
+- **Deliberate practice.** Expert performance targets specific weaknesses and gets feedback on them. The rubric in Evaluate (Weak / Strong / Ask Yourself) is that feedback mechanism.
+- **Autonomy.** People sustain learning when they have autonomy and a sense of competence. Skip/restore is the autonomy mechanism. Progress bars are the competence signal.
+
+Canon is curriculum-agnostic. The PM curriculum is the one running now.
+
+### The loop
+
+Canon is a system, not a feature list:
+
+```
+Curate (Design mode)
+  → Execute (Reading / Watching / Assignment)
+    → Capture (Notes, Reflection, Evaluate)
+      → Signal (skip reasons, reflection notes, rubric grades)
+        → Surface (AI Recommendations → better curation)
+          ↖ loop closes
+```
+
+Each step feeds the next. Skip reasons tell the AI what you already know. Reflection notes drive personalised recommendations. Recommendations sharpen what you curate next. The longer you run, the better the signal.
+
+AI Recommendations (§12) closes this loop. Multi-Curriculum (§13) makes it domain-agnostic.
+
+### What Canon is not
+
+- **Content aggregator.** Canon does not discover reading material for you. You bring the curriculum. The tool helps you execute it.
+- **Note-taking app.** Notes are scoped to specific readings and modules. They feed the reflection and assignment loops, not a general capture system.
+- **Course platform.** No prescribed path, no instructor, no certificate. The curriculum is yours to set and change.
+- **Learning community.** No social layer. Nobody sees your progress or your work. That is the biggest behavioural gap (see §2).
+- **Portfolio host.** Artifacts live inside Canon while you build them. Publishing them is a separate step.
 
 ---
 
 ## 2. Who it is for
 
-Me. I built it, I curate the curriculum, and I am the only user. Everything is shaped around how I actually study, and it changes when my habits do.
+Built for one person: me. Everything shaped around how I actually study, and it changes when my habits do.
 
-The admin account (`batra.surabhi@gmail.com`) is special-cased in code via `_isAdmin()`. It can edit the curriculum, publish, and manage PDF attachments. That structure is what would make multiple curricula, and one day other people, possible. Neither is live yet.
+The underlying design is based on learning principles that hold across people — established cognitive science for adult learners broadly. The specific curriculum, the pace, what gets skipped, what gets reflected on: all of that is shaped around one person's gaps, goals, and habits.
+
+**What the design covers:**
+
+- **Autonomy:** I choose the curriculum, the pace, what to skip. Nothing is prescribed by someone else.
+- **Competence:** progress bars, module completion, artifact production. Clear signals that things are actually moving forward.
+
+**What the design does not cover:**
+
+- **Relatedness:** research consistently shows that people sustain learning when their work connects to someone they respect or a community they belong to. In Canon, nobody else sees what gets produced. That is the biggest behavioural gap and the hardest one to close.
+
+The admin account (`batra.surabhi@gmail.com`) can edit the curriculum, publish, and manage attachments. Multiple curricula and other users are not live yet.
 
 ---
 
@@ -325,6 +370,16 @@ When `CANONICAL_CURRICULUM` JS changes:
 
 ## 10. What Could Be Built Next
 
+**Behavioural gaps (learning science):**
+
+- **Spaced retrieval of your own thinking.** Surface reflection notes from earlier modules when a later one is relevant. "You wrote this in module 2. What would you say now?" Nobody else has built this.
+- **Retrieval practice.** Before showing a reading note, ask "what was the main thing you took from this?" One prompt that creates a retrieval loop before the content appears.
+- **Forgetting curve signal.** Surface modules not touched in X weeks. Not a notification — a quiet visual indicator that content may have decayed.
+- **Implementation intentions.** "I will do one reading every Tuesday morning" beats "I will learn every day." A simple schedule commitment in the app.
+- **Relatedness layer.** Even one other person seeing your artifacts changes behaviour. Hardest gap, biggest behavioural impact. No design yet.
+
+**Infrastructure and UX:**
+
 - **AI curriculum generator**, in-app form (context fields → generate curriculum JSON via Claude). Master prompt lives at `prompts/curriculum-generator.md`.
 - **Export progress**, PDF or CSV of completed readings, assignment notes, reflections
 - **Mobile layout**, current layout works but isn't optimised for small screens
@@ -362,7 +417,9 @@ When `CANONICAL_CURRICULUM` JS changes:
 
 ### 12.1 Problem
 
-The curriculum is a snapshot. It was curated at a point in time, by one person, for a generalised learner. Three things make it go stale fast:
+A recommendation is only as good as its signal. Most systems use completion history and content similarity. Canon has richer data: skip reasons, reflection notes, rubric grades. This feature closes the feedback loop by routing those signals back into curation.
+
+Three things make the canonical reading list go stale on its own:
 
 1. **The field moves.** New tools, new essays, new practitioners emerge constantly. What Marty Cagan wrote in 2018 is different from what he's writing now. A new AI paper ships every week.
 2. **The learner is not generalised.** What you already know, what you just reflected on, what you skipped and why, these signals make your ideal next reading completely different from someone else's at the same module.
@@ -377,6 +434,8 @@ The canonical reading list can't solve these. It's a floor, not a ceiling.
 Surface 3–5 high-signal reading/watching directions per module, personalised to **this learner's current state**, on demand. Not a feed. Not a push notification. A button you press when you've done the work and want to go deeper.
 
 **The output isn't a list of URLs.** It's a list of *directions*, author + concept + where to find it. The learner discovers the specific article themselves. This is intentional (see §12.5 on Discovery).
+
+**If designed right, this is also the spaced repetition mechanism.** Cross-module surfacing — "your module 2 reflection mentioned network effects, this module 6 reading is relevant" — is interleaving plus spaced retrieval in one feature. That is scoped out of v1 (see §12.10) but is the highest-leverage v2 direction.
 
 ---
 
@@ -549,7 +608,7 @@ Not speccing the UI in detail yet. Broad strokes:
 
 - ❌ Real-time web search integration (Tavily, Exa, Perplexity), adds infrastructure before the format is proven
 - ❌ Watching recommendations, video content is harder to describe by search term. Start with reading only.
-- ❌ Cross-module recommendations ("based on Module 3, you might want to read X in Module 5"), scope creep. One module at a time.
+- ❌ Cross-module recommendations for v1. Scoped out to prove the per-module format first. But surfacing "your module 2 reflection mentioned network effects, this module 6 reading is relevant" is interleaving plus spaced retrieval in one feature. Highest-leverage v2 addition (see §12.2).
 - ❌ Automatic/scheduled refresh, this must always be a deliberate user action, not a feed
 - ❌ Social/shared recommendations, what other Canon users found useful. Privacy concern, infrastructure concern, not in scope
 
@@ -586,9 +645,9 @@ Not speccing the UI in detail yet. Broad strokes:
 
 ### 13.1 Why
 
-Right now Canon has one curriculum baked in. I want to run more than one, because the execution layer is the interesting part, not the PM content specifically. Reflections, rubrics, assignments, skip logic, the PDF viewer, progress tracking: all of it works for any subject. The PM curriculum just happens to be the one I am running first.
+The execution layer is domain-agnostic. Reflections, rubrics, assignments, skip logic, progress tracking: none of it is specific to PM. The PM curriculum is just the first one running.
 
-Once any curriculum can plug into that layer, the same tool works for learning anything.
+Once any curriculum can plug into that layer, Canon works for learning anything.
 
 ---
 
