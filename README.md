@@ -15,7 +15,7 @@ Canon is a personal learning workspace. Curate a curriculum, execute it module b
 Three things, driven by a personal problem:
 
 1. **A personal problem with no good solution.** Cohort courses prescribe what you learn. Self-directed reading has no structure. Forty open tabs, plenty started, almost nothing finished. I needed something that let me curate my own path and forced me to produce output, not just consume.
-2. **A learning science experiment.** How does learning actually work — for people broadly, and specifically for me? Canon is the test environment.
+2. **A learning science experiment.** How does learning actually work, for people broadly and specifically for me? Canon is the test environment.
 3. **A hands-on AI development challenge.** Built entirely with Claude Code. Wanted to see how far AI-assisted dev could go in my own hands.
 
 Three experiments running at once: a curriculum I curate myself, a tool to change how I learn, and proof of what I can ship with AI.
@@ -28,7 +28,7 @@ Built on cognitive science. Each principle maps to a specific feature:
 
 | Principle | Hypothesis | Feature |
 |-----------|-----------|---------|
-| **Generation effect** | Producing information encodes far deeper than consuming it | Every module ends in a named artifact — reading alone does not count |
+| **Generation effect** | Producing information encodes far deeper than consuming it | Every module ends in a named artifact. Reading alone does not count. |
 | **Elaborative interrogation** | Asking "why does this work?" beats summarising what you read | Reflection tab: open prompt after every module |
 | **Deliberate practice** | Expert performance comes from targeting specific weaknesses with feedback | Evaluate tab: Weak / Strong / Ask Yourself rubric |
 | **Autonomy** | People sustain learning when they control their own path | Skip/restore: decide what to skip and note why |
@@ -49,7 +49,7 @@ What you skip, note, and reflect on feeds the next round. The longer you run, th
 ### Module gallery
 A grid of modules, each showing status, progress, and Core flag. Click any card to open it.
 
-### Inside a module — 7 tabs
+### Inside a module: 7 tabs
 
 | Tab | What happens |
 |-----|-------------|

@@ -12,7 +12,7 @@
 
 Canon is a personal learning workspace. You bring your own curriculum, decide what to skip, and track progress by what you consume and what you produce. Every module ends in a named artifact. Built on cognitive science. Used by one person. The execution layer is curriculum-agnostic.
 
-**Live:** full execution loop — modules, readings, assignments, reflection, rubric, PDF viewer, cloud sync.  
+**Live:** full execution loop: modules, readings, assignments, reflection, rubric, PDF viewer, cloud sync.  
 **In progress:** AI Recommendations (§12), Multiple Curricula (§13).  
 **Next:** in-app AI curriculum generator.
 
@@ -88,7 +88,7 @@ In progress: multiple curricula (§13) and generating a curriculum with AI in th
 
 ## 1. What this is
 
-Canon is a personal learning workspace. You bring your own curriculum, decide what to skip, and track progress by what you consume and what you produce. Every module ends in a named artifact. The execution layer is curriculum-agnostic — the PM curriculum is the one running now.
+Canon is a personal learning workspace. You bring your own curriculum, decide what to skip, and track progress by what you consume and what you produce. Every module ends in a named artifact. The execution layer is curriculum-agnostic. The PM curriculum is the one running now.
 
 ### Why each node is designed this way
 
@@ -96,7 +96,7 @@ Built on cognitive science. Whether this implementation achieves these effects i
 
 | Principle | Hypothesis | Feature |
 |-----------|-----------|---------|
-| **Generation effect** | Producing information encodes far deeper than consuming it | Every module ends in a named artifact — reading alone does not count |
+| **Generation effect** | Producing information encodes far deeper than consuming it | Every module ends in a named artifact. Reading alone does not count. |
 | **Elaborative interrogation** | Asking "why does this work?" beats summarising what you read | Reflection tab: open prompt after every module |
 | **Deliberate practice** | Expert performance comes from targeting specific weaknesses with feedback | Evaluate tab: Weak / Strong / Ask Yourself rubric |
 | **Autonomy** | People sustain learning when they control their own path | Skip/restore: decide what to skip and note why |
@@ -104,7 +104,7 @@ Built on cognitive science. Whether this implementation achieves these effects i
 
 ### What Canon is not
 
-- **Content aggregator.** Canon does not discover reading material for you. You bring the curriculum. The tool helps you execute it.
+- **Passive content aggregator.** You bring the curriculum. Canon does not crawl feeds or surface trending content. The AI Recommendations feature does surface highly curated reading suggestions, but based on your own reflections, skip reasons, and notes, not algorithmic popularity.
 - **Note-taking app.** Notes are scoped to specific readings and modules. They feed the reflection and assignment loops, not a general capture system.
 - **Course platform.** No prescribed path, no instructor, no certificate. The curriculum is yours to set and change.
 - **Learning community.** No social layer. Nobody sees your progress or your work. That is the biggest behavioural gap (see §2).
@@ -116,7 +116,7 @@ Built on cognitive science. Whether this implementation achieves these effects i
 
 Built for one person: me. Everything shaped around how I actually study, and it changes when my habits do.
 
-The underlying design is based on learning principles that hold across people — established cognitive science for adult learners broadly. The specific curriculum, the pace, what gets skipped, what gets reflected on: all of that is shaped around one person's gaps, goals, and habits.
+The underlying design is based on learning principles that hold across people: established cognitive science for adult learners broadly. The specific curriculum, the pace, what gets skipped, what gets reflected on: all of that is shaped around one person's gaps, goals, and habits.
 
 **What the design covers:**
 
@@ -131,13 +131,28 @@ The admin account (`batra.surabhi@gmail.com`) can edit the curriculum, publish, 
 
 ### How I'll know it's working
 
-- **Modules actually get completed.** Not just started. The artifact gets produced.
-- **Reflection notes get written.** The Reflection tab does not get closed empty.
-- **Skip reasons get used.** When something is already known, it gets marked with a reason, not silently abandoned.
-- **AI recommendations get acted on.** At least some get added to the reading list rather than dismissed.
-- **The curriculum gets refined.** Design mode gets used. Items get added or removed based on what actually worked.
+**North Star:** Modules completed with an artifact produced, not marked done without output.
 
-These are behavioural signals, not vanity metrics. If none of them move, the tool is not changing behaviour — and changing behaviour is the only thing it exists to do.
+**Engagement metrics:**
+
+| Metric | Definition | Signal |
+|--------|-----------|--------|
+| Artifact completion rate | % of completed modules with a non-empty assignment section | Are outputs actually being produced? |
+| Reflection fill rate | % of completed modules with non-empty reflection notes | Is elaboration happening, or just checkbox-ticking? |
+| Purposeful skip rate | % of skipped items with a reason logged | Are skips deliberate or just abandonment? |
+| Return cadence | Sessions distributed across the week, not burst-then-silence | Is this a habit or a sprint? |
+
+**Quality metrics:**
+
+| Metric | Definition | Signal |
+|--------|-----------|--------|
+| AI recommendation conversion | % of surfaced recommendations added to the reading list | Are recommendations landing, or getting dismissed? |
+| Curriculum refinement frequency | Design mode used at least once per curriculum pass | Is the curriculum getting sharper over time? |
+| Rubric score distribution | Range of Weak / Strong ratings across modules | Honest self-assessment, or grade inflation? |
+
+**Guardrail:** Skip rate overall. If the majority of readings are skipped, the curriculum was poorly curated, not a signal the tool is working.
+
+N=1. No statistical significance possible. The baseline is how I studied before Canon: forty open tabs, plenty started, almost nothing finished, no output.
 
 ---
 
@@ -209,7 +224,7 @@ Each module contains: `title`, `subtitle`, `whyItMatters`, `artifact`, `rubric` 
 
 ## 5. Technical Reference
 
-*Implementation-level detail — spec of existing features, useful when building or debugging.*
+*Implementation-level detail: spec of existing features, useful when building or debugging.*
 
 ### 5.1 Authentication
 - Supabase email/password sign in / create account
@@ -445,7 +460,7 @@ Surface 3–5 high-signal reading/watching directions per module, personalised t
 
 **The output isn't a list of URLs.** It's a list of *directions*, author + concept + where to find it. The learner discovers the specific article themselves. This is intentional (see §12.5 on Discovery).
 
-**If designed right, this is also the spaced repetition mechanism.** Cross-module surfacing — "your module 2 reflection mentioned network effects, this module 6 reading is relevant" — is interleaving plus spaced retrieval in one feature. That is scoped out of v1 (see §12.10) but is the highest-leverage v2 direction.
+**If designed right, this is also the spaced repetition mechanism.** Cross-module surfacing ("your module 2 reflection mentioned network effects, this module 6 reading is relevant") is interleaving plus spaced retrieval in one feature. That is scoped out of v1 (see §12.10) but is the highest-leverage v2 direction.
 
 ---
 
