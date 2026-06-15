@@ -12,26 +12,32 @@ Canon is a personal learning workspace. Curate a curriculum, execute it module b
 
 ## Why I built it
 
-Two things at once, driven by a personal problem:
+Three things, driven by a personal problem:
 
-1. **No good way to execute a curriculum.** Forty open tabs, plenty started, almost nothing finished. I needed something that forced output, not just intake.
-2. **Experiment: how does learning actually work?** For myself and broadly. Canon is the test environment.
-3. **Get hands dirty with AI-assisted development.** Built entirely with Claude Code. Wanted to see how far AI-assisted dev could go in my own hands.
+1. **A personal problem with no good solution.** Cohort courses prescribe what you learn. Self-directed reading has no structure. Forty open tabs, plenty started, almost nothing finished. I needed something that let me curate my own path and forced me to produce output, not just consume.
+2. **A learning science experiment.** How does learning actually work — for people broadly, and specifically for me? Canon is the test environment.
+3. **A hands-on AI development challenge.** Built entirely with Claude Code. Wanted to see how far AI-assisted dev could go in my own hands.
 
-Canon is two experiments in one: a tool meant to change how I learn, and proof of what I can ship with AI.
+Three experiments running at once: a curriculum I curate myself, a tool to change how I learn, and proof of what I can ship with AI.
 
 ---
 
 ## How it works
 
+Built on cognitive science. Each principle maps to a specific feature:
+
+| Principle | Hypothesis | Feature |
+|-----------|-----------|---------|
+| **Generation effect** | Producing information encodes far deeper than consuming it | Every module ends in a named artifact — reading alone does not count |
+| **Elaborative interrogation** | Asking "why does this work?" beats summarising what you read | Reflection tab: open prompt after every module |
+| **Deliberate practice** | Expert performance comes from targeting specific weaknesses with feedback | Evaluate tab: Weak / Strong / Ask Yourself rubric |
+| **Autonomy** | People sustain learning when they control their own path | Skip/restore: decide what to skip and note why |
+| **Competence** | Visible progress sustains motivation | Progress bars per module and overall |
+
+Whether this implementation achieves these effects in practice: still being tested.
+
 ### The module
 Each module contains: readings, videos, an assignment with a named artifact, a reflection prompt, and a rubric to grade yourself against.
-
-### The constraint
-A module counts as done only when the artifact is produced. Not when the reading is finished. That constraint is what Canon is built around.
-
-### The curriculum
-Curated with AI from a structured discovery process. 14 modules, each ending in a named deliverable. Scope is a choice, not a fixed number.
 
 ### The compounding
 What you skip, note, and reflect on feeds the next round. The longer you run, the sharper the curriculum gets.
