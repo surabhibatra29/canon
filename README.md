@@ -4,7 +4,7 @@
 
 Canon is a personal learning workspace and a curation tool. Find gold-standard sources, build your curriculum, execute it module by module, and track what you produce, not just what you consume. Built solo during a career break using Claude Code.
 
-**[Live](https://surabhibatra29.github.io/canon/curriculum-tracker.html)** · **[Intro video (2 min)](https://www.loom.com/share/02c93c7ead8e4b37a517bffa76144359)** · **[PRD](PRD.md)** · **[Architecture](docs/ARCHITECTURE.md)**
+**[Live](https://surabhibatra29.github.io/canon/curriculum-tracker.html)** · **[Intro video (2 min)](https://www.loom.com/share/02c93c7ead8e4b37a517bffa76144359)** · **[PRD](PRD.md)** · **[Architecture](docs/technical/ARCHITECTURE.md)** · **[Learning Science](docs/product/LEARNING-SCIENCE.md)**
 
 ![Canon dashboard, the module gallery](assets/canon-dashboard.png)
 
@@ -34,17 +34,17 @@ Four experiments running at once:
 
 ## How it works
 
-Canon is built on cognitive science. Each principle maps to a specific feature:
+Canon draws from the highest-evidence principles in cognitive science. Evidence ratings (H/M) are based on meta-analyses. Whether each implementation actually achieves these effects in practice is still being tested.
 
-| Principle | Hypothesis | Feature |
-|-----------|-----------|---------|
-| **Generation effect** | Producing information encodes far deeper than consuming it | Every module ends in a named artifact. Reading alone does not count. |
-| **Elaborative interrogation** | Asking "why does this work?" beats summarising what you read | Reflection tab: open prompt after every module |
-| **Deliberate practice** | Expert performance comes from targeting specific weaknesses with feedback | Evaluate tab: Weak / Strong / Ask Yourself rubric |
-| **Autonomy** | People sustain learning when they control their own path | Skip/restore: decide what to skip and note why |
-| **Competence** | Visible progress sustains motivation | Progress bars per module and overall |
-
-Whether this implementation achieves these effects in practice: still being tested.
+| Principle | Evidence | Hypothesis | Canon feature | Status |
+|-----------|----------|------------|---------------|--------|
+| **Retrieval practice** | **H** | Testing yourself produces far better long-term retention than re-reading | Evaluate tab: Ask Yourself self-check questions | WIP |
+| **Spaced practice** | **H** | Spreading study over time produces better retention than massed practice | Pace note banner encourages distributing study | To be explored |
+| **Generation effect** | **H** | Producing information produces better retention than reading it | Every module ends in a named artifact. Reading alone does not count. | Yes |
+| **Autonomy** | **H** | People sustain learning when they control their own path | Skip/restore, choose curriculum, set pace | Yes |
+| **Competence** | **H** | Perceived effectiveness sustains motivation | Progress bars per module and overall | Yes |
+| **Elaborative interrogation** | **M** | Asking "why does this work?" produces better retention than summarising | Reflection tab: open prompt after every module | Yes |
+| **Deliberate practice** | **M** *(contested)* | Targeting specific weaknesses with feedback improves performance | Evaluate tab: Weak / Strong rubric | WIP |
 
 ### The module
 Each module contains: readings, videos, an assignment with a named artifact, a reflection prompt, and a rubric to grade yourself against.

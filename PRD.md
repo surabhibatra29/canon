@@ -54,8 +54,11 @@ In progress: multiple curricula (§13) and generating a curriculum with AI in th
   - [How I'll know it's working](#how-ill-know-its-working)
 - [3. Architecture](#3-architecture)
 - [4. Curriculum Structure](#4-curriculum-structure)
-- [Technical Reference](docs/ARCHITECTURE.md) *(separate doc)*
-- [Changelog](docs/CHANGELOG.md) *(separate doc)*
+- [Technical Reference](docs/technical/ARCHITECTURE.md) *(separate doc)*
+- [Changelog](docs/technical/CHANGELOG.md) *(separate doc)*
+- [Learning Science](docs/product/LEARNING-SCIENCE.md) *(separate doc)*
+- [Competitive Research](docs/product/COMPETITIVE.md) *(separate doc)*
+- [Ideation Log](docs/product/IDEATION.md) *(separate doc)*
 - [10. What Could Be Built Next](#10-what-could-be-built-next)
 - [12. Feature Design: AI Recommendations](#12-feature-design-ai-recommendations)
   - [12.1 Problem](#121-problem)
@@ -111,15 +114,17 @@ Canon is a personal learning workspace and a curation tool, with an experiment t
 
 ### Why each node is designed this way
 
-Built on cognitive science. Whether this implementation achieves these effects in practice: still being tested.
+Canon draws from the highest-evidence principles in cognitive science. Evidence ratings (H/M) are based on meta-analyses and systematic reviews. Whether each implementation actually achieves these effects in practice is still being tested.
 
-| Principle | Hypothesis | Feature |
-|-----------|-----------|---------|
-| **Generation effect** | Producing information encodes far deeper than consuming it | Every module ends in a named artifact. Reading alone does not count. |
-| **Elaborative interrogation** | Asking "why does this work?" beats summarising what you read | Reflection tab: open prompt after every module |
-| **Deliberate practice** | Expert performance comes from targeting specific weaknesses with feedback | Evaluate tab: Weak / Strong / Ask Yourself rubric |
-| **Autonomy** | People sustain learning when they control their own path | Skip/restore: decide what to skip and note why |
-| **Competence** | Visible progress sustains motivation | Progress bars per module and overall |
+| Principle | Evidence | Key paper | Hypothesis | Canon feature | Canon status |
+|-----------|----------|-----------|------------|---------------|-------------|
+| **Retrieval practice** | **H** | [Rowland 2014](https://pmc.ncbi.nlm.nih.gov/articles/PMC7889502/) — *Psychological Bulletin* | Testing yourself on material produces far better long-term retention than re-reading it | Evaluate tab: Ask Yourself self-check questions | WIP |
+| **Spaced practice** | **H** | [Cepeda et al. 2006](https://doi.org/10.1037/0033-2909.132.3.354) — *Psychological Bulletin* | Spreading study sessions over time produces better retention than massed practice | Pace note banner encourages distributing study over time | To be explored |
+| **Generation effect** | **H** | [Bertsch et al. 2007](https://link.springer.com/article/10.3758/BF03193441) — *Memory & Cognition* | Producing information produces better retention and recall than reading or re-reading | Every module ends in a named artifact. Reading alone does not count. | Yes |
+| **Autonomy** | **H** | [Bureau et al. 2022](https://pmc.ncbi.nlm.nih.gov/articles/PMC8935530/) — *Psychological Bulletin* | People sustain learning when they control their own path | Skip/restore: decide what to skip and note why. Choose the curriculum, set the pace. | Yes |
+| **Competence** | **H** | [Bureau et al. 2022](https://pmc.ncbi.nlm.nih.gov/articles/PMC8935530/) — *Psychological Bulletin* | Perceived effectiveness sustains motivation | Progress bars per module and overall | Yes |
+| **Elaborative interrogation** | **M** | [Dunlosky et al. 2013](https://journals.sagepub.com/doi/abs/10.1177/1529100612453266) — *Psych Science in the Public Interest* | Asking "why does this work?" produces better retention than summarising | Reflection tab: open prompt after every module | Yes |
+| **Deliberate practice** | **M** *(contested)* | [Macnamara et al. 2014](https://journals.sagepub.com/doi/abs/10.1177/0956797614535810) — *Psychological Science* | Targeting specific weaknesses with feedback improves performance | Evaluate tab: Weak / Strong / Ask Yourself rubric | WIP |
 
 ### What Canon is not
 
@@ -246,7 +251,7 @@ Each module contains: `title`, `subtitle`, `whyItMatters`, `artifact`, `rubric` 
 
 ---
 
-> Technical reference (feature spec, key functions, data storage, known issues, admin workflow): [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+> Technical reference (feature spec, key functions, data storage, known issues, admin workflow): [docs/technical/ARCHITECTURE.md](docs/technical/ARCHITECTURE.md)
 
 ---
 
@@ -274,7 +279,7 @@ Each module contains: `title`, `subtitle`, `whyItMatters`, `artifact`, `rubric` 
 
 ---
 
-> Changelog: [docs/CHANGELOG.md](docs/CHANGELOG.md)
+> Changelog: [docs/technical/CHANGELOG.md](docs/technical/CHANGELOG.md)
 
 ---
 
