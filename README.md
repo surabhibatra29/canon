@@ -1,6 +1,6 @@
 # Canon
 
-> Curate your curriculum. Execute it. Track it. Write about it.
+> Curate your curriculum. Execute it. Track it. Come out sharp.
 
 Canon is a personal learning workspace. Curate a curriculum, execute it module by module, track progress, and write as you go. Built solo during a career break using Claude Code.
 

@@ -775,6 +775,7 @@
         <div class="auth-logo-byline">by Sur:B</div>
       </div>
     </div>
+    <div style="margin-top:10px;"><span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;background:#FEF3C7;color:#92400E;border:1px solid rgba(180,83,9,0.18);font-size:11px;font-weight:600;letter-spacing:0.03em;">Personal Build — expect rough edges</span></div>
     <!-- Loading state -->
     <div id="authLoading" class="auth-loading">
       <div class="auth-loading-spinner"></div>
@@ -820,6 +821,7 @@
           <span class="header-logo-name">Canon</span>
           <span class="header-logo-brand">by Sur:B</span>
         </div>
+        <span style="display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;background:#FEF3C7;color:#92400E;border:1px solid rgba(180,83,9,0.18);font-size:10.5px;font-weight:600;letter-spacing:0.03em;line-height:1.4;">Personal Build</span>
       </div>
     </div>
 
@@ -2909,6 +2911,18 @@ function addBlankModule() {
 function renderDesignPanel(mod) {
   const att = getAttachments(mod.id);
   const attCount = att.admin.length + att.student.length;
+  const bookmarks = mod.bookmarks || [];
+  const bookmarksHtml = bookmarks.length ? bookmarks.map(b => `
+    <div class="reading-edit-row">
+      <span style="font-size:13px;min-width:18px;text-align:right">🔖</span>
+      <input class="reading-edit-input title" value="${esc(b.title)}" placeholder="Title / header"
+             onblur="saveBookmarkField('${mod.id}','${b.id}','title',this.value)"
+             onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
+      <input class="reading-edit-input url" value="${esc(b.url)}" placeholder="https://..."
+             onblur="saveBookmarkField('${mod.id}','${b.id}','url',this.value)"
+             onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">
+      <button class="btn btn-sm" style="padding:4px 8px;color:var(--red);border:none;background:none;cursor:pointer;flex-shrink:0" onclick="deleteBookmark('${mod.id}','${b.id}')" title="Remove">✕</button>
+    </div>`).join('') : '';
 
   const readingsHtml = mod.readings.length ? mod.readings.map((r, idx) => {
     const urlVal = r.type === 'verified' ? (r.url || '') : (r.searchTerm || '');
@@ -3005,6 +3019,14 @@ function renderDesignPanel(mod) {
           <div class="reading-editor-section" style="margin-bottom:0">
             ${watchingHtml}
             <button class="reading-add-btn" onclick="addWatching('${mod.id}')">+ Add video</button>
+          </div>
+        </div>
+
+        <div class="design-field-group">
+          <label class="design-field-label" style="display:flex;align-items:center;gap:6px">🔖 Bookmarks <span style="font-size:10px;font-weight:400;color:var(--text-muted);text-transform:none;letter-spacing:0">— links to read later, not yet in the curriculum</span></label>
+          <div class="reading-editor-section" style="margin-bottom:0">
+            ${bookmarksHtml}
+            <button class="reading-add-btn" onclick="addBookmark('${mod.id}')">+ Add bookmark</button>
           </div>
         </div>
 
@@ -3201,6 +3223,32 @@ function deleteWatching(modId, watchingId) {
   mod.watching = mod.watching.filter(w => w.id !== watchingId);
   saveState();
   renderAdmin();
+}
+
+function addBookmark(modId) {
+  const mod = activeCurriculum()?.modules.find(m => m.id === modId);
+  if (!mod) return;
+  if (!mod.bookmarks) mod.bookmarks = [];
+  mod.bookmarks.push({ id: 'bk_' + Math.random().toString(36).substr(2,8), title: '', url: '' });
+  saveState();
+  renderAdmin();
+}
+
+function deleteBookmark(modId, bookmarkId) {
+  const mod = activeCurriculum()?.modules.find(m => m.id === modId);
+  if (!mod) return;
+  mod.bookmarks = (mod.bookmarks || []).filter(b => b.id !== bookmarkId);
+  saveState();
+  renderAdmin();
+}
+
+function saveBookmarkField(modId, bookmarkId, field, value) {
+  const mod = activeCurriculum()?.modules.find(m => m.id === modId);
+  if (!mod) return;
+  const b = (mod.bookmarks || []).find(b => b.id === bookmarkId);
+  if (!b) return;
+  b[field] = value.trim();
+  saveState();
 }
 
 function addReading(modId) {
@@ -4601,9 +4649,10 @@ initAuth().catch(err => {
       <div class="about-tagline">
         <span>Curate your curriculum.</span>
         <span>Execute it. Track it.</span>
-        <span>Write about it.</span>
+        <span>Come out sharp.</span>
       </div>
       <div class="about-byline">by Sur:B</div>
+      <div style="margin-top:14px;"><span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;background:#FEF3C7;color:#92400E;border:1px solid rgba(180,83,9,0.18);font-size:11px;font-weight:600;letter-spacing:0.03em;">Personal Build</span></div>
     </div>
   </div>
   <div class="about-dismiss">click anywhere to close</div>
