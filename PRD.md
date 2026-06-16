@@ -64,6 +64,13 @@ In progress: multiple curricula (§13) and generating a curriculum with AI in th
   - [13.7 UI Touchpoints](#137-ui-touchpoints)
   - [13.8 Supabase Changes](#138-supabase-changes)
   - [13.9 The Generate Flow (in-app curriculum builder)](#139-the-generate-flow-in-app-curriculum-builder)
+- [14. Feature Design: Reading Groups](#14-feature-design-reading-groups)
+  - [14.1 Problem](#141-problem)
+  - [14.2 Design](#142-design)
+  - [14.3 Data Shape](#143-data-shape)
+  - [14.4 UI Spec](#144-ui-spec)
+  - [14.5 Design Mode](#145-design-mode)
+  - [14.6 Build Order](#146-build-order)
   - [13.10 What's Out of Scope for v1](#1310-whats-out-of-scope-for-v1)
   - [13.11 Open Questions](#1311-open-questions)
   - [13.12 Build Order](#1312-build-order)
@@ -677,6 +684,97 @@ Outputs: full curriculum JSON in Canon schema. User sees the module list before 
 7. **Dashboard curriculum badge**, small active curriculum label above pace note.
 8. **Admin: publish to library**, updated publish flow for multi-curriculum.
 9. **Generate flow**, last, because it depends on API key settings (shared with recommendations).
+
+---
+
+## 14. Feature Design: Reading Groups
+
+**Status:** Specced. Not built.
+
+---
+
+### 14.1 Problem
+
+As modules grow, readings accumulate from different angles. Module 0 now has 8 readings: some about metacognition, some about first principles reasoning, some about how to study. They appear as a flat numbered list. There is no signal about which ones belong together or what to work through first.
+
+A flat list of 8 is navigable. A flat list of 12 is not.
+
+The hypothesis: if readings are grouped into named sections, students can approach a module with more intention. They can choose a cluster, work through it, and return. The module feels navigable rather than exhausting.
+
+---
+
+### 14.2 Design
+
+No new entity. No "submodule" data type. Just a `group` field on each reading (and optionally watching item) — a short string label. Items with the same label are visually grouped under a shared section header in the Reading tab.
+
+This is the lightest change that captures the intent. The alternative (proper submodule entities with their own IDs, completion states, and UI) would add significant complexity for a benefit that doesn't require it at the current scale.
+
+The grouping is curatorial, not structural. It does not change how progress is calculated. It does not add a new layer of completion. It just makes the reading list scannable.
+
+---
+
+### 14.3 Data Shape
+
+One new optional field on readings and watching items:
+
+```js
+// readings item (watching item: same)
+{
+  id, number, title, url, searchTerm, type, description,
+  group: "How to Think"  // optional; omit or empty string = ungrouped
+}
+```
+
+No schema migration needed. Items without a `group` field continue to render normally (ungrouped, at the top or bottom, designer's choice).
+
+Module 0 example groupings:
+
+| Group | Readings |
+|-------|---------|
+| How to Think | Feynman technique, Cook and Chef (Tim Urban), First Principles (Farnam Street) |
+| Metacognition | Growth mindset (Dweck), learning how to learn material |
+| Decision Quality | Anything in the Annie Duke / cognitive bias cluster |
+
+---
+
+### 14.4 UI Spec
+
+**Reading tab (student view):**
+
+- When two or more readings share a group label, a section divider appears above the first item in the group.
+- Divider: small caps label, muted color, thin rule. Example: `HOW TO THINK`.
+- Items within a group render as normal (checkbox, title, skip button, etc.).
+- Ungrouped items appear first (or last — TBD on first build).
+- Group headers are not interactive. No group-level completion tracking.
+- Progress bar and `getModPct()` are unchanged. Groups are presentation only.
+
+**Watching tab:** same pattern if `group` field is present.
+
+---
+
+### 14.5 Design Mode
+
+**Inline reading editor (per reading row):**
+
+- Add a `Group` input field to each reading row (small, right-aligned, or below the description).
+- Placeholder: `Group (optional)`.
+- Previously used group names within the same module surface as a `<datalist>` for autocomplete — reduces typos between readings that should share the same group.
+- No separate group management UI. Groups are just strings; if you rename one, you change each reading manually.
+
+**Reading editor layout change:**
+
+The existing row layout is: `[emoji] [title input] [url input] [✕]`. The group field fits below or as a third input before the URL. Exact layout is design's call on first build.
+
+---
+
+### 14.6 Build Order
+
+1. **Add `group` field to CANONICAL_CURRICULUM for Module 0.** Assign groups to the 8 readings as a proof of concept. No UI change yet.
+2. **Reading tab renders group headers.** When `group` is present, group items and render `<h4>`-style dividers. No Design mode change.
+3. **Design mode: add group input per reading.** `<datalist>` autocomplete using existing group names in the module.
+4. **Watching tab:** apply same grouping logic if watching items have `group` field.
+
+Step 1 alone is a 5-minute data change. Steps 2 and 3 are the real build. Step 4 is optional in v1.
 
 ---
 

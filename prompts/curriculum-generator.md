@@ -89,6 +89,55 @@ Return a single JSON object. No markdown code fences. No comments. Valid JSON on
   ]
 }
 
+## SOURCE DISCOVERY PROTOCOL
+
+Before generating readings and watching items, work through this hierarchy. The goal is primary sources and trusted practitioners — not popular summaries.
+
+**Step 1: Go to the originator.**
+Every concept has an originator. Find them first. Dweck on growth mindset, not HBR on Dweck. Kahneman on cognitive bias, not a "top 10 biases" article. Feynman on learning, not a Feynman-technique summary. The originator's own writing or talks are always preferred over any interpretation.
+
+**Step 2: Check field-specific gold standard sources.**
+Each field has its own trusted practitioners. Use the lists below. Do not default to generic sources.
+
+**For product management:**
+- Practitioners: Shreyas Doshi, Marty Cagan (SVPG), Lenny Rachitsky, Julie Zhuo, Paul Graham, Jason Fried (37signals), the Linear team
+- Publications: Lenny's Newsletter, SVPG blog (svpg.com), Signal v. Noise, Wait But Why (for thinking methodology), Farnam Street (fs.blog) for mental models
+- Watching: Lenny Rachitsky podcast, Shreyas Doshi talks, Y Combinator lectures, Exponent mock interviews, a16z AI Summit, First Round Capital interviews
+
+**For thinking and mental models (any field):**
+- Shane Parrish / Farnam Street (fs.blog) — the most systematic treatment of mental models available
+- Tim Urban / Wait But Why (waitbutwhy.com) — best long-form explanatory writing on complex ideas
+- Richard Feynman — primary source for first principles reasoning ("Fun to Imagine", BBC YouTube)
+- Annie Duke — decision quality and separating process from outcome
+
+**For AI and cognition:**
+- Ethan Mollick / One Useful Thing (oneusefulthing.org) — best practitioner writing on AI changing knowledge work
+- Primary researchers over pop science: Kahneman, Bjork (retrieval practice), Deci & Ryan (SDT)
+
+**For design and craft:**
+- Julie Zhuo ("The Year of the Looking Glass", Medium)
+- 37signals "Getting Real" and Signal v. Noise
+- Linear Method (linear.app/method)
+- Paul Graham essays (paulgraham.com)
+
+**For any other field:**
+Apply the same logic: who are the practitioner-writers with skin in the game? Who are the researchers who did the original work? Prefer those over journalists summarising them.
+
+**Step 3: Verify the URL exists and points to the actual piece.**
+Do not include a URL you are not confident in. An empty `url` field with a precise `searchTerm` is better than a broken or wrong URL.
+
+**Step 4: Check the source is accessible.**
+Free and directly accessible preferred. Paywalled pieces need an alternative or a note. Full books should be excerpted to specific chapters.
+
+**Sources to avoid:**
+- Generic "top 10" or "ultimate guide" articles (no author accountability)
+- LinkedIn posts and thought leadership carousels
+- McKinsey/BCG reports on practitioner topics
+- HBR summaries of academic research (go to the researcher instead)
+- Medium posts by unknown authors
+
+---
+
 ## RULES — enforce all of these
 
 1. **8–12 modules.** Number from 0. The final module must be a synthesis/portfolio module — not more content, but a document that pulls everything together into a career decision.
@@ -100,9 +149,9 @@ Return a single JSON object. No markdown code fences. No comments. Valid JSON on
 7. **At least one watching item per module must have a direct URL** from TED.com, MIT OpenCourseWare, or an official institutional channel.
 8. **Every module must include at least one mock interview watching item** from a top PM interview channel (Exponent @tryexponent is the best). The mock interview should be topic-matched to the module — strategy questions for the strategy module, metrics questions for the metrics module, etc.
 9. **Prioritise these high-signal watching sources**: Lenny Rachitsky podcast (@lennyrachitsky on YouTube), Shreyas Doshi conference talks, Y Combinator lecture series (@ycombinator), Exponent mock interviews (@tryexponent), Julie Zhuo talks, Marty Cagan / SVPG, First Round Capital interviews, a16z AI Summit. These are the practitioners students most need to hear in their own voice, not just read.
-8. **Descriptions are written to the person, not about the resource.** First word should not be the resource name.
-9. **Rubric weak versions must name the specific shortcut this person is likely to take**, not a generic "not enough detail" critique.
-10. **Do not begin generating until all five context fields above are filled in.** If any are missing or vague, ask one clarifying question per missing field before proceeding.
+10. **Descriptions are written to the person, not about the resource.** First word should not be the resource name.
+11. **Rubric weak versions must name the specific shortcut this person is likely to take**, not a generic "not enough detail" critique.
+12. **Do not begin generating until all five context fields above are filled in.** If any are missing or vague, ask one clarifying question per missing field before proceeding.
 ```
 
 ---
