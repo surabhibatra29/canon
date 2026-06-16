@@ -10,7 +10,23 @@
 
 ## TL;DR
 
-Canon is a personal learning workspace, built by and for one person and grounded in cognitive science. You curate the curriculum yourself, decide what to skip, and track progress by what you consume and what you produce. Every module ends in a named artifact. The execution layer is curriculum-agnostic.
+Canon is a personal learning workspace, built by and for one person (of course open to anybody else, a PM who wants to up their reading!), with an experiment to ground it in cognitive science. It is built around three themes:
+
+**1. Curate, with AI as copilot:**
+- You choose the curriculum
+- AI helps you find gold-standard practitioners and primary sources in any field
+- The source discovery protocol: which voices to trust, how to go to the originator over the summary, is being developed through the process of running the curriculum itself
+- This is a work in progress
+
+**2. Execute and produce:**
+- Track progress by what you consume and what you produce
+- Every module ends in a named artifact
+- You decide what to skip
+- The execution layer is curriculum-agnostic
+
+**3. Sharpen continuously:**
+- Recommendations feed back into the curriculum based on what you reflected on, skipped, and noted
+- The longer you run it, the sharper the curriculum gets
 
 **Live:** full execution loop: modules, readings, assignments, reflection, rubric, PDF viewer, cloud sync.  
 **In progress:** AI Recommendations (§12), Multiple Curricula (§13).  
@@ -81,7 +97,17 @@ In progress: multiple curricula (§13) and generating a curriculum with AI in th
 
 ## 1. What this is
 
-Canon is a personal learning workspace. You bring your own curriculum, decide what to skip, and track progress by what you consume and what you produce. Every module ends in a named artifact. The execution layer is curriculum-agnostic. The PM curriculum is the one running now.
+Canon is a personal learning workspace and a curation tool, with an experiment to ground it in cognitive science. The PM curriculum is the one running now.
+
+**As an execution layer:**
+- You bring your own curriculum, decide what to skip, and track progress by what you consume and what you produce
+- Every module ends in a named artifact
+- Curriculum-agnostic by design
+
+**As a curation tool:**
+- AI helps you find gold-standard practitioners and primary sources in any field
+- The source discovery protocol: which voices to trust, how to go to the originator over the summary, what to exclude, is being developed and refined through active learning
+- This is a work in progress
 
 ### Why each node is designed this way
 
@@ -126,24 +152,29 @@ The admin account (`batra.surabhi@gmail.com`) can edit the curriculum, publish, 
 
 **North Star:** Modules completed with an artifact produced, not marked done without output.
 
-**Engagement metrics:**
+**Personal growth (Surabhi as designer):**
+
+| Metric | Signal |
+|--------|--------|
+| Thinking quality | Artifacts in modules 6-13 show different problem framing than module 0. She can name the shift, not just feel it. |
+| AI skill acquisition | She can demonstrate context engineering, prompt design, and multi-agent use from building Canon, not just describe them. |
+| Applied learning | At least one Canon product decision is traceable to a specific reflection note or module artifact. |
+
+**Tool effectiveness:**
 
 | Metric | Definition | Signal |
 |--------|-----------|--------|
 | Artifact completion rate | % of completed modules with a non-empty assignment section | Are outputs actually being produced? |
 | Reflection fill rate | % of completed modules with non-empty reflection notes | Is elaboration happening, or just checkbox-ticking? |
 | Purposeful skip rate | % of skipped items with a reason logged | Are skips deliberate or just abandonment? |
-| Return cadence | Sessions distributed across the week, not burst-then-silence | Is this a habit or a sprint? |
-
-**Quality metrics:**
-
-| Metric | Definition | Signal |
-|--------|-----------|--------|
-| AI recommendation conversion | % of surfaced recommendations added to the reading list | Are recommendations landing, or getting dismissed? |
 | Curriculum refinement frequency | Design mode used at least once per curriculum pass | Is the curriculum getting sharper over time? |
 | Rubric score distribution | Range of Weak / Strong ratings across modules | Honest self-assessment, or grade inflation? |
 
 **Guardrail:** Skip rate overall. If the majority of readings are skipped, the curriculum was poorly curated, not a signal the tool is working.
+
+**Retired:**
+- *AI recommendation conversion:* feature not live yet. Revisit when §12 ships.
+- *Return cadence:* habit signal, not a learning signal. Not meaningful at N=1.
 
 N=1. No statistical significance possible. The baseline is how I studied before Canon: forty open tabs, plenty started, almost nothing finished, no output.
 

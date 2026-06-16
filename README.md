@@ -2,7 +2,7 @@
 
 > Curate your curriculum. Execute it. Track it. Come out sharp.
 
-Canon is a personal learning workspace. Curate a curriculum, execute it module by module, track progress, and write as you go. Built solo during a career break using Claude Code.
+Canon is a personal learning workspace and a curation tool. Find gold-standard sources, build your curriculum, execute it module by module, and track what you produce, not just what you consume. Built solo during a career break using Claude Code.
 
 **[Live](https://surabhibatra29.github.io/canon/curriculum-tracker.html)** · **[Intro video (2 min)](https://www.loom.com/share/02c93c7ead8e4b37a517bffa76144359)** · **[PRD](PRD.md)** · **[Architecture](docs/ARCHITECTURE.md)**
 
@@ -12,19 +12,29 @@ Canon is a personal learning workspace. Curate a curriculum, execute it module b
 
 ## Why I built it
 
-Three things, driven by a personal problem:
+Four things, driven by a personal problem:
 
 1. **A personal problem with no good solution.** Cohort courses prescribe what you learn. Self-directed reading has no structure. Forty open tabs, plenty started, almost nothing finished. I needed something that let me curate my own path and forced me to produce output, not just consume.
 2. **A learning science experiment.** How does learning actually work, for people broadly and specifically for me? Canon is the test environment.
 3. **A hands-on AI development challenge.** Built entirely with Claude Code. Wanted to see how far AI-assisted dev could go in my own hands.
+4. **A curation methodology in development:** Self-directed learning has two problems:
+   - no execution layer
+   - no reliable signal for which sources are actually worth your time
 
-Three experiments running at once: a curriculum I curate myself, a tool to change how I learn, and proof of what I can ship with AI.
+   Canon is designed to solve both. The source discovery protocol: which voices to trust in any field, how to reach primary sources rather than summaries, what to skip, is being developed and tested through the process of running the curriculum itself. The readings are not just inputs. They are tests of the methodology.
+
+Four experiments running at once:
+
+- a curriculum I curate myself
+- a tool to change how I learn
+- a source quality protocol being refined through active use
+- proof of what I can ship with AI
 
 ---
 
 ## How it works
 
-Built on cognitive science. Each principle maps to a specific feature:
+Canon is built on cognitive science. Each principle maps to a specific feature:
 
 | Principle | Hypothesis | Feature |
 |-----------|-----------|---------|
@@ -78,7 +88,7 @@ Cloud sync (Supabase), PDF page memory, URL hash navigation (survives refresh an
 ## Next up
 
 - **AI Recommendations** *(in progress).* On-demand reading suggestions personalised to what you have reflected on, skipped, and noted. Uses your own words as the signal, not generic content similarity.
-- **AI curriculum generator in-app.** Currently generated outside Canon via a prompt. Plan: 5 questions → structured curriculum, built inside the tool.
+- **AI curriculum generator in-app.** Currently generated outside Canon via a prompt. Plan: 5 questions → structured curriculum built inside the tool, sourced from gold-standard voices across any field. The source discovery protocol that governs which readings make the cut is being refined through active use.
 - **Multiple curricula.** The execution layer is domain-agnostic. PM is just the first curriculum running.
 
 ---
