@@ -128,28 +128,28 @@ Canon draws from the highest-evidence principles in cognitive science. Evidence 
 
 ### What Canon is not
 
-- **Passive content aggregator.** You bring the curriculum. Canon does not crawl feeds or surface trending content. The AI Recommendations feature does surface highly curated reading suggestions, but based on your own reflections, skip reasons, and notes, not algorithmic popularity.
-- **Note-taking app.** Notes are scoped to specific readings and modules. They feed the reflection and assignment loops, not a general capture system.
-- **Course platform.** No prescribed path, no instructor, no certificate. The curriculum is yours to set and change.
-- **Learning community.** No social layer. Nobody sees your progress or your work. That is the biggest behavioural gap (see §2).
-- **Portfolio host.** Artifacts live inside Canon while you build them. Publishing them is a separate step.
+- **Not an algorithmic content aggregator:** Canon does not crawl feeds or surface content based on popularity. Discovery is intentional: gold-standard sources curated by field, with AI Recommendations that surface reading based on your own reflections, skip reasons, and notes. The curation methodology is part of what Canon is building.
+- **Not a note-taking app:** Notes are scoped to specific readings and modules. They feed the reflection and assignment loops, not a general capture system.
+- **Not a centralised course platform:** No prescribed path, no instructor, no certificate. You set the curriculum and change it when your thinking changes.
+- **Not a learning community:** No social layer. Nobody else sees your progress or your work. That is the biggest behavioural gap (see §2).
+- **Not a portfolio host:** Artifacts live inside Canon while you build them. Publishing them is a separate step.
 
 ---
 
 ## 2. Who it is for
 
-Built for one person: me. Everything shaped around how I actually study, and it changes when my habits do.
-
-The underlying design is based on learning principles that hold across people: established cognitive science for adult learners broadly. The specific curriculum, the pace, what gets skipped, what gets reflected on: all of that is shaped around one person's gaps, goals, and habits.
+Canon started as a personal project: one person, one curriculum, one experiment. The pace, what gets skipped and reflected on: all shaped around one person's gaps and habits. But the underlying design is based on learning principles that hold across people: established cognitive science for adult learners. Any PM who wants to curate and execute their own curriculum can use it.
 
 **What the design covers:**
 
-- **Autonomy:** I choose the curriculum, the pace, what to skip. Nothing is prescribed by someone else.
-- **Competence:** progress bars, module completion, artifact production. Clear signals that things are actually moving forward.
+- **Autonomy:** you choose the curriculum, the pace, what to skip. Nothing is prescribed by someone else.
+- **Competence:** progress bars, module completion, artifact production. Clear signals that things are moving forward.
+- **Generation and retrieval:** every module ends in a named artifact. Ask Yourself questions in the Evaluate tab are a form of retrieval practice.
 
-**What the design does not cover:**
+**What the design does not cover (yet):**
 
-- **Relatedness:** people sustain learning when their work connects to someone they respect or a community they belong to. In Canon, nobody else sees what gets produced. That is the biggest behavioural gap and the hardest one to close.
+- **Relatedness:** people sustain learning when their work connects to someone they respect or a community they belong to. In Canon, nobody else sees what gets produced. That is the biggest behavioural gap and the hardest to close.
+- **Spaced retrieval:** no algorithm surfaces prior material at optimal intervals. The pace note encourages spacing, but the system does not enforce it.
 
 The admin account (`batra.surabhi@gmail.com`) can edit the curriculum, publish, and manage attachments. Multiple curricula and other users are not live yet.
 
