@@ -96,13 +96,25 @@ Before generating readings and watching items, work through this hierarchy. The 
 **Step 1: Go to the originator.**
 Every concept has an originator. Find them first. Dweck on growth mindset, not HBR on Dweck. Kahneman on cognitive bias, not a "top 10 biases" article. Feynman on learning, not a Feynman-technique summary. The originator's own writing or talks are always preferred over any interpretation.
 
-**Step 2: Check field-specific gold standard sources.**
-Each field has its own trusted practitioners. Use the lists below. Do not default to generic sources.
+**Step 2: Find the gold standard sources for this field.**
+Each field has its own trusted practitioners. The examples below are illustrative — use the same logic for any domain not listed.
+
+**For any field, ask three questions before picking sources:**
+1. Who are the practitioner-writers with skin in the game? (people who built or do the thing, not people who write about it)
+2. Who did the original research? (go to the researcher, not the HBR summary of the researcher)
+3. What is the highest-signal publication in this space — written by practitioners, not journalists?
+
+The answers to these three questions produce your source list for any field.
+
+---
+
+*The following are field-specific examples. They are not exhaustive — apply the same logic to any field.*
 
 **For product management:**
-- Practitioners: Shreyas Doshi, Marty Cagan (SVPG), Lenny Rachitsky, Julie Zhuo, Paul Graham, Jason Fried (37signals), the Linear team
-- Publications: Lenny's Newsletter, SVPG blog (svpg.com), Signal v. Noise, Wait But Why (for thinking methodology), Farnam Street (fs.blog) for mental models
+- Practitioners: Shreyas Doshi, Marty Cagan (SVPG), Lenny Rachitsky, Julie Zhuo, Paul Graham, Jason Fried (37signals), the Linear team, Teresa Torres (producttalk.org — continuous discovery and opportunity solution trees), Jackie Bavaro (PM interview frameworks and product sense)
+- Publications: Lenny's Newsletter, SVPG blog (svpg.com), Signal v. Noise, Farnam Street (fs.blog) for mental models
 - Watching: Lenny Rachitsky podcast, Shreyas Doshi talks, Y Combinator lectures, Exponent mock interviews, a16z AI Summit, First Round Capital interviews
+- Discovery methods: any module covering product discovery must include Teresa Torres' Opportunity Solution Tree (producttalk.org/opportunity-solution-tree/) and either JTBD (Intercom Job Stories: intercom.com/blog/using-job-stories-design-features-ui-ux/) or the Mom Test (Rob Fitzpatrick). These are primary frameworks tested in interviews.
 
 **For thinking and mental models (any field):**
 - Shane Parrish / Farnam Street (fs.blog) — the most systematic treatment of mental models available
@@ -110,8 +122,11 @@ Each field has its own trusted practitioners. Use the lists below. Do not defaul
 - Richard Feynman — primary source for first principles reasoning ("Fun to Imagine", BBC YouTube)
 - Annie Duke — decision quality and separating process from outcome
 
-**For AI and cognition:**
+**For AI (any field that touches AI products or tools):**
 - Ethan Mollick / One Useful Thing (oneusefulthing.org) — best practitioner writing on AI changing knowledge work
+- Eugene Yan (eugeneyan.com) — production AI systems and LLM product patterns; his "Patterns for Building LLM-based Systems & Products" covers evals, RAG, guardrails, and defensive UX
+- Simon Willison (simonwillison.net) — the most honest practitioner writing on AI failure modes, hallucination, and trust
+- Hamel Husain (hamel.dev) — practitioner guide to designing AI eval sets; "Your AI Product Needs Evals" is required for any module that involves building or evaluating AI products
 - Primary researchers over pop science: Kahneman, Bjork (retrieval practice), Deci & Ryan (SDT)
 
 **For design and craft:**
@@ -120,8 +135,18 @@ Each field has its own trusted practitioners. Use the lists below. Do not defaul
 - Linear Method (linear.app/method)
 - Paul Graham essays (paulgraham.com)
 
+**For data science and analytics:**
+- Practitioners: Cassie Kozyrkov (Google's former Chief Decision Scientist), Eugene Yan, Jeremy Howard (fast.ai)
+- Publications: Towards Data Science (practitioner-authored pieces only), fast.ai blog, Chip Huyen (huyenchip.com)
+- Watching: fast.ai practical deep learning course, Andrej Karpathy lectures, StatQuest (YouTube) for fundamentals
+
+**For software engineering:**
+- Practitioners: Martin Fowler (martinfowler.com), Will Larson (lethain.com), Dan Abramov
+- Publications: The Pragmatic Engineer (newsletter), High Scalability, engineering blogs from Stripe, Shopify, Airbnb
+- Watching: System design interviews (Gaurav Sen, ByteByteGo), Fireship for overviews
+
 **For any other field:**
-Apply the same logic: who are the practitioner-writers with skin in the game? Who are the researchers who did the original work? Prefer those over journalists summarising them.
+Apply the three questions above. Find the practitioner-writers, the original researchers, and the highest-signal practitioner publication. Use those as your source list.
 
 **Step 3: Verify the URL exists and points to the actual piece.**
 Do not include a URL you are not confident in. An empty `url` field with a precise `searchTerm` is better than a broken or wrong URL.
@@ -147,11 +172,23 @@ Free and directly accessible preferred. Paywalled pieces need an alternative or 
 5. **No vague search terms.** "AI strategy" is not acceptable. "Hamilton Helmer 7 Powers Invest Like the Best Patrick OShaughnessy" is acceptable.
 6. **At least 60% of readings must have verified URLs** (type: "verified", url field populated).
 7. **At least one watching item per module must have a direct URL** from TED.com, MIT OpenCourseWare, or an official institutional channel.
-8. **Every module must include at least one mock interview watching item** from a top PM interview channel (Exponent @tryexponent is the best). The mock interview should be topic-matched to the module — strategy questions for the strategy module, metrics questions for the metrics module, etc.
-9. **Prioritise these high-signal watching sources**: Lenny Rachitsky podcast (@lennyrachitsky on YouTube), Shreyas Doshi conference talks, Y Combinator lecture series (@ycombinator), Exponent mock interviews (@tryexponent), Julie Zhuo talks, Marty Cagan / SVPG, First Round Capital interviews, a16z AI Summit. These are the practitioners students most need to hear in their own voice, not just read.
+8. **Every module must include at least one watching item that applies the module's concepts in a real or simulated context** — not a lecture, but a demonstration, critique, case study, or practice session. Match the format to the field:
+   - Product management: Exponent mock interviews (@tryexponent), topic-matched to the module
+   - Design: portfolio critiques, live design reviews, teardown sessions
+   - Data science: Kaggle solution walkthroughs, case study presentations, live analysis sessions
+   - Software engineering: system design walkthroughs, code review sessions, architecture teardowns
+   - Any field: find the equivalent — where does a senior practitioner apply this skill in real time while you watch?
+9. **Prioritise high-signal practitioner sources in the watching list.** For product management: Lenny Rachitsky podcast, Shreyas Doshi talks, Y Combinator lectures, Exponent mock interviews, Julie Zhuo talks, Marty Cagan / SVPG, First Round Capital interviews, a16z AI Summit. For other fields: apply the same principle — find the practitioners who talk in public about how they actually do the work, not theorists explaining the concepts. These are the sources students most need to hear in their own voice, not just read.
 10. **Descriptions are written to the person, not about the resource.** First word should not be the resource name.
 11. **Rubric weak versions must name the specific shortcut this person is likely to take**, not a generic "not enough detail" critique.
 12. **Do not begin generating until all five context fields above are filled in.** If any are missing or vague, ask one clarifying question per missing field before proceeding.
+13. **Any module covering AI strategy or AI tools must include at least one reading on AI evaluation and trust.** The reading must cover: what hallucination or failure looks like in a product context, how to design or reason about an eval set, and what honest user communication of AI limitations requires. Eugene Yan, Simon Willison, or Hamel Husain are the primary sources for this.
+14. **The final synthesis module must include a domain-specific performance practice gate.** The principle: the person must perform their skill out loud to a real human before the module is done. Reading about interviews is not the same as doing one. The format depends on the field:
+   - Product management: (a) written 90-second personal narrative (background, decision, what was built, what comes next); (b) written product sense answers for at least three real products; (c) one mock interview with a real human — gated, not optional
+   - Design: (a) portfolio walkthrough script written out; (b) live critique session with someone who can give honest feedback — gated
+   - Data science: (a) case study presented out loud; (b) take-home analysis reviewed by someone with domain knowledge — gated
+   - Software engineering: (a) system design explanation for one problem; (b) mock technical interview with a real human — gated
+   - Any field: identify the equivalent real-world performance context and gate the module on completing it. The assignment must name the gate explicitly and state that it is not optional.
 ```
 
 ---
